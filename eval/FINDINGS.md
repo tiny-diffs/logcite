@@ -67,13 +67,35 @@ G1/G2/G3 (commit `feat(preprocess): syslog PRI, envelope unwrap, logfmt timestam
 
 ## Status notes
 
-- **Coverage:** 25 scenarios across all 5 categories ran. ~12 more (docker,
-  ECS, journalctl×2, systemd, envoy, postgres, redis, kafka, mysql, otel,
-  java-gc, k8s-plain) were **not generated** — the generator sub-agents hit the
-  account session limit (resets 15:30 America/Sao_Paulo). Backfill after reset.
-- **LLM judge (unbiased):** deferred — spawning judge agents needs the same
-  budget that is currently capped. Run after reset:
-  `bun eval/run.ts` (refresh) then spawn judges → `bun eval/judge-merge.ts`.
-  The deterministic metrics already give an objective read (recall, citation
-  integrity, context-loss); the judge adds the qualitative "could an agent
-  diagnose this / how to improve" layer.
+- **Coverage:** all **38 scenarios** across the 5 categories generated and run
+  (the 8 that the stalled generators left empty were hand-written). Harness:
+  **20/38 pass**, citation integrity **1.00** on every one.
+- **LLM judge (unbiased):** done — 38 capsules judged by sonnet agents that saw
+  only the original log + the capsule (not logpod's own scores). Verdicts in
+  `eval/judge/*.json`, table appended to `REPORT.md`, synthesis below.
+- Re-run any time: `bun eval/run.ts` (metrics) then `bun eval/judge-merge.ts`
+  (re-merge existing verdicts).
+
+---
+
+## Judge synthesis — 38 capsules, unbiased LLM (overall mean 6.3/10)
+
+| axis | mean | read |
+|---|---|---|
+| faithfulness | **7.8** | highest — citations are trustworthy, little is invented/wrong (matches the deterministic cite=1.00) |
+| actionability | 6.5 | usually enough to start debugging |
+| signal | 6.3 | the chain is often present but the *root* is mislabeled |
+| **context_loss** | **5.7** | lowest — important lines get dropped; this is the lever |
+
+Best: otel(9) gelf(9) sentry(9) logrus(9) zap(9) kafka(8) mysql(8) datadog(8) logfmt(8).
+Worst: **nginx-access(1) haproxy(2)** postgres(4) systemd(4) ecs(5) spring(5) python(5) java-gc(5).
+
+### Cross-cutting themes the judge surfaced (ranked by leverage)
+
+1. **Causal roles are systematically wrong (→ task #12).** The single most common defect, in ~20/38: recurring **distractors admitted as trigger/root_cause**; the real **root_cause labeled trigger/consequence**; downstream **symptoms labeled root_cause** (postgres shared-mem over the slow-query ramp; mysql "too many connections" over the long-running txn; otel payment-fail over Vault refused; redis consequence as root). Faithful but *misleading* — depresses signal + actionability across the whole set. Highest-leverage fix.
+2. **Severity/level gate hides level-less incidents (→ task #4).** The biggest `context_loss` driver: access logs (nginx **1/5**, haproxy, envoy), postgres `LOG:` lines, kernel OOM triggers (systemd), and **recovery/end-of-incident INFO lines** never get buffered (only WARN+ / INTEREST-keyword lines do). Surfacing rare templates and/or inferring severity from HTTP status would unblock the entire web/datastore tier.
+3. **Multi-line stack traces lose the payload (→ task #3).** java-gc(5), spring(5), python(5): the exception type + `file:line` frames (CacheLoader.java:142, etc.) are absent from evidence — the most actionable facts. Stitch frames into one record + extract code_refs.
+4. **Residual ingestion (→ ingestion round 3).** ts unparsed (window "unknown") for OTel (`Timestamp`/nanos), Redis (`pid:role DD Mon YYYY`), journalctl-json (`__REALTIME_TIMESTAMP` epoch-micros); a few JSON field aliases (`eventTimestamp`, GELF `short_message`).
+
+### Bottom line
+The **faithfulness contract holds** under real-world mess (cite 1.00, faith 7.8) — logpod doesn't lie. The gap to "actually good" is **(a) correct causal roles** and **(b) surfacing what the severity gate currently hides**. Those two (tasks #12 and #4) move more capsules from 5-6 to 8-9 than anything else.

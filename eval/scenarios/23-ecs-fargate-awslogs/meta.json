@@ -1,0 +1,14 @@
+{
+  "id": "23-ecs-fargate-awslogs",
+  "provider": "ECS Fargate (awslogs)",
+  "format": "text",
+  "envelope": "none",
+  "incident": "DynamoDB write throttling: latency/throttle warnings escalate to ProvisionedThroughputExceededException, SQS batches fail and return to the queue, backlog rises — amid a recurring token-near-expiry distractor.",
+  "ground_truth": [
+    { "needle": "throttled retrying", "role": "trigger", "desc": "writes start getting throttled" },
+    { "needle": "provisionedthroughputexceeded", "role": "root_cause", "desc": "DynamoDB capacity exceeded" },
+    { "needle": "batch processing failed", "role": "consequence", "desc": "SQS batch fails" },
+    { "needle": "messages returned to queue", "role": "consequence", "desc": "messages requeued, backlog grows" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 1.0 }
+}

@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "id": "21-k8s-plain-text",
+    "provider": "Kubernetes kubectl logs (no envelope) — Go text logger",
+    "format": "text",
+    "envelope": "none",
+    "incident": "gRPC upstream certificate expiry: TLS handshake errors escalate -> all RPCs to inventory-svc fail -> order fulfillment stalls; recurring distractor: slow S3 presign requests on a separate code path",
+    "ground_truth": [
+      {
+        "needle": "tls handshake timeout",
+        "role": "trigger",
+        "desc": "TLS handshakes to inventory-svc start timing out"
+      },
+      {
+        "needle": "certificate has expired",
+        "role": "root_cause",
+        "desc": "Peer TLS certificate on inventory-svc is expired"
+      },
+      {
+        "needle": "rpc error: code = unavailable",
+        "role": "consequence",
+        "desc": "All gRPC calls to inventory-svc return UNAVAILABLE"
+      },
+      {
+        "needle": "fulfillment stalled order",
+        "role": "consequence",
+        "desc": "Order fulfillment goroutines blocked waiting on inventory"
+      },
+      {
+        "needle": "circuit open for inventory-svc",
+        "role": "consequence",
+        "desc": "Circuit breaker opens, fast-failing all inventory calls"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 1
+    }
+  },
+  "metrics": {
+    "id": "21-k8s-plain-text",
+    "provider": "Kubernetes kubectl logs (no envelope) — Go text logger",
+    "format": "text",
+    "envelope": "none",
+    "lines_in": 169,
+    "tokens_in": 6529,
+    "tokens_out": 959,
+    "compression": 7,
+    "template_count": 15,
+    "pct_ts": 100,
+    "pct_level": 100,
+    "evidence_count": 12,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 1,
+    "facts_found": 5,
+    "facts_total": 5,
+    "role_accuracy": 0.4,
+    "citation_integrity": 1,
+    "context_loss": [],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 1,
+    "pass": true
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "21-k8s-plain-text",
+    "window": "13:45:00 to 13:48:55",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 70,
+        "text": "time=\"2026-05-04T13:47:08Z\" level=warn msg=\"tls handshake timeout connecting to inventory-svc:443 elapsed=5.0s\"",
+        "template": "T8",
+        "score": 0.51
+      },
+      {
+        "role": "trigger",
+        "line": 74,
+        "text": "time=\"2026-05-04T13:47:14Z\" level=warn msg=\"tls handshake timeout connecting to inventory-svc:443 elapsed=5.0s\"",
+        "template": "T8",
+        "score": 0.51
+      },
+      {
+        "role": "trigger",
+        "line": 83,
+        "text": "time=\"2026-05-04T13:47:26Z\" level=error msg=\"grpc dial inventory-svc:443 failed: tls: certificate has expired or is not yet valid\" target=inventory-svc:443",
+        "template": "T9",
+        "score": 0.75
+      },
+      {
+        "role": "trigger",
+        "line": 84,
+        "text": "time=\"2026-05-04T13:47:27Z\" level=error msg=\"inventory reservation failed: rpc error: code = unavailable desc = connection refused\" order_id=ORD-10027",
+        "template": "T10",
+        "score": 0.75
+      },
+      {
+        "role": "trigger",
+        "line": 86,
+        "text": "time=\"2026-05-04T13:47:28Z\" level=error msg=\"grpc dial inventory-svc:443 failed: tls: certificate has expired or is not yet valid\" target=inventory-svc:443",
+        "template": "T9",
+        "score": 0.75
+      },
+      {
+        "role": "trigger",
+        "line": 87,
+        "text": "time=\"2026-05-04T13:47:29Z\" level=error msg=\"inventory reservation failed: rpc error: code = unavailable desc = connection refused\" order_id=ORD-10028",
+        "template": "T10",
+        "score": 0.75
+      },
+      {
+        "role": "trigger",
+        "line": 107,
+        "text": "time=\"2026-05-04T13:47:43Z\" level=warn msg=\"circuit open for inventory-svc after 5 consecutive failures, fast-failing all calls\"",
+        "template": "T12",
+        "score": 0.55
+      },
+      {
+        "role": "root_cause",
+        "line": 130,
+        "text": "time=\"2026-05-04T13:47:56Z\" level=error msg=\"inventory reservation failed: rpc error: code = unavailable desc = circuit breaker open\" order_id=ORD-10040",
+        "template": "T13",
+        "score": 0.91
+      },
+      {
+        "role": "consequence",
+        "line": 133,
+        "text": "time=\"2026-05-04T13:47:59Z\" level=error msg=\"inventory reservation failed: rpc error: code = unavailable desc = circuit breaker open\" order_id=ORD-10041\"",
+        "template": "T13",
+        "score": 0.91
+      },
+      {
+        "role": "consequence",
+        "line": 139,
+        "text": "time=\"2026-05-04T13:48:04Z\" level=warn msg=\"fulfillment stalled order=ORD-10040 waiting_for=inventory-reservation duration=3s\"",
+        "template": "T11",
+        "score": 0.63
+      },
+      {
+        "role": "consequence",
+        "line": 144,
+        "text": "time=\"2026-05-04T13:48:09Z\" level=warn msg=\"fulfillment stalled order=ORD-10041 waiting_for=inventory-reservation duration=3s\"",
+        "template": "T11",
+        "score": 0.63
+      },
+      {
+        "role": "consequence",
+        "line": 163,
+        "text": "time=\"2026-05-04T13:48:42Z\" level=error msg=\"circuit half-open probe failed, staying open\"",
+        "template": "T14",
+        "score": 0.85
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 169,
+      "template_count": 15,
+      "top_templates": [
+        {
+          "id": "T4",
+          "pattern": "<*> level=info msg=\"GET <*> <*> <*>",
+          "count": 53
+        },
+        {
+          "id": "T5",
+          "pattern": "<*> level=info <*> <*> <*> <*> <*>",
+          "count": 29
+        },
+        {
+          "id": "T7",
+          "pattern": "<*> level=warn msg=\"s3 presign slow <*> bucket=order-attachments <*>",
+          "count": 21
+        },
+        {
+          "id": "T11",
+          "pattern": "<*> level=warn msg=\"fulfillment stalled <*> waiting_for=inventory-reservation <*>",
+          "count": 16
+        },
+        {
+          "id": "T6",
+          "pattern": "<*> level=info <*> <*> <*> <*> <*> <*>",
+          "count": 15
+        }
+      ]
+    },
+    "compression": 7,
+    "stats": {
+      "lines_in": 169,
+      "tokens_in_est": 6529,
+      "tokens_out_est": 959
+    }
+  },
+  "log_lines": 169
+}

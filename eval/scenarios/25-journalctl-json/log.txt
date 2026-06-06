@@ -1,0 +1,13 @@
+{"__REALTIME_TIMESTAMP":"1746367200100000","PRIORITY":"6","SYSLOG_IDENTIFIER":"systemd","_PID":"1","MESSAGE":"Started Analytics Worker."}
+{"__REALTIME_TIMESTAMP":"1746367201200000","PRIORITY":"6","SYSLOG_IDENTIFIER":"analytics","_PID":"5120","MESSAGE":"consuming topic events.raw partition=3 offset=901233"}
+{"__REALTIME_TIMESTAMP":"1746367202300000","PRIORITY":"6","SYSLOG_IDENTIFIER":"chronyd","_PID":"701","MESSAGE":"Selected source 169.254.169.123"}
+{"__REALTIME_TIMESTAMP":"1746367203400000","PRIORITY":"6","SYSLOG_IDENTIFIER":"analytics","_PID":"5120","MESSAGE":"flushed 5000 rows to warehouse in 412ms"}
+{"__REALTIME_TIMESTAMP":"1746367204500000","PRIORITY":"4","SYSLOG_IDENTIFIER":"analytics","_PID":"5120","MESSAGE":"heap usage 87% rss=3.6GB, gc pressure rising"}
+{"__REALTIME_TIMESTAMP":"1746367205600000","PRIORITY":"6","SYSLOG_IDENTIFIER":"chronyd","_PID":"701","MESSAGE":"Selected source 169.254.169.123"}
+{"__REALTIME_TIMESTAMP":"1746367206700000","PRIORITY":"4","SYSLOG_IDENTIFIER":"analytics","_PID":"5120","MESSAGE":"heap usage 96% rss=3.9GB, allocation stalls detected"}
+{"__REALTIME_TIMESTAMP":"1746367207800000","PRIORITY":"3","SYSLOG_IDENTIFIER":"kernel","_PID":"0","MESSAGE":"analytics invoked oom-killer: gfp_mask=0x100cca, order=0, oom_score_adj=0"}
+{"__REALTIME_TIMESTAMP":"1746367208900000","PRIORITY":"3","SYSLOG_IDENTIFIER":"kernel","_PID":"0","MESSAGE":"Out of memory: Killed process 5120 (analytics) total-vm:4194304kB, anon-rss:3981204kB"}
+{"__REALTIME_TIMESTAMP":"1746367209900000","PRIORITY":"2","SYSLOG_IDENTIFIER":"systemd","_PID":"1","MESSAGE":"analytics.service: A process of this unit has been killed by the OOM killer."}
+{"__REALTIME_TIMESTAMP":"1746367210900000","PRIORITY":"3","SYSLOG_IDENTIFIER":"systemd","_PID":"1","MESSAGE":"analytics.service: Failed with result 'oom-kill'."}
+{"__REALTIME_TIMESTAMP":"1746367211900000","PRIORITY":"6","SYSLOG_IDENTIFIER":"chronyd","_PID":"701","MESSAGE":"Selected source 169.254.169.123"}
+{"__REALTIME_TIMESTAMP":"1746367212900000","PRIORITY":"5","SYSLOG_IDENTIFIER":"systemd","_PID":"1","MESSAGE":"analytics.service: Scheduled restart job, restart counter is at 1."}

@@ -1,0 +1,16 @@
+{
+  "id": "56-otel-json",
+  "provider": "OpenTelemetry Collector (OTLP JSON export)",
+  "format": "json",
+  "envelope": "none",
+  "incident": "HashiCorp Vault sidecar crash caused token expiry: Stripe API key unreachable -> all payment charges fail with 502 invalid api key, amid a recurring TLS cert expiry warning distractor",
+  "ground_truth": [
+    { "needle": "vault token renewal attempt failed", "role": "trigger",     "desc": "Vault sidecar stopped responding, token renewal failing" },
+    { "needle": "token expired",                      "role": "root_cause",  "desc": "Vault token expired after 3 failed renewals" },
+    { "needle": "permission denied",                  "role": "root_cause",  "desc": "Vault returned 403 when fetching Stripe API key" },
+    { "needle": "api key unavailable",                "role": "root_cause",  "desc": "Stripe client could not initialize due to missing key" },
+    { "needle": "invalid api key provided",           "role": "consequence", "desc": "Stripe charges rejected with invalid key error" },
+    { "needle": "stripe integration down",            "role": "consequence", "desc": "PagerDuty P1 alert fired for full payment outage" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.85 }
+}

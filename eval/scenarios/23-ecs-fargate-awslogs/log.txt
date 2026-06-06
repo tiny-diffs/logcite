@@ -1,0 +1,24 @@
+2026-05-04T14:00:00.012Z INFO  [sqs-consumer] worker started, polling queue orders-ingest
+2026-05-04T14:00:01.244Z INFO  [healthcheck] ok 200
+2026-05-04T14:00:02.561Z INFO  [sqs-consumer] received batch size=10 messages
+2026-05-04T14:00:03.870Z INFO  [dynamo] putItem table=orders pk=ORD#48201 ok 8ms
+2026-05-04T14:00:05.119Z INFO  [healthcheck] ok 200
+2026-05-04T14:00:06.402Z WARN  [auth] token near expiry for client=svc-billing
+2026-05-04T14:00:07.733Z INFO  [dynamo] putItem table=orders pk=ORD#48202 ok 7ms
+2026-05-04T14:00:09.051Z INFO  [sqs-consumer] received batch size=10 messages
+2026-05-04T14:00:10.388Z INFO  [healthcheck] ok 200
+2026-05-04T14:00:11.640Z WARN  [auth] token near expiry for client=svc-billing
+2026-05-04T14:00:13.002Z INFO  [dynamo] putItem table=orders pk=ORD#48203 ok 9ms
+2026-05-04T14:00:14.355Z WARN  [dynamo] putItem table=orders consumed=42 throttled retrying in 100ms
+2026-05-04T14:00:15.704Z WARN  [dynamo] putItem table=orders consumed=58 throttled retrying in 200ms
+2026-05-04T14:00:17.066Z ERROR [dynamo] ProvisionedThroughputExceededException: rate exceeded for table orders
+2026-05-04T14:00:18.421Z ERROR [sqs-consumer] batch processing failed: ProvisionedThroughputExceededException
+2026-05-04T14:00:19.795Z WARN  [sqs-consumer] 10 messages returned to queue, visibility timeout reset
+2026-05-04T14:00:21.140Z ERROR [dynamo] ProvisionedThroughputExceededException: rate exceeded for table orders
+2026-05-04T14:00:22.503Z ERROR [sqs-consumer] batch processing failed: ProvisionedThroughputExceededException
+2026-05-04T14:00:23.870Z WARN  [sqs-consumer] 10 messages returned to queue, visibility timeout reset
+2026-05-04T14:00:25.219Z WARN  [healthcheck] degraded: consumer error rate 100%
+2026-05-04T14:00:26.560Z ERROR [dynamo] ProvisionedThroughputExceededException: rate exceeded for table orders
+2026-05-04T14:00:27.901Z WARN  [sqs-consumer] approximateNumberOfMessages=4120 and rising
+2026-05-04T14:00:29.244Z INFO  [healthcheck] ok 200
+2026-05-04T14:00:30.610Z INFO  [sqs-consumer] backoff applied, polling paused 5s

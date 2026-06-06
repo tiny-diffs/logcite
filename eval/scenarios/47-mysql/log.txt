@@ -1,0 +1,14 @@
+2026-05-04T14:00:00.101234Z 0 [System] [MY-010931] [Server] /usr/sbin/mysqld: ready for connections. Version: '8.0.36'
+2026-05-04T14:00:01.244000Z 8 [Note] [MY-010914] [Server] Aborted connection 8 to db: 'shop' user: 'app' (Got timeout reading communication packets)
+2026-05-04T14:00:03.560000Z 12 [Note] [MY-012345] [InnoDB] Buffer pool(s) load completed at 260504 14:00:03
+2026-05-04T14:00:05.880000Z 9 [Note] [MY-010914] [Server] Aborted connection 9 to db: 'shop' user: 'app' (Got timeout reading communication packets)
+2026-05-04T14:00:08.140000Z 41 [Warning] [MY-010055] [Server] IP address '10.0.7.5' could not be resolved
+2026-05-04T14:00:11.402000Z 77 [Warning] [MY-012324] [InnoDB] Trx id counter lag; long-running transaction trx_id=80551 active 42s holding locks on shop.orders
+2026-05-04T14:00:14.665000Z 78 [ERROR] [MY-012345] [InnoDB] Lock wait timeout exceeded; try restarting transaction on table shop.orders
+2026-05-04T14:00:17.930000Z 79 [ERROR] [MY-012345] [InnoDB] Lock wait timeout exceeded; try restarting transaction on table shop.orders
+2026-05-04T14:00:20.193000Z 80 [ERROR] [MY-013183] [InnoDB] Deadlock found when trying to get lock; try restarting transaction
+2026-05-04T14:00:22.718000Z 12 [Warning] [MY-010055] [Server] IP address '10.0.7.5' could not be resolved
+2026-05-04T14:00:25.980000Z 0 [Warning] [MY-010914] [Server] Too many connections: 152 of 151 max_connections reached, refusing new connections
+2026-05-04T14:00:28.240000Z 0 [ERROR] [MY-010914] [Server] Too many connections
+2026-05-04T14:00:31.500000Z 81 [ERROR] [MY-013183] [InnoDB] Deadlock found when trying to get lock; try restarting transaction
+2026-05-04T14:00:34.760000Z 42 [Warning] [MY-010055] [Server] IP address '10.0.7.5' could not be resolved

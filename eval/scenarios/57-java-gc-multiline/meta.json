@@ -1,0 +1,15 @@
+{
+  "id": "57-java-gc-multiline",
+  "provider": "JVM GC + OutOfMemoryError (multi-line)",
+  "format": "text",
+  "envelope": "none",
+  "incident": "Old-gen fills up: Full GCs grow longer and reclaim nothing as the invoices cache region balloons, then an OutOfMemoryError (Java heap space) is thrown with a multi-line stack trace, the request returns 503 and the liveness probe fails — amid a recurring report-scheduler distractor. Tests multi-line stack-trace handling + code_refs.",
+  "ground_truth": [
+    { "needle": "full gc", "role": "trigger", "desc": "Full GCs growing, reclaiming nothing" },
+    { "needle": "outofmemoryerror: java heap space", "role": "root_cause", "desc": "heap exhausted" },
+    { "needle": "cacheloader.java:142", "role": "root_cause", "desc": "the code frame where it blew up" },
+    { "needle": "unhandled outofmemoryerror", "role": "consequence", "desc": "request returns 503" },
+    { "needle": "liveness probe failing", "role": "consequence", "desc": "instance going unhealthy" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.8 }
+}

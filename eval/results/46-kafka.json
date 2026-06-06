@@ -1,0 +1,170 @@
+{
+  "meta": {
+    "id": "46-kafka",
+    "provider": "Kafka broker (log4j)",
+    "format": "text",
+    "envelope": "none",
+    "incident": "A follower falls behind, the ISR for partition events-7 shrinks 1,2,3 -> 1, dropping below min.insync.replicas=2; produces fail with NotEnoughReplicasException and the partition goes under-replicated — amid a recurring socket-server distractor. Bracketed comma-millis timestamp.",
+    "ground_truth": [
+      {
+        "needle": "shrinking isr",
+        "role": "trigger",
+        "desc": "ISR contracting as a follower lags"
+      },
+      {
+        "needle": "notenoughreplicas",
+        "role": "root_cause",
+        "desc": "below min insync replicas"
+      },
+      {
+        "needle": "under-replicated",
+        "role": "consequence",
+        "desc": "partition under-replicated"
+      },
+      {
+        "needle": "produce to events-7 failed",
+        "role": "consequence",
+        "desc": "produces rejected"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 1
+    }
+  },
+  "metrics": {
+    "id": "46-kafka",
+    "provider": "Kafka broker (log4j)",
+    "format": "text",
+    "envelope": "none",
+    "lines_in": 14,
+    "tokens_in": 718,
+    "tokens_out": 896,
+    "compression": 1,
+    "template_count": 10,
+    "pct_ts": 100,
+    "pct_level": 100,
+    "evidence_count": 8,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 1,
+    "facts_found": 4,
+    "facts_total": 4,
+    "role_accuracy": 0.75,
+    "citation_integrity": 1,
+    "context_loss": [],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 1,
+    "pass": true
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "46-kafka",
+    "window": "17:00:00 to 17:00:31",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 4,
+        "text": "[2026-05-04 14:00:05,880] WARN [SocketServer listenerType=ZK_BROKER] Unexpected error from /<ip>; closing connection (org.apache.kafka.common.network.Selector)",
+        "template": "T3",
+        "score": 0.47
+      },
+      {
+        "role": "trigger",
+        "line": 6,
+        "text": "[2026-05-04 14:00:11,402] WARN [ReplicaManager broker=1] Shrinking ISR from 1,2,3 to 1,2 for partition events-7. Leader: (highWatermark: 90412) (kafka.server.ReplicaManager)",
+        "template": "T4",
+        "score": 0.51
+      },
+      {
+        "role": "trigger",
+        "line": 7,
+        "text": "[2026-05-04 14:00:13,665] WARN [SocketServer listenerType=ZK_BROKER] Unexpected error from /<ip>; closing connection (org.apache.kafka.common.network.Selector)",
+        "template": "T3",
+        "score": 0.47
+      },
+      {
+        "role": "root_cause",
+        "line": 8,
+        "text": "[2026-05-04 14:00:15,930] ERROR [ReplicaFetcher replicaId=3, leaderId=1, fetcherId=0] Error for partition events-7: org.apache.kafka.common.errors.NotLeaderOrFollowerException (kafka.server.ReplicaFetcherThread)",
+        "template": "T5",
+        "score": 0.85
+      },
+      {
+        "role": "consequence",
+        "line": 9,
+        "text": "[2026-05-04 14:00:18,193] WARN [ReplicaManager broker=1] Shrinking ISR from 1,2 to 1 for partition events-7. Leader: (highWatermark: 90420) (kafka.server.ReplicaManager)",
+        "template": "T4",
+        "score": 0.71
+      },
+      {
+        "role": "consequence",
+        "line": 10,
+        "text": "[2026-05-04 14:00:20,455] ERROR [ReplicaManager broker=1] Error processing append operation on partition events-7: org.apache.kafka.common.errors.NotEnoughReplicasException: Number of insync replicas for partition events-7 is 1, below required minimum 2 (kafka.server.ReplicaManager)",
+        "template": "T6",
+        "score": 0.85
+      },
+      {
+        "role": "consequence",
+        "line": 11,
+        "text": "[2026-05-04 14:00:22,718] WARN [Partition events-7 broker=1] Partition events-7 is now under-replicated, isr=1 (kafka.cluster.Partition)",
+        "template": "T7",
+        "score": 0.59
+      },
+      {
+        "role": "consequence",
+        "line": 12,
+        "text": "[2026-05-04 14:00:25,980] ERROR [KafkaApi-1] Error when handling request: produce to events-7 failed with NotEnoughReplicasException (kafka.server.KafkaApis)",
+        "template": "T8",
+        "score": 0.85
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 14,
+      "template_count": 10,
+      "top_templates": [
+        {
+          "id": "T3",
+          "pattern": "<*> WARN [SocketServer listenerType=ZK_BROKER] Unexpected error from /<ip>; closing connection (org.apache.kafka.common.network.Selector)",
+          "count": 3
+        },
+        {
+          "id": "T1",
+          "pattern": "<*> INFO [GroupCoordinator 1]: Stabilized group orders-consumer generation <*> (kafka.coordinator.group.GroupCoordinator)",
+          "count": 2
+        },
+        {
+          "id": "T4",
+          "pattern": "<*> WARN [ReplicaManager broker=1] Shrinking ISR from <*> to <*> for partition events-7. Leader: (highWatermark: <*> (kafka.server.ReplicaManager)",
+          "count": 2
+        },
+        {
+          "id": "T0",
+          "pattern": ",101] INFO [KafkaServer id=1] started (kafka.server.KafkaServer)",
+          "count": 1
+        },
+        {
+          "id": "T2",
+          "pattern": ",560] INFO [ProducerStateManager partition=events-7] Wrote producer snapshot (kafka.log.ProducerStateManager)",
+          "count": 1
+        }
+      ]
+    },
+    "compression": 1,
+    "stats": {
+      "lines_in": 14,
+      "tokens_in_est": 718,
+      "tokens_out_est": 896
+    }
+  },
+  "log_lines": 14
+}

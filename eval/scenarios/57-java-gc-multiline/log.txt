@@ -1,0 +1,17 @@
+2026-05-04T14:00:00.100+0000: 1200.100: [GC (Allocation Failure) [PSYoungGen: 1398144K->48512K(1572864K)] 2871234K->1521610K(4194304K), 0.0421120 secs]
+2026-05-04T14:00:02.300+0000: 1202.300: [GC (Allocation Failure) [PSYoungGen: 1398272K->51200K(1572864K)] 2871370K->1524302K(4194304K), 0.0455900 secs]
+2026-05-04T14:00:04.500+0000: 1204.500: INFO  c.acme.report.ReportScheduler - scheduled report run started id=rpt-8841
+2026-05-04T14:00:06.700+0000: 1206.700: [GC (Allocation Failure) [PSYoungGen: 1400000K->180224K(1572864K)] 2873100K->2102400K(4194304K), 0.1120300 secs]
+2026-05-04T14:00:09.000+0000: 1209.000: [Full GC (Ergonomics) [PSYoungGen: 180224K->0K(1572864K)] [ParOldGen: 1922176K->2588000K(2621440K)] 2102400K->2588000K(4194304K), 1.8421000 secs]
+2026-05-04T14:00:12.000+0000: 1212.000: [Full GC (Ergonomics) [PSYoungGen: 1398144K->1398144K(1572864K)] [ParOldGen: 2588000K->2620000K(2621440K)] 3986144K->4018144K(4194304K), 3.4120000 secs]
+2026-05-04T14:00:16.000+0000: 1216.000: WARN  c.acme.cache.CacheLoader - cache region 'invoices' at 1.9GB, eviction disabled
+2026-05-04T14:00:18.500+0000: 1218.500: [Full GC (Allocation Failure) [PSYoungGen: 1398144K->1398144K(1572864K)] [ParOldGen: 2620000K->2620900K(2621440K)] 4018144K->4019044K(4194304K), 4.0100000 secs]
+2026-05-04T14:00:23.000+0000: Exception in thread "http-nio-8080-exec-7" java.lang.OutOfMemoryError: Java heap space
+	at com.acme.cache.CacheLoader.loadRegion(CacheLoader.java:142)
+	at com.acme.cache.CacheLoader.get(CacheLoader.java:88)
+	at com.acme.invoices.InvoiceService.render(InvoiceService.java:213)
+	at com.acme.web.InvoiceController.show(InvoiceController.java:64)
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:103)
+2026-05-04T14:00:24.000+0000: 1224.000: ERROR c.acme.web.GlobalExceptionHandler - unhandled OutOfMemoryError serving GET /invoices/8841, returning 503
+2026-05-04T14:00:25.000+0000: 1225.000: WARN  c.acme.health.Heartbeat - liveness probe failing, heap exhausted
+2026-05-04T14:00:27.000+0000: 1227.000: INFO  c.acme.report.ReportScheduler - scheduled report run started id=rpt-8842

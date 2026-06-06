@@ -1,0 +1,196 @@
+{
+  "meta": {
+    "id": "22-docker-json-file",
+    "provider": "Docker json-file log driver (Node.js API service)",
+    "format": "text",
+    "envelope": "docker-json",
+    "incident": "Redis maxmemory exhaustion with noeviction policy: memory-high warnings -> OOM errors on SET -> all new session writes fail with 500s; recurring distractor: slow disk writes on upload path",
+    "ground_truth": [
+      {
+        "needle": "redis memory usage high",
+        "role": "trigger",
+        "desc": "Redis memory approaching maxmemory limit"
+      },
+      {
+        "needle": "oom command not allowed when used memory > 'maxmemory'",
+        "role": "root_cause",
+        "desc": "Redis rejecting writes because maxmemory reached with noeviction policy"
+      },
+      {
+        "needle": "cache write error",
+        "role": "consequence",
+        "desc": "Application layer propagating the OOM as a cache write error"
+      },
+      {
+        "needle": "eviction policy noeviction",
+        "role": "root_cause",
+        "desc": "noeviction policy confirmed as reason keys are not evicted"
+      },
+      {
+        "needle": "post /api/sessions 500",
+        "role": "consequence",
+        "desc": "Session creation endpoint returning 500 to all clients"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 1
+    }
+  },
+  "metrics": {
+    "id": "22-docker-json-file",
+    "provider": "Docker json-file log driver (Node.js API service)",
+    "format": "text",
+    "envelope": "docker-json",
+    "lines_in": 102,
+    "tokens_in": 6399,
+    "tokens_out": 1203,
+    "compression": 5,
+    "template_count": 11,
+    "pct_ts": 100,
+    "pct_level": 100,
+    "evidence_count": 11,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 1,
+    "facts_found": 5,
+    "facts_total": 5,
+    "role_accuracy": 0.6,
+    "citation_integrity": 1,
+    "context_loss": [],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 1,
+    "pass": true
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "22-docker-json-file",
+    "window": "08:00:00 to 08:02:05",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 8,
+        "text": "{\"log\":\"2026-05-04T08:00:13.300000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=820ms\\n\",\"stream\":\"stderr\",\"time\":\"2026-05-04T08:00:13.300000000Z\"}",
+        "template": "T5",
+        "score": 0.42
+      },
+      {
+        "role": "trigger",
+        "line": 15,
+        "text": "{\"log\":\"2026-05-04T08:00:22.910000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=940ms\\n\",\"stream\":\"stderr\",\"time\":\"2026-05-04T08:00:22.910000000Z\"}",
+        "template": "T5",
+        "score": 0.42
+      },
+      {
+        "role": "trigger",
+        "line": 60,
+        "text": "{\"log\":\"2026-05-04T08:01:26.300000000Z WARN  [cache] redis memory usage high used_memory=480mb maxmemory=512mb ratio=0.94\\n\",\"stream\":\"stderr\",\"time\":\"2026-05-04T08:01:26.300000000Z\"}",
+        "template": "T6",
+        "score": 0.52
+      },
+      {
+        "role": "trigger",
+        "line": 62,
+        "text": "{\"log\":\"2026-05-04T08:01:28.500000000Z WARN  [cache] redis memory usage high used_memory=498mb maxmemory=512mb ratio=0.97\\n\",\"stream\":\"stderr\",\"time\":\"2026-05-04T08:01:28.500000000Z\"}",
+        "template": "T6",
+        "score": 0.52
+      },
+      {
+        "role": "trigger",
+        "line": 66,
+        "text": "{\"log\":\"2026-05-04T08:01:33.800000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1011\\n\",\"stream\":\"stderr\",\"time\":\"2026-05-04T08:01:33.800000000Z\"}",
+        "template": "T7",
+        "score": 0.7
+      },
+      {
+        "role": "trigger",
+        "line": 67,
+        "text": "{\"log\":\"2026-05-04T08:01:34.900000000Z ERROR [api] failed to create session for user u1011: cache write error: oom command not allowed when used memory > 'maxmemory'\\n\",\"stream\":\"stderr\",\"time\":\"2026-05-04T08:01:34.900000000Z\"}",
+        "template": "T8",
+        "score": 0.76
+      },
+      {
+        "role": "trigger",
+        "line": 69,
+        "text": "{\"log\":\"2026-05-04T08:01:35.110000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1012\\n\",\"stream\":\"stderr\",\"time\":\"2026-05-04T08:01:35.110000000Z\"}",
+        "template": "T7",
+        "score": 0.7
+      },
+      {
+        "role": "trigger",
+        "line": 70,
+        "text": "{\"log\":\"2026-05-04T08:01:35.200000000Z ERROR [api] failed to create session for user u1012: cache write error: oom command not allowed when used memory > 'maxmemory'\\n\",\"stream\":\"stderr\",\"time\":\"2026-05-04T08:01:35.200000000Z\"}",
+        "template": "T8",
+        "score": 0.76
+      },
+      {
+        "role": "root_cause",
+        "line": 80,
+        "text": "{\"log\":\"2026-05-04T08:01:41.110000000Z ERROR [cache] eviction policy noeviction: refusing to evict existing keys, session writes failing\\n\",\"stream\":\"stderr\",\"time\":\"2026-05-04T08:01:41.110000000Z\"}",
+        "template": "T9",
+        "score": 0.85
+      },
+      {
+        "role": "consequence",
+        "line": 81,
+        "text": "{\"log\":\"2026-05-04T08:01:42.200000000Z ERROR [api] POST /api/sessions 500 4ms\\n\",\"stream\":\"stderr\",\"time\":\"2026-05-04T08:01:42.200000000Z\"}",
+        "template": "T10",
+        "score": 0.74
+      },
+      {
+        "role": "consequence",
+        "line": 86,
+        "text": "{\"log\":\"2026-05-04T08:01:46.600000000Z ERROR [api] POST /api/sessions 500 4ms\\n\",\"stream\":\"stderr\",\"time\":\"2026-05-04T08:01:46.600000000Z\"}",
+        "template": "T10",
+        "score": 0.74
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 102,
+      "template_count": 11,
+      "top_templates": [
+        {
+          "id": "T3",
+          "pattern": "<*> INFO [api] <*> <*> <*> <*>",
+          "count": 49
+        },
+        {
+          "id": "T5",
+          "pattern": "<*> WARN [jobs] slow disk write path=/var/data/uploads <*>",
+          "count": 15
+        },
+        {
+          "id": "T4",
+          "pattern": "<*> INFO [cache] <*> <*> <*>",
+          "count": 11
+        },
+        {
+          "id": "T7",
+          "pattern": "<*> ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' <*>",
+          "count": 10
+        },
+        {
+          "id": "T10",
+          "pattern": "<*> ERROR [api] POST /api/sessions 500 <*>",
+          "count": 6
+        }
+      ]
+    },
+    "compression": 5,
+    "stats": {
+      "lines_in": 102,
+      "tokens_in_est": 6399,
+      "tokens_out_est": 1203
+    }
+  },
+  "log_lines": 102
+}

@@ -1,0 +1,14 @@
+{
+  "id": "45-redis",
+  "provider": "Redis server log",
+  "format": "text",
+  "envelope": "none",
+  "incident": "Redis hits maxmemory, RDB background save fails with Cannot allocate memory, enters MISCONF state and rejects writes with OOM command not allowed — amid a recurring overcommit WARNING distractor. Redis uses single-char loglevels (* - # ), not words.",
+  "ground_truth": [
+    { "needle": "maxmemory 4gb reached", "role": "trigger", "desc": "memory limit hit, eviction blocked" },
+    { "needle": "background saving error: cannot allocate memory", "role": "root_cause", "desc": "RDB save fails OOM" },
+    { "needle": "misconf", "role": "consequence", "desc": "writes disabled, persistence broken" },
+    { "needle": "oom command not allowed", "role": "consequence", "desc": "clients rejected" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.75 }
+}

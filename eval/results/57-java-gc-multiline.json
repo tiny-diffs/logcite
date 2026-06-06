@@ -1,0 +1,142 @@
+{
+  "meta": {
+    "id": "57-java-gc-multiline",
+    "provider": "JVM GC + OutOfMemoryError (multi-line)",
+    "format": "text",
+    "envelope": "none",
+    "incident": "Old-gen fills up: Full GCs grow longer and reclaim nothing as the invoices cache region balloons, then an OutOfMemoryError (Java heap space) is thrown with a multi-line stack trace, the request returns 503 and the liveness probe fails — amid a recurring report-scheduler distractor. Tests multi-line stack-trace handling + code_refs.",
+    "ground_truth": [
+      {
+        "needle": "full gc",
+        "role": "trigger",
+        "desc": "Full GCs growing, reclaiming nothing"
+      },
+      {
+        "needle": "outofmemoryerror: java heap space",
+        "role": "root_cause",
+        "desc": "heap exhausted"
+      },
+      {
+        "needle": "cacheloader.java:142",
+        "role": "root_cause",
+        "desc": "the code frame where it blew up"
+      },
+      {
+        "needle": "unhandled outofmemoryerror",
+        "role": "consequence",
+        "desc": "request returns 503"
+      },
+      {
+        "needle": "liveness probe failing",
+        "role": "consequence",
+        "desc": "instance going unhealthy"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 0.8
+    }
+  },
+  "metrics": {
+    "id": "57-java-gc-multiline",
+    "provider": "JVM GC + OutOfMemoryError (multi-line)",
+    "format": "text",
+    "envelope": "none",
+    "lines_in": 17,
+    "tokens_in": 868,
+    "tokens_out": 458,
+    "compression": 2,
+    "template_count": 5,
+    "pct_ts": 70.6,
+    "pct_level": 29.4,
+    "evidence_count": 3,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 0.8,
+    "facts_found": 4,
+    "facts_total": 5,
+    "role_accuracy": 0.25,
+    "citation_integrity": 1,
+    "context_loss": [
+      "cacheloader.java:142"
+    ],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 0.8,
+    "pass": false
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "57-java-gc-multiline",
+    "window": "14:00:00 to 14:00:27",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 7,
+        "text": "2026-05-04T14:00:16.000+0000: 1216.000: WARN  c.acme.cache.CacheLoader - cache region 'invoices' at 1.9GB, eviction disabled",
+        "template": "T1",
+        "score": 0.45
+      },
+      {
+        "role": "root_cause",
+        "line": 15,
+        "text": "2026-05-04T14:00:24.000+0000: 1224.000: ERROR c.acme.web.GlobalExceptionHandler - unhandled OutOfMemoryError serving GET /invoices/8841, returning 503",
+        "template": "T1",
+        "score": 0.71
+      },
+      {
+        "role": "consequence",
+        "line": 16,
+        "text": "2026-05-04T14:00:25.000+0000: 1225.000: WARN  c.acme.health.Heartbeat - liveness probe failing, heap exhausted",
+        "template": "T0",
+        "score": 0.4
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 17,
+      "template_count": 5,
+      "top_templates": [
+        {
+          "id": "T0",
+          "pattern": ": <*> <*> <*> <*> <*> <*> <*> <*> <*>",
+          "count": 6
+        },
+        {
+          "id": "T4",
+          "pattern": "at <*>",
+          "count": 5
+        },
+        {
+          "id": "T1",
+          "pattern": ": <*> <*> <*> <*> <*> <*> <*> <*> <*> <*> <*>",
+          "count": 4
+        },
+        {
+          "id": "T2",
+          "pattern": ": 1218.500: [Full GC (Allocation Failure) [PSYoungGen: 1398144K->1398144K(1572864K)] [ParOldGen: 2620000K->2620900K(2621440K)] 4018144K->4019044K(4194304K), 4.0100000 secs]",
+          "count": 1
+        },
+        {
+          "id": "T3",
+          "pattern": ": Exception in thread \"http-nio-8080-exec-7\" java.lang.OutOfMemoryError: Java heap space",
+          "count": 1
+        }
+      ]
+    },
+    "compression": 2,
+    "stats": {
+      "lines_in": 17,
+      "tokens_in_est": 868,
+      "tokens_out_est": 458
+    }
+  },
+  "log_lines": 17
+}

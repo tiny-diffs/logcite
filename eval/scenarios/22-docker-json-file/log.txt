@@ -1,0 +1,102 @@
+{"log":"2026-05-04T08:00:00.123456789Z INFO  [api] server started port=3000\n","stream":"stdout","time":"2026-05-04T08:00:00.123456789Z"}
+{"log":"2026-05-04T08:00:01.204123456Z INFO  [db] connection pool ready size=10\n","stream":"stdout","time":"2026-05-04T08:00:01.204123456Z"}
+{"log":"2026-05-04T08:00:01.312987654Z INFO  [cache] redis connected host=redis:6379\n","stream":"stdout","time":"2026-05-04T08:00:01.312987654Z"}
+{"log":"2026-05-04T08:00:05.001234567Z INFO  [api] GET /health 200 2ms\n","stream":"stdout","time":"2026-05-04T08:00:05.001234567Z"}
+{"log":"2026-05-04T08:00:10.002345678Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:00:10.002345678Z"}
+{"log":"2026-05-04T08:00:11.100000000Z INFO  [api] POST /api/sessions 201 18ms\n","stream":"stdout","time":"2026-05-04T08:00:11.100000000Z"}
+{"log":"2026-05-04T08:00:12.200000000Z INFO  [cache] SET session:u1001 ttl=3600\n","stream":"stdout","time":"2026-05-04T08:00:12.200000000Z"}
+{"log":"2026-05-04T08:00:13.300000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=820ms\n","stream":"stderr","time":"2026-05-04T08:00:13.300000000Z"}
+{"log":"2026-05-04T08:00:15.004567890Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:00:15.004567890Z"}
+{"log":"2026-05-04T08:00:17.500000000Z INFO  [api] GET /api/sessions/u1001 200 9ms\n","stream":"stdout","time":"2026-05-04T08:00:17.500000000Z"}
+{"log":"2026-05-04T08:00:18.600000000Z INFO  [cache] GET session:u1001 hit\n","stream":"stdout","time":"2026-05-04T08:00:18.600000000Z"}
+{"log":"2026-05-04T08:00:19.700000000Z INFO  [api] POST /api/sessions 201 15ms\n","stream":"stdout","time":"2026-05-04T08:00:19.700000000Z"}
+{"log":"2026-05-04T08:00:20.800000000Z INFO  [cache] SET session:u1002 ttl=3600\n","stream":"stdout","time":"2026-05-04T08:00:20.800000000Z"}
+{"log":"2026-05-04T08:00:20.005678901Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:00:20.005678901Z"}
+{"log":"2026-05-04T08:00:22.910000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=940ms\n","stream":"stderr","time":"2026-05-04T08:00:22.910000000Z"}
+{"log":"2026-05-04T08:00:24.100000000Z INFO  [api] GET /api/sessions/u1002 200 8ms\n","stream":"stdout","time":"2026-05-04T08:00:24.100000000Z"}
+{"log":"2026-05-04T08:00:25.200000000Z INFO  [api] POST /api/sessions 201 14ms\n","stream":"stdout","time":"2026-05-04T08:00:25.200000000Z"}
+{"log":"2026-05-04T08:00:25.006789012Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:00:25.006789012Z"}
+{"log":"2026-05-04T08:00:26.300000000Z INFO  [cache] SET session:u1003 ttl=3600\n","stream":"stdout","time":"2026-05-04T08:00:26.300000000Z"}
+{"log":"2026-05-04T08:00:28.400000000Z INFO  [api] GET /api/sessions/u1001 200 7ms\n","stream":"stdout","time":"2026-05-04T08:00:28.400000000Z"}
+{"log":"2026-05-04T08:00:30.007890123Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:00:30.007890123Z"}
+{"log":"2026-05-04T08:00:31.500000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=1100ms\n","stream":"stderr","time":"2026-05-04T08:00:31.500000000Z"}
+{"log":"2026-05-04T08:00:32.600000000Z INFO  [api] POST /api/sessions 201 16ms\n","stream":"stdout","time":"2026-05-04T08:00:32.600000000Z"}
+{"log":"2026-05-04T08:00:33.700000000Z INFO  [cache] SET session:u1004 ttl=3600\n","stream":"stdout","time":"2026-05-04T08:00:33.700000000Z"}
+{"log":"2026-05-04T08:00:35.008901234Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:00:35.008901234Z"}
+{"log":"2026-05-04T08:00:36.800000000Z INFO  [api] GET /api/sessions/u1003 200 9ms\n","stream":"stdout","time":"2026-05-04T08:00:36.800000000Z"}
+{"log":"2026-05-04T08:00:37.900000000Z INFO  [api] POST /api/sessions 201 17ms\n","stream":"stdout","time":"2026-05-04T08:00:37.900000000Z"}
+{"log":"2026-05-04T08:00:38.010000000Z INFO  [cache] SET session:u1005 ttl=3600\n","stream":"stdout","time":"2026-05-04T08:00:38.010000000Z"}
+{"log":"2026-05-04T08:00:40.009012345Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:00:40.009012345Z"}
+{"log":"2026-05-04T08:00:41.110000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=890ms\n","stream":"stderr","time":"2026-05-04T08:00:41.110000000Z"}
+{"log":"2026-05-04T08:00:43.200000000Z INFO  [api] GET /api/sessions/u1004 200 8ms\n","stream":"stdout","time":"2026-05-04T08:00:43.200000000Z"}
+{"log":"2026-05-04T08:00:44.300000000Z INFO  [api] POST /api/sessions 201 15ms\n","stream":"stdout","time":"2026-05-04T08:00:44.300000000Z"}
+{"log":"2026-05-04T08:00:45.010123456Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:00:45.010123456Z"}
+{"log":"2026-05-04T08:00:46.400000000Z INFO  [cache] SET session:u1006 ttl=3600\n","stream":"stdout","time":"2026-05-04T08:00:46.400000000Z"}
+{"log":"2026-05-04T08:00:48.500000000Z INFO  [api] GET /api/sessions/u1002 200 7ms\n","stream":"stdout","time":"2026-05-04T08:00:48.500000000Z"}
+{"log":"2026-05-04T08:00:50.011234567Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:00:50.011234567Z"}
+{"log":"2026-05-04T08:00:51.600000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=760ms\n","stream":"stderr","time":"2026-05-04T08:00:51.600000000Z"}
+{"log":"2026-05-04T08:00:53.700000000Z INFO  [api] POST /api/sessions 201 14ms\n","stream":"stdout","time":"2026-05-04T08:00:53.700000000Z"}
+{"log":"2026-05-04T08:00:54.800000000Z INFO  [cache] SET session:u1007 ttl=3600\n","stream":"stdout","time":"2026-05-04T08:00:54.800000000Z"}
+{"log":"2026-05-04T08:00:55.012345678Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:00:55.012345678Z"}
+{"log":"2026-05-04T08:00:57.900000000Z INFO  [api] GET /api/sessions/u1005 200 8ms\n","stream":"stdout","time":"2026-05-04T08:00:57.900000000Z"}
+{"log":"2026-05-04T08:01:00.013456789Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:00.013456789Z"}
+{"log":"2026-05-04T08:01:01.100000000Z INFO  [api] POST /api/sessions 201 16ms\n","stream":"stdout","time":"2026-05-04T08:01:01.100000000Z"}
+{"log":"2026-05-04T08:01:02.200000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=1020ms\n","stream":"stderr","time":"2026-05-04T08:01:02.200000000Z"}
+{"log":"2026-05-04T08:01:03.300000000Z INFO  [cache] SET session:u1008 ttl=3600\n","stream":"stdout","time":"2026-05-04T08:01:03.300000000Z"}
+{"log":"2026-05-04T08:01:05.014567890Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:05.014567890Z"}
+{"log":"2026-05-04T08:01:07.400000000Z INFO  [api] GET /api/sessions/u1006 200 9ms\n","stream":"stdout","time":"2026-05-04T08:01:07.400000000Z"}
+{"log":"2026-05-04T08:01:09.500000000Z INFO  [api] POST /api/sessions 201 13ms\n","stream":"stdout","time":"2026-05-04T08:01:09.500000000Z"}
+{"log":"2026-05-04T08:01:10.015678901Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:10.015678901Z"}
+{"log":"2026-05-04T08:01:11.600000000Z INFO  [cache] SET session:u1009 ttl=3600\n","stream":"stdout","time":"2026-05-04T08:01:11.600000000Z"}
+{"log":"2026-05-04T08:01:12.700000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=950ms\n","stream":"stderr","time":"2026-05-04T08:01:12.700000000Z"}
+{"log":"2026-05-04T08:01:14.800000000Z INFO  [api] GET /api/sessions/u1007 200 7ms\n","stream":"stdout","time":"2026-05-04T08:01:14.800000000Z"}
+{"log":"2026-05-04T08:01:15.016789012Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:15.016789012Z"}
+{"log":"2026-05-04T08:01:17.900000000Z INFO  [api] POST /api/sessions 201 15ms\n","stream":"stdout","time":"2026-05-04T08:01:17.900000000Z"}
+{"log":"2026-05-04T08:01:19.010000000Z INFO  [cache] SET session:u1010 ttl=3600\n","stream":"stdout","time":"2026-05-04T08:01:19.010000000Z"}
+{"log":"2026-05-04T08:01:20.017890123Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:20.017890123Z"}
+{"log":"2026-05-04T08:01:22.110000000Z INFO  [api] GET /api/sessions/u1008 200 8ms\n","stream":"stdout","time":"2026-05-04T08:01:22.110000000Z"}
+{"log":"2026-05-04T08:01:23.200000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=830ms\n","stream":"stderr","time":"2026-05-04T08:01:23.200000000Z"}
+{"log":"2026-05-04T08:01:25.018901234Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:25.018901234Z"}
+{"log":"2026-05-04T08:01:26.300000000Z WARN  [cache] redis memory usage high used_memory=480mb maxmemory=512mb ratio=0.94\n","stream":"stderr","time":"2026-05-04T08:01:26.300000000Z"}
+{"log":"2026-05-04T08:01:27.400000000Z INFO  [api] POST /api/sessions 201 19ms\n","stream":"stdout","time":"2026-05-04T08:01:27.400000000Z"}
+{"log":"2026-05-04T08:01:28.500000000Z WARN  [cache] redis memory usage high used_memory=498mb maxmemory=512mb ratio=0.97\n","stream":"stderr","time":"2026-05-04T08:01:28.500000000Z"}
+{"log":"2026-05-04T08:01:30.019012345Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:30.019012345Z"}
+{"log":"2026-05-04T08:01:31.600000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=1200ms\n","stream":"stderr","time":"2026-05-04T08:01:31.600000000Z"}
+{"log":"2026-05-04T08:01:32.700000000Z WARN  [cache] redis memory usage high used_memory=511mb maxmemory=512mb ratio=0.998\n","stream":"stderr","time":"2026-05-04T08:01:32.700000000Z"}
+{"log":"2026-05-04T08:01:33.800000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1011\n","stream":"stderr","time":"2026-05-04T08:01:33.800000000Z"}
+{"log":"2026-05-04T08:01:34.900000000Z ERROR [api] failed to create session for user u1011: cache write error: oom command not allowed when used memory > 'maxmemory'\n","stream":"stderr","time":"2026-05-04T08:01:34.900000000Z"}
+{"log":"2026-05-04T08:01:35.020123456Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:35.020123456Z"}
+{"log":"2026-05-04T08:01:35.110000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1012\n","stream":"stderr","time":"2026-05-04T08:01:35.110000000Z"}
+{"log":"2026-05-04T08:01:35.200000000Z ERROR [api] failed to create session for user u1012: cache write error: oom command not allowed when used memory > 'maxmemory'\n","stream":"stderr","time":"2026-05-04T08:01:35.200000000Z"}
+{"log":"2026-05-04T08:01:35.300000000Z INFO  [api] POST /api/sessions 500 6ms\n","stream":"stdout","time":"2026-05-04T08:01:35.300000000Z"}
+{"log":"2026-05-04T08:01:36.400000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1013\n","stream":"stderr","time":"2026-05-04T08:01:36.400000000Z"}
+{"log":"2026-05-04T08:01:36.500000000Z ERROR [api] failed to create session for user u1013: cache write error: oom command not allowed when used memory > 'maxmemory'\n","stream":"stderr","time":"2026-05-04T08:01:36.500000000Z"}
+{"log":"2026-05-04T08:01:36.600000000Z INFO  [api] POST /api/sessions 500 5ms\n","stream":"stdout","time":"2026-05-04T08:01:36.600000000Z"}
+{"log":"2026-05-04T08:01:37.700000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=780ms\n","stream":"stderr","time":"2026-05-04T08:01:37.700000000Z"}
+{"log":"2026-05-04T08:01:37.800000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1014\n","stream":"stderr","time":"2026-05-04T08:01:37.800000000Z"}
+{"log":"2026-05-04T08:01:38.900000000Z ERROR [api] failed to create session for user u1014: cache write error: oom command not allowed when used memory > 'maxmemory'\n","stream":"stderr","time":"2026-05-04T08:01:38.900000000Z"}
+{"log":"2026-05-04T08:01:39.010000000Z INFO  [api] POST /api/sessions 500 5ms\n","stream":"stdout","time":"2026-05-04T08:01:39.010000000Z"}
+{"log":"2026-05-04T08:01:40.021234567Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:40.021234567Z"}
+{"log":"2026-05-04T08:01:41.110000000Z ERROR [cache] eviction policy noeviction: refusing to evict existing keys, session writes failing\n","stream":"stderr","time":"2026-05-04T08:01:41.110000000Z"}
+{"log":"2026-05-04T08:01:42.200000000Z ERROR [api] POST /api/sessions 500 4ms\n","stream":"stderr","time":"2026-05-04T08:01:42.200000000Z"}
+{"log":"2026-05-04T08:01:42.300000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1015\n","stream":"stderr","time":"2026-05-04T08:01:42.300000000Z"}
+{"log":"2026-05-04T08:01:43.400000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=1050ms\n","stream":"stderr","time":"2026-05-04T08:01:43.400000000Z"}
+{"log":"2026-05-04T08:01:44.500000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1016\n","stream":"stderr","time":"2026-05-04T08:01:44.500000000Z"}
+{"log":"2026-05-04T08:01:45.022345678Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:45.022345678Z"}
+{"log":"2026-05-04T08:01:46.600000000Z ERROR [api] POST /api/sessions 500 4ms\n","stream":"stderr","time":"2026-05-04T08:01:46.600000000Z"}
+{"log":"2026-05-04T08:01:47.700000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1017\n","stream":"stderr","time":"2026-05-04T08:01:47.700000000Z"}
+{"log":"2026-05-04T08:01:48.800000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=900ms\n","stream":"stderr","time":"2026-05-04T08:01:48.800000000Z"}
+{"log":"2026-05-04T08:01:49.900000000Z ERROR [api] POST /api/sessions 500 4ms\n","stream":"stderr","time":"2026-05-04T08:01:49.900000000Z"}
+{"log":"2026-05-04T08:01:50.023456789Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:50.023456789Z"}
+{"log":"2026-05-04T08:01:51.010000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1018\n","stream":"stderr","time":"2026-05-04T08:01:51.010000000Z"}
+{"log":"2026-05-04T08:01:52.100000000Z ERROR [api] POST /api/sessions 500 3ms\n","stream":"stderr","time":"2026-05-04T08:01:52.100000000Z"}
+{"log":"2026-05-04T08:01:53.200000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=870ms\n","stream":"stderr","time":"2026-05-04T08:01:53.200000000Z"}
+{"log":"2026-05-04T08:01:55.024567890Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:01:55.024567890Z"}
+{"log":"2026-05-04T08:01:56.300000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1019\n","stream":"stderr","time":"2026-05-04T08:01:56.300000000Z"}
+{"log":"2026-05-04T08:01:57.400000000Z ERROR [api] POST /api/sessions 500 3ms\n","stream":"stderr","time":"2026-05-04T08:01:57.400000000Z"}
+{"log":"2026-05-04T08:01:58.500000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=1140ms\n","stream":"stderr","time":"2026-05-04T08:01:58.500000000Z"}
+{"log":"2026-05-04T08:02:00.025678901Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:02:00.025678901Z"}
+{"log":"2026-05-04T08:02:01.600000000Z ERROR [cache] redis command failed: oom command not allowed when used memory > 'maxmemory' key=session:u1020\n","stream":"stderr","time":"2026-05-04T08:02:01.600000000Z"}
+{"log":"2026-05-04T08:02:02.700000000Z ERROR [api] POST /api/sessions 500 3ms\n","stream":"stderr","time":"2026-05-04T08:02:02.700000000Z"}
+{"log":"2026-05-04T08:02:03.800000000Z WARN  [jobs] slow disk write path=/var/data/uploads latency=820ms\n","stream":"stderr","time":"2026-05-04T08:02:03.800000000Z"}
+{"log":"2026-05-04T08:02:05.026789012Z INFO  [api] GET /health 200 1ms\n","stream":"stdout","time":"2026-05-04T08:02:05.026789012Z"}

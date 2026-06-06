@@ -1,0 +1,187 @@
+{
+  "meta": {
+    "id": "56-otel-json",
+    "provider": "OpenTelemetry Collector (OTLP JSON export)",
+    "format": "json",
+    "envelope": "none",
+    "incident": "HashiCorp Vault sidecar crash caused token expiry: Stripe API key unreachable -> all payment charges fail with 502 invalid api key, amid a recurring TLS cert expiry warning distractor",
+    "ground_truth": [
+      {
+        "needle": "vault token renewal attempt failed",
+        "role": "trigger",
+        "desc": "Vault sidecar stopped responding, token renewal failing"
+      },
+      {
+        "needle": "token expired",
+        "role": "root_cause",
+        "desc": "Vault token expired after 3 failed renewals"
+      },
+      {
+        "needle": "permission denied",
+        "role": "root_cause",
+        "desc": "Vault returned 403 when fetching Stripe API key"
+      },
+      {
+        "needle": "api key unavailable",
+        "role": "root_cause",
+        "desc": "Stripe client could not initialize due to missing key"
+      },
+      {
+        "needle": "invalid api key provided",
+        "role": "consequence",
+        "desc": "Stripe charges rejected with invalid key error"
+      },
+      {
+        "needle": "stripe integration down",
+        "role": "consequence",
+        "desc": "PagerDuty P1 alert fired for full payment outage"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 0.85
+    }
+  },
+  "metrics": {
+    "id": "56-otel-json",
+    "provider": "OpenTelemetry Collector (OTLP JSON export)",
+    "format": "json",
+    "envelope": "none",
+    "lines_in": 136,
+    "tokens_in": 19484,
+    "tokens_out": 1753,
+    "compression": 11,
+    "template_count": 35,
+    "pct_ts": 0,
+    "pct_level": 100,
+    "evidence_count": 9,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 1,
+    "facts_found": 6,
+    "facts_total": 6,
+    "role_accuracy": 0.33,
+    "citation_integrity": 1,
+    "context_loss": [],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 0.85,
+    "pass": false
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "56-otel-json",
+    "window": "unknown",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 111,
+        "text": "{\"Timestamp\":\"2025-05-04T10:01:48.004Z\",\"ObservedTimestamp\":\"2025-05-04T10:01:48.005Z\",\"SeverityText\":\"WARN\",\"SeverityNumber\":13,\"Body\":\"vault token renewal attempt failed: connection refused <ip>:8200\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"vault.addr\":\"<ip>:8200\",\"error\":\"connection refused\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"00000000000000000000000000000000\",\"SpanId\":\"0000000000000000\"}",
+        "template": "T27",
+        "score": 0.53
+      },
+      {
+        "role": "trigger",
+        "line": 112,
+        "text": "{\"Timestamp\":\"2025-05-04T10:01:49.205Z\",\"ObservedTimestamp\":\"2025-05-04T10:01:49.206Z\",\"SeverityText\":\"WARN\",\"SeverityNumber\":13,\"Body\":\"vault token renewal attempt failed: connection refused <ip>:8200\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"vault.addr\":\"<ip>:8200\",\"error\":\"connection refused\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"00000000000000000000000000000000\",\"SpanId\":\"0000000000000000\"}",
+        "template": "T27",
+        "score": 0.53
+      },
+      {
+        "role": "trigger",
+        "line": 118,
+        "text": "{\"Timestamp\":\"2025-05-04T10:01:55.010Z\",\"ObservedTimestamp\":\"2025-05-04T10:01:55.011Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"vault token expired: failed to renew after 3 attempts, secret fetch will fail\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"vault.addr\":\"<ip>:8200\",\"vault.attempts\":3,\"error\":\"token expired\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d\",\"SpanId\":\"aabbccddeeff0001\"}",
+        "template": "T29",
+        "score": 0.85
+      },
+      {
+        "role": "trigger",
+        "line": 120,
+        "text": "{\"Timestamp\":\"2025-05-04T10:01:57.001Z\",\"ObservedTimestamp\":\"2025-05-04T10:01:57.002Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"failed to fetch stripe api key from vault: permission denied path=secret/data/stripe-api-key\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"vault.path\":\"secret/data/stripe-api-key\",\"http.status_code\":403,\"error\":\"permission denied\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d\",\"SpanId\":\"aabbccddeeff0002\"}",
+        "template": "T30",
+        "score": 0.85
+      },
+      {
+        "role": "trigger",
+        "line": 121,
+        "text": "{\"Timestamp\":\"2025-05-04T10:01:57.850Z\",\"ObservedTimestamp\":\"2025-05-04T10:01:57.851Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"stripe client initialization failed: api key unavailable\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"error\":\"api key unavailable\",\"stripe.endpoint\":\"https://api.stripe.com/v1\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d\",\"SpanId\":\"aabbccddeeff0003\"}",
+        "template": "T31",
+        "score": 0.85
+      },
+      {
+        "role": "trigger",
+        "line": 129,
+        "text": "{\"Timestamp\":\"2025-05-04T10:02:01.700Z\",\"ObservedTimestamp\":\"2025-05-04T10:02:01.701Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"health check degraded: stripe integration unavailable\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"health.component\":\"stripe\",\"health.status\":\"degraded\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d\",\"SpanId\":\"00112233446677cc\"}",
+        "template": "T33",
+        "score": 0.85
+      },
+      {
+        "role": "root_cause",
+        "line": 130,
+        "text": "{\"Timestamp\":\"2025-05-04T10:02:02.050Z\",\"ObservedTimestamp\":\"2025-05-04T10:02:02.051Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"POST /v1/payments failed: stripe charge error: invalid api key provided\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"http.method\":\"POST\",\"http.route\":\"/v1/payments\",\"http.status_code\":502,\"error\":\"invalid api key provided\",\"payment.amount\":820.00},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e\",\"SpanId\":\"1122334455887788\"}",
+        "template": "T32",
+        "score": 0.92
+      },
+      {
+        "role": "consequence",
+        "line": 132,
+        "text": "{\"Timestamp\":\"2025-05-04T10:02:03.010Z\",\"ObservedTimestamp\":\"2025-05-04T10:02:03.011Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"POST /v1/payments failed: stripe charge error: invalid api key provided\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"http.method\":\"POST\",\"http.route\":\"/v1/payments\",\"http.status_code\":502,\"error\":\"invalid api key provided\",\"payment.amount\":127.00},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e4f\",\"SpanId\":\"2233445566998899\"}",
+        "template": "T32",
+        "score": 0.92
+      },
+      {
+        "role": "consequence",
+        "line": 136,
+        "text": "{\"Timestamp\":\"2025-05-04T10:02:05.400Z\",\"ObservedTimestamp\":\"2025-05-04T10:02:05.401Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"alert dispatched to pagerduty: payment gateway stripe integration down, all charges failing\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"alert.destination\":\"pagerduty\",\"alert.severity\":\"P1\",\"alert.title\":\"stripe integration down\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"2f3a4b5c6d7e8f9a0b1c2d3e4f5a6b7c\",\"SpanId\":\"556677889900aabb\"}",
+        "template": "T34",
+        "score": 0.85
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 136,
+      "template_count": 35,
+      "top_templates": [
+        {
+          "id": "T3",
+          "pattern": "<*> /v1/payments processed successfully <*> <*>",
+          "count": 39
+        },
+        {
+          "id": "T4",
+          "pattern": "<*> certificate for vault.internal expires in 29 days\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"tls.subject\":\"vault.internal\",\"tls.days_remaining\":29},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"00000000000000000000000000000000\",\"SpanId\":\"0000000000000000\"}",
+          "count": 37
+        },
+        {
+          "id": "T32",
+          "pattern": "<*> <*> failed: stripe <*> error: invalid api key <*> api key <*>",
+          "count": 9
+        },
+        {
+          "id": "T6",
+          "pattern": "<*> secret lease renewed <*>",
+          "count": 7
+        },
+        {
+          "id": "T8",
+          "pattern": "<*> /v1/refunds processed <*> <*>",
+          "count": 7
+        }
+      ]
+    },
+    "compression": 11,
+    "stats": {
+      "lines_in": 136,
+      "tokens_in_est": 19484,
+      "tokens_out_est": 1753
+    }
+  },
+  "log_lines": 136
+}

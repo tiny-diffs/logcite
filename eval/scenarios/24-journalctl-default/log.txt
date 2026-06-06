@@ -1,0 +1,18 @@
+May 04 14:00:00 app-01 checkout[4471]: INFO listening on 127.0.0.1:8080
+May 04 14:00:01 app-01 systemd[1]: Started Checkout Service.
+May 04 14:00:02 app-01 checkout[4471]: INFO GET /healthz 200 2ms
+May 04 14:00:03 app-01 cron[884]: (root) CMD (/usr/bin/rotate-logs.sh)
+May 04 14:00:05 app-01 checkout[4471]: INFO POST /v1/checkout 201 44ms
+May 04 14:00:07 app-01 checkout[4471]: INFO GET /healthz 200 2ms
+May 04 14:00:09 app-01 cron[884]: (root) CMD (/usr/bin/rotate-logs.sh)
+May 04 14:00:11 app-01 checkout[4471]: WARN disk usage on /var is 88%
+May 04 14:00:13 app-01 checkout[4471]: INFO POST /v1/checkout 201 51ms
+May 04 14:00:15 app-01 checkout[4471]: WARN disk usage on /var is 95%
+May 04 14:00:17 app-01 checkout[4471]: ERROR failed to write order journal: No space left on device
+May 04 14:00:18 app-01 checkout[4471]: ERROR POST /v1/checkout 500 12ms write failed
+May 04 14:00:19 app-01 checkout[4471]: ERROR failed to write order journal: No space left on device
+May 04 14:00:20 app-01 systemd[1]: checkout.service: Main process exited, code=exited, status=1/FAILURE
+May 04 14:00:20 app-01 systemd[1]: checkout.service: Failed with result 'exit-code'.
+May 04 14:00:21 app-01 checkout[4471]: FATAL shutting down: cannot persist state, No space left on device
+May 04 14:00:22 app-01 cron[884]: (root) CMD (/usr/bin/rotate-logs.sh)
+May 04 14:00:23 app-01 systemd[1]: checkout.service: Scheduled restart job, restart counter is at 1.

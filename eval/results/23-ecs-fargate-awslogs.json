@@ -1,0 +1,198 @@
+{
+  "meta": {
+    "id": "23-ecs-fargate-awslogs",
+    "provider": "ECS Fargate (awslogs)",
+    "format": "text",
+    "envelope": "none",
+    "incident": "DynamoDB write throttling: latency/throttle warnings escalate to ProvisionedThroughputExceededException, SQS batches fail and return to the queue, backlog rises — amid a recurring token-near-expiry distractor.",
+    "ground_truth": [
+      {
+        "needle": "throttled retrying",
+        "role": "trigger",
+        "desc": "writes start getting throttled"
+      },
+      {
+        "needle": "provisionedthroughputexceeded",
+        "role": "root_cause",
+        "desc": "DynamoDB capacity exceeded"
+      },
+      {
+        "needle": "batch processing failed",
+        "role": "consequence",
+        "desc": "SQS batch fails"
+      },
+      {
+        "needle": "messages returned to queue",
+        "role": "consequence",
+        "desc": "messages requeued, backlog grows"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 1
+    }
+  },
+  "metrics": {
+    "id": "23-ecs-fargate-awslogs",
+    "provider": "ECS Fargate (awslogs)",
+    "format": "text",
+    "envelope": "none",
+    "lines_in": 24,
+    "tokens_in": 766,
+    "tokens_out": 840,
+    "compression": 1,
+    "template_count": 12,
+    "pct_ts": 100,
+    "pct_level": 100,
+    "evidence_count": 12,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 1,
+    "facts_found": 4,
+    "facts_total": 4,
+    "role_accuracy": 0.5,
+    "citation_integrity": 1,
+    "context_loss": [],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 1,
+    "pass": true
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "23-ecs-fargate-awslogs",
+    "window": "14:00:00 to 14:00:30",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 6,
+        "text": "2026-05-04T14:00:06.402Z WARN  [auth] token near expiry for client=svc-billing",
+        "template": "T4",
+        "score": 0.53
+      },
+      {
+        "role": "trigger",
+        "line": 10,
+        "text": "2026-05-04T14:00:11.640Z WARN  [auth] token near expiry for client=svc-billing",
+        "template": "T4",
+        "score": 0.53
+      },
+      {
+        "role": "trigger",
+        "line": 12,
+        "text": "2026-05-04T14:00:14.355Z WARN  [dynamo] putItem table=orders consumed=42 throttled retrying in 100ms",
+        "template": "T5",
+        "score": 0.53
+      },
+      {
+        "role": "trigger",
+        "line": 13,
+        "text": "2026-05-04T14:00:15.704Z WARN  [dynamo] putItem table=orders consumed=58 throttled retrying in 200ms",
+        "template": "T5",
+        "score": 0.53
+      },
+      {
+        "role": "trigger",
+        "line": 14,
+        "text": "2026-05-04T14:00:17.066Z ERROR [dynamo] ProvisionedThroughputExceededException: rate exceeded for table orders",
+        "template": "T6",
+        "score": 0.75
+      },
+      {
+        "role": "root_cause",
+        "line": 15,
+        "text": "2026-05-04T14:00:18.421Z ERROR [sqs-consumer] batch processing failed: ProvisionedThroughputExceededException",
+        "template": "T7",
+        "score": 0.79
+      },
+      {
+        "role": "consequence",
+        "line": 16,
+        "text": "2026-05-04T14:00:19.795Z WARN  [sqs-consumer] 10 messages returned to queue, visibility timeout reset",
+        "template": "T8",
+        "score": 0.53
+      },
+      {
+        "role": "consequence",
+        "line": 17,
+        "text": "2026-05-04T14:00:21.140Z ERROR [dynamo] ProvisionedThroughputExceededException: rate exceeded for table orders",
+        "template": "T6",
+        "score": 0.75
+      },
+      {
+        "role": "consequence",
+        "line": 18,
+        "text": "2026-05-04T14:00:22.503Z ERROR [sqs-consumer] batch processing failed: ProvisionedThroughputExceededException",
+        "template": "T7",
+        "score": 0.79
+      },
+      {
+        "role": "consequence",
+        "line": 19,
+        "text": "2026-05-04T14:00:23.870Z WARN  [sqs-consumer] 10 messages returned to queue, visibility timeout reset",
+        "template": "T8",
+        "score": 0.53
+      },
+      {
+        "role": "consequence",
+        "line": 20,
+        "text": "2026-05-04T14:00:25.219Z WARN  [healthcheck] degraded: consumer error rate 100%",
+        "template": "T9",
+        "score": 0.59
+      },
+      {
+        "role": "consequence",
+        "line": 22,
+        "text": "2026-05-04T14:00:27.901Z WARN  [sqs-consumer] approximateNumberOfMessages=4120 and rising",
+        "template": "T10",
+        "score": 0.59
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 24,
+      "template_count": 12,
+      "top_templates": [
+        {
+          "id": "T1",
+          "pattern": "[healthcheck] ok 200",
+          "count": 4
+        },
+        {
+          "id": "T3",
+          "pattern": "[dynamo] putItem table=orders <*> ok <*>",
+          "count": 3
+        },
+        {
+          "id": "T6",
+          "pattern": "[dynamo] ProvisionedThroughputExceededException: rate exceeded for table orders",
+          "count": 3
+        },
+        {
+          "id": "T2",
+          "pattern": "[sqs-consumer] received batch size=10 messages",
+          "count": 2
+        },
+        {
+          "id": "T4",
+          "pattern": "[auth] token near expiry for client=svc-billing",
+          "count": 2
+        }
+      ]
+    },
+    "compression": 1,
+    "stats": {
+      "lines_in": 24,
+      "tokens_in_est": 766,
+      "tokens_out_est": 840
+    }
+  },
+  "log_lines": 24
+}

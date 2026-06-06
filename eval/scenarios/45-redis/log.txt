@@ -1,0 +1,18 @@
+2211:M 04 May 2026 14:00:00.101 * Ready to accept connections tcp
+2211:M 04 May 2026 14:00:01.244 * Background saving started by pid 2890
+2211:C 04 May 2026 14:00:02.560 * DB saved on disk
+2211:M 04 May 2026 14:00:02.561 * Background saving terminated with success
+2211:M 04 May 2026 14:00:05.880 - Accepted 10.0.4.21:51244
+2211:M 04 May 2026 14:00:08.140 - DB 0: 1840221 keys (12044 volatile) in 2097152 slots HT
+2211:M 04 May 2026 14:00:11.402 # WARNING Memory overcommit must be enabled! see /proc/sys/vm/overcommit_memory
+2211:M 04 May 2026 14:00:14.665 - Accepted 10.0.4.22:51290
+2211:M 04 May 2026 14:00:17.930 # WARNING maxmemory 4GB reached, used_memory 4.02GB, evicting keys (policy noeviction)
+2211:M 04 May 2026 14:00:21.193 # Background saving error: Cannot allocate memory
+2211:M 04 May 2026 14:00:21.194 # Background saving terminated by signal 9
+2211:M 04 May 2026 14:00:24.455 # MISCONF Redis is configured to save RDB snapshots, but it's currently unable to persist to disk. Commands that may modify the data set are disabled
+2211:M 04 May 2026 14:00:27.718 # Client 10.0.4.22:51290 closed: write error 'OOM command not allowed when used memory > maxmemory'
+2211:M 04 May 2026 14:00:30.980 # WARNING Memory overcommit must be enabled! see /proc/sys/vm/overcommit_memory
+2211:M 04 May 2026 14:00:34.240 - Accepted 10.0.4.23:51410
+2211:M 04 May 2026 14:00:37.500 # OOM command not allowed when used memory > 'maxmemory'
+2211:M 04 May 2026 14:00:40.760 * Background saving started by pid 2991
+2211:M 04 May 2026 14:00:41.020 # Background saving error: Cannot allocate memory

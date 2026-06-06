@@ -1,0 +1,158 @@
+{
+  "meta": {
+    "id": "45-redis",
+    "provider": "Redis server log",
+    "format": "text",
+    "envelope": "none",
+    "incident": "Redis hits maxmemory, RDB background save fails with Cannot allocate memory, enters MISCONF state and rejects writes with OOM command not allowed — amid a recurring overcommit WARNING distractor. Redis uses single-char loglevels (* - # ), not words.",
+    "ground_truth": [
+      {
+        "needle": "maxmemory 4gb reached",
+        "role": "trigger",
+        "desc": "memory limit hit, eviction blocked"
+      },
+      {
+        "needle": "background saving error: cannot allocate memory",
+        "role": "root_cause",
+        "desc": "RDB save fails OOM"
+      },
+      {
+        "needle": "misconf",
+        "role": "consequence",
+        "desc": "writes disabled, persistence broken"
+      },
+      {
+        "needle": "oom command not allowed",
+        "role": "consequence",
+        "desc": "clients rejected"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 0.75
+    }
+  },
+  "metrics": {
+    "id": "45-redis",
+    "provider": "Redis server log",
+    "format": "text",
+    "envelope": "none",
+    "lines_in": 18,
+    "tokens_in": 578,
+    "tokens_out": 544,
+    "compression": 1,
+    "template_count": 10,
+    "pct_ts": 0,
+    "pct_level": 33.3,
+    "evidence_count": 6,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 0.75,
+    "facts_found": 3,
+    "facts_total": 4,
+    "role_accuracy": 0.33,
+    "citation_integrity": 1,
+    "context_loss": [
+      "misconf"
+    ],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 0.75,
+    "pass": false
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "45-redis",
+    "window": "unknown",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 7,
+        "text": "2211:M 04 May 2026 14:00:11.402 # WARNING Memory overcommit must be enabled! see /proc/sys/vm/overcommit_memory",
+        "template": "T5",
+        "score": 0.52
+      },
+      {
+        "role": "trigger",
+        "line": 9,
+        "text": "2211:M 04 May 2026 14:00:17.930 # WARNING maxmemory 4GB reached, used_memory 4.02GB, evicting keys (policy noeviction)",
+        "template": "T6",
+        "score": 0.59
+      },
+      {
+        "role": "trigger",
+        "line": 10,
+        "text": "2211:M 04 May 2026 14:00:21.193 # Background saving error: Cannot allocate memory",
+        "template": "T1",
+        "score": 0.69
+      },
+      {
+        "role": "root_cause",
+        "line": 13,
+        "text": "2211:M 04 May 2026 14:00:27.718 # Client <ip>:51290 closed: write error 'OOM command not allowed when used memory > maxmemory'",
+        "template": "T8",
+        "score": 0.85
+      },
+      {
+        "role": "consequence",
+        "line": 14,
+        "text": "2211:M 04 May 2026 14:00:30.980 # WARNING Memory overcommit must be enabled! see /proc/sys/vm/overcommit_memory",
+        "template": "T5",
+        "score": 0.52
+      },
+      {
+        "role": "consequence",
+        "line": 18,
+        "text": "2211:M 04 May 2026 14:00:41.020 # Background saving error: Cannot allocate memory",
+        "template": "T1",
+        "score": 0.69
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 18,
+      "template_count": 10,
+      "top_templates": [
+        {
+          "id": "T1",
+          "pattern": "2211:M 04 May 2026 <*> <*> Background saving <*> <*> <*> <*>",
+          "count": 5
+        },
+        {
+          "id": "T3",
+          "pattern": "2211:M 04 May 2026 <*> - Accepted <*>",
+          "count": 3
+        },
+        {
+          "id": "T0",
+          "pattern": "2211:M 04 May 2026 <*> * <*> <*> <*> <*> <*>",
+          "count": 2
+        },
+        {
+          "id": "T5",
+          "pattern": "2211:M 04 May 2026 <*> # WARNING Memory overcommit must be enabled! see /proc/sys/vm/overcommit_memory",
+          "count": 2
+        },
+        {
+          "id": "T2",
+          "pattern": "2211:C 04 May 2026 14:00:02.560 * DB saved on disk",
+          "count": 1
+        }
+      ]
+    },
+    "compression": 1,
+    "stats": {
+      "lines_in": 18,
+      "tokens_in_est": 578,
+      "tokens_out_est": 544
+    }
+  },
+  "log_lines": 18
+}
