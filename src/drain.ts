@@ -18,6 +18,9 @@ interface LogGroup {
   tokens: (string | null)[];
   count: number;
   levels: Map<LogLevel, number>;
+  /** Source line span of matching lines — recurring (spread) vs concentrated. */
+  first: number;
+  last: number;
 }
 
 const WILDCARD = "<*>";
@@ -103,6 +106,7 @@ export class Drain {
         }
       }
       best.count++;
+      best.last = line.line;
       if (line.level) best.levels.set(line.level, (best.levels.get(line.level) ?? 0) + 1);
       return best.id;
     }
@@ -112,6 +116,8 @@ export class Drain {
       tokens: tokens.slice(),
       count: 1,
       levels: new Map(),
+      first: line.line,
+      last: line.line,
     };
     if (line.level) g.levels.set(line.level, 1);
     groups.push(g);
@@ -134,6 +140,8 @@ export class Drain {
         tokens: g.tokens,
         count: g.count,
         level: dominant(g.levels),
+        first: g.first,
+        last: g.last,
       }))
       .sort((a, b) => b.count - a.count);
   }

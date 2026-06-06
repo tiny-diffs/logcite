@@ -34,6 +34,10 @@ export interface Template {
   count: number;
   /** Dominant severity across matching lines. */
   level: LogLevel | null;
+  /** Source line number of the first line that matched this template. */
+  first: number;
+  /** Source line number of the most recent line that matched. */
+  last: number;
 }
 
 /** Causal role assigned to an evidence line within the incident. */

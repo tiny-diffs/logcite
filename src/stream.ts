@@ -144,6 +144,14 @@ export class StreamAccumulator {
     const countById = new Map(templates.map((t) => [t.id, t.count]));
     const p95 = percentile(this.numericSample, 0.95);
 
+    // Recurring/spread templates: they recur across most of the log (a benign
+    // distractor), as opposed to a burst concentrated in the incident. These are
+    // barred from being the root/trigger and demoted to context.
+    const scale = Math.max(1, this.linesIn);
+    const recurring = new Set(
+      templates.filter((t) => t.count >= 3 && t.last - t.first > 0.5 * scale).map((t) => t.id),
+    );
+
     const scored: ScoredLine[] = this.candidates.map((c) => ({
       line: c.line,
       templateId: c.templateId,
@@ -155,7 +163,7 @@ export class StreamAccumulator {
         p95,
       ),
     }));
-    const evidence = extractEvidence(scored, this.opts.maxEvidence ?? 12);
+    const evidence = extractEvidence(scored, this.opts.maxEvidence ?? 12, recurring);
 
     this.cachedCapsule = assembleCapsule({
       service: this.opts.service ?? "unknown",

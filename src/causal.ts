@@ -28,6 +28,8 @@ function sortKey(s: ScoredLine): number {
 export function extractEvidence(
   scored: ScoredLine[],
   maxEvidence: number,
+  /** Templates that recur across the whole log (distractors), barred from root/trigger. */
+  recurringIds: Set<string> = new Set(),
   /** Max evidence lines kept per template, so a storm can't crowd out signal. */
   perTemplate = 2,
 ): Evidence[] {
@@ -36,29 +38,37 @@ export function extractEvidence(
   const filtered = scored.filter((s) => s.score >= 0.4);
   if (filtered.length === 0) return [];
 
-  // Root cause: the strongest error-class line over the whole set; ties to the
-  // earliest. Computed before any trimming so it is never lost.
-  const errors = filtered.filter(
-    (s) => s.line.level === "ERROR" || s.line.level === "FATAL" || ROOT_HINTS.test(s.line.message),
-  );
-  const pool = errors.length ? errors : filtered;
-  const root = pool.reduce((best, s) => {
-    if (s.score !== best.score) return s.score > best.score ? s : best;
-    return sortKey(s) < sortKey(best) ? s : best;
-  });
+  const recurring = (s: ScoredLine) => recurringIds.has(s.templateId);
+  const isError = (s: ScoredLine) =>
+    s.line.level === "ERROR" || s.line.level === "FATAL" || ROOT_HINTS.test(s.line.message);
 
-  // Causal roles only apply *near* the root cause in time, so unrelated earlier
-  // errors (a recurring rate-limit elsewhere in a 10-hour window) are not
-  // mislabeled as triggers. Gate by timestamp when present, else by line number.
-  const useTs = root.line.ts !== null;
-  const rootPos = useTs ? root.line.ts! : root.line.line;
+  // Position basis: timestamps when most lines carry them, else line numbers.
+  const tsCount = filtered.filter((s) => s.line.ts !== null).length;
+  const useTs = tsCount >= filtered.length / 2;
+  const pos = (s: ScoredLine) => (useTs ? s.line.ts ?? s.line.line : s.line.line);
   const PRE = useTs ? 120_000 : 200; // 2 min, or 200 lines, before the root
   const POST = useTs ? 600_000 : 5000; // 10 min, or 5000 lines, after the root
-  const posOf = (s: ScoredLine) => (useTs ? s.line.ts ?? rootPos : s.line.line);
+  const byPos = (a: ScoredLine, b: ScoredLine) => pos(a) - pos(b);
+
+  // Root cause = the EARLIEST originating error that is followed by downstream
+  // fallout — the *start* of the cascade, not the loudest or latest symptom.
+  // Recurring distractors are excluded so they can never become the root.
+  const rootPool = filtered.filter((s) => isError(s) && !recurring(s));
+  const hasFallout = (s: ScoredLine) =>
+    filtered.some((o) => o !== s && pos(o) > pos(s) && pos(o) - pos(s) <= POST);
+  const earliest = (arr: ScoredLine[]) => (arr.length ? arr.slice().sort(byPos)[0]! : undefined);
+  const root =
+    earliest(rootPool.filter(hasFallout)) ??
+    earliest(rootPool) ??
+    earliest(filtered.filter(isError)) ??
+    filtered.slice().sort((a, b) => b.score - a.score || byPos(a, b))[0]!;
+
+  const rootPos = pos(root);
 
   const assign = (s: ScoredLine): EvidenceRole => {
     if (s === root) return "root_cause";
-    const d = posOf(s) - rootPos;
+    if (recurring(s)) return "context"; // a recurring distractor is never on the causal path
+    const d = pos(s) - rootPos;
     if (d < 0) {
       // Pre-failure anomalies within the window are triggers; the rest context.
       if (d >= -PRE && (s.line.level === "WARN" || s.score >= 0.5)) return "trigger";
@@ -67,7 +77,10 @@ export function extractEvidence(
     // Post-failure fallout within the window is a consequence.
     if (
       d <= POST &&
-      (CONSEQUENCE_HINTS.test(s.line.message) || s.line.level === "ERROR" || s.line.level === "WARN")
+      (CONSEQUENCE_HINTS.test(s.line.message) ||
+        s.line.level === "ERROR" ||
+        s.line.level === "WARN" ||
+        s.line.level === "FATAL")
     ) {
       return "consequence";
     }
