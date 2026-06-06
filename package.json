@@ -1,0 +1,25 @@
+{
+  "name": "logpod",
+  "version": "0.0.1",
+  "description": "Systems log compression for AI agents — turns millions of log lines into a cited, schema-valid IncidentCapsule.",
+  "type": "module",
+  "module": "src/index.ts",
+  "bin": {
+    "logpod": "src/cli.ts"
+  },
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "test": "bun test",
+    "demo": "bun run scripts/demo.ts",
+    "gen-fixture": "bun run scripts/gen-fixture.ts",
+    "ab": "bun run scripts/gen-incident.ts > fixtures/incident.log && bun run scripts/ab-grep.ts fixtures/incident.log"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "dependencies": {
+    "gpt-tokenizer": "^3.4.0"
+  }
+}
