@@ -28,9 +28,26 @@ const LEVELS: Record<string, LogLevel> = {
   PANIC: "FATAL",
 };
 
-// ISO-8601 (with optional millis / timezone) at the start of a line.
+const MONTHS: Record<string, number> = {
+  Jan: 0, Feb: 1, Mar: 2, Apr: 3, May: 4, Jun: 5,
+  Jul: 6, Aug: 7, Sep: 8, Oct: 9, Nov: 10, Dec: 11,
+};
+
+// Leading ISO-8601 (with optional millis / timezone).
 const ISO_RE =
   /^\s*(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?)/;
+// Rails-style bracketed ISO, with an optional "I, " severity tag: I, [2026-…
+const BRACKET_ISO_RE =
+  /^\s*(?:[A-Z], )?\[(\d{4}-\d{2}-\d{2}[T ]\d{2}:\d{2}:\d{2}(?:\.\d+)?(?:Z|[+-]\d{2}:?\d{2})?)/;
+// nginx error log / Go std log / common: 2026/05/04 14:22:11(.123)
+const SLASH_RE = /^\s*(\d{4})\/(\d{2})\/(\d{2})[ T](\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?/;
+// RFC3164 syslog (no year): "Jan  2 15:04:05", "May 04 14:22:11".
+const SYSLOG_RE = /^\s*([A-Z][a-z]{2})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})/;
+// Bare epoch seconds (10 digits) or millis (13), optionally fractional.
+const EPOCH_RE = /^\s*(\d{13}|\d{10})(?:\.(\d+))?(?=\s|$)/;
+// Apache/nginx access (CLF) — sits mid-line after the client IP, so ts only.
+const CLF_RE = /\[(\d{2})\/([A-Z][a-z]{2})\/(\d{4}):(\d{2}):(\d{2}):(\d{2}) ([+-]\d{4})\]/;
+
 // Bracketed level: [ERROR], (WARN)
 const LEVEL_RE = /\b(TRACE|DEBUG|INFO(?:RMATION)?|NOTICE|WARN(?:ING)?|ERR(?:OR)?|CRIT(?:ICAL)?|FATAL|PANIC)\b/i;
 
@@ -48,11 +65,60 @@ export function redactLine(s: string): string {
   return out;
 }
 
-function parseTimestamp(s: string): number | null {
-  const m = ISO_RE.exec(s);
-  if (!m) return null;
-  const t = Date.parse(m[1]!.replace(" ", "T"));
-  return Number.isNaN(t) ? null : t;
+/** A detected leading (or, for CLF, inline) timestamp. */
+interface TimestampHit {
+  /** Epoch milliseconds. */
+  ts: number;
+  /** Chars to strip from the start to drop the timestamp prefix (0 = none). */
+  strip: number;
+}
+
+/**
+ * Detect the timestamp at the start of a line (or, for access logs, the
+ * bracketed CLF stamp mid-line). Tries formats in order of specificity and
+ * returns epoch ms plus how much leading text to strip. Formats without a year
+ * (syslog) assume the current year; ordering within a window is what matters.
+ */
+function detectTimestamp(s: string): TimestampHit | null {
+  let m = ISO_RE.exec(s);
+  if (m) {
+    const t = Date.parse(m[1]!.replace(" ", "T"));
+    if (!Number.isNaN(t)) return { ts: t, strip: m[0].length };
+  }
+  m = BRACKET_ISO_RE.exec(s);
+  if (m) {
+    const t = Date.parse(m[1]!.replace(" ", "T"));
+    if (!Number.isNaN(t)) return { ts: t, strip: m[0].length };
+  }
+  m = SLASH_RE.exec(s);
+  if (m) {
+    const frac = m[7] ? Math.round(Number("0." + m[7]) * 1000) : 0;
+    const t = Date.UTC(+m[1]!, +m[2]! - 1, +m[3]!, +m[4]!, +m[5]!, +m[6]!, frac);
+    return { ts: t, strip: m[0].length };
+  }
+  m = EPOCH_RE.exec(s);
+  if (m) {
+    const digits = m[1]!;
+    const frac = m[2] ? Number("0." + m[2]) : 0;
+    const ts = digits.length === 13 ? Number(digits) : Number(digits) * 1000 + Math.round(frac * 1000);
+    return { ts, strip: m[0].length };
+  }
+  m = SYSLOG_RE.exec(s);
+  if (m) {
+    const mon = MONTHS[m[1]!];
+    if (mon !== undefined) {
+      const year = new Date().getUTCFullYear();
+      const t = Date.UTC(year, mon, +m[2]!, +m[3]!, +m[4]!, +m[5]!);
+      return { ts: t, strip: m[0].length };
+    }
+  }
+  // CLF sits after the client IP, so we extract the timestamp but strip nothing.
+  m = CLF_RE.exec(s);
+  if (m) {
+    const t = Date.parse(`${m[1]} ${m[2]} ${m[3]} ${m[4]}:${m[5]}:${m[6]} ${m[7]}`);
+    if (!Number.isNaN(t)) return { ts: t, strip: 0 };
+  }
+  return null;
 }
 
 function normalizeLevel(value: unknown): LogLevel | null {
@@ -61,8 +127,13 @@ function normalizeLevel(value: unknown): LogLevel | null {
 }
 
 function parseTimestampValue(value: unknown): number | null {
-  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "number" && Number.isFinite(value)) {
+    // Values below 1e12 are epoch *seconds* (epoch ms is ≥ 1e12 since 2001).
+    return value < 1e12 ? value * 1000 : value;
+  }
   if (typeof value !== "string") return null;
+  const hit = detectTimestamp(value);
+  if (hit) return hit.ts;
   const t = Date.parse(value.replace(" ", "T"));
   return Number.isNaN(t) ? null : t;
 }
@@ -112,12 +183,12 @@ export function parseLine(
   const json = parseJsonLine(clean);
   if (json) return { line, raw: clean, ...json };
 
-  const ts = parseTimestamp(clean);
+  const hit = detectTimestamp(clean);
+  const ts = hit?.ts ?? null;
 
-  // Message = everything after the timestamp prefix, if any.
+  // Message = everything after the timestamp prefix, if any was stripped.
   let message = clean;
-  const tsMatch = ISO_RE.exec(clean);
-  if (tsMatch) message = clean.slice(tsMatch[0].length).trimStart();
+  if (hit && hit.strip > 0) message = clean.slice(hit.strip).trimStart();
 
   let level: LogLevel | null = null;
   const lvl = LEVEL_RE.exec(message);

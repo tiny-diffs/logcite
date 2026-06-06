@@ -246,7 +246,7 @@ Codified as a regression test in [`test/ab.test.ts`](test/ab.test.ts).
 | `src/linereader.ts` | stream lines from bytes (+ byte offsets); `--max-bytes` / `--max-lines` |
 | `src/lineindex.ts` | sparse line→byte-offset index, built in the same pass |
 | `src/expand.ts` | expand a cited line into its raw context (`logpod expand`) |
-| `src/preprocess.ts` | line parsing, level/ts detection, JSONL fields, PII redaction |
+| `src/preprocess.ts` | line parsing, level/ts detection (ISO, slash, syslog, epoch, CLF, Rails, JSONL), PII redaction |
 | `src/drain.ts` | Drain-style fixed-depth templating (count-based) |
 | `src/anomaly.ts` | per-line scoring (`scoreOne`) |
 | `src/causal.ts` | evidence selection + causal roles (template-diverse, time-gated) |
