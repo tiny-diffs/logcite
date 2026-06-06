@@ -1,0 +1,204 @@
+{
+  "meta": {
+    "id": "30-pino-pretty-ansi",
+    "provider": "pino-pretty (ANSI colorized text)",
+    "format": "text",
+    "envelope": "none",
+    "incident": "Redis node redis-01 becomes unreachable: latency spikes -> ETIMEDOUT -> session lookups fail -> cart service returns 503, amid a recurring undefined-property cart error distractor",
+    "ground_truth": [
+      {
+        "needle": "redis latency spike",
+        "role": "trigger",
+        "desc": "Redis response time climbing before full timeout"
+      },
+      {
+        "needle": "connect etimedout",
+        "role": "root_cause",
+        "desc": "TCP connect to Redis timed out"
+      },
+      {
+        "needle": "session lookup failed",
+        "role": "consequence",
+        "desc": "Sessions cannot be resolved from Redis"
+      },
+      {
+        "needle": "cart service unavailable",
+        "role": "consequence",
+        "desc": "Cart endpoint returns 503"
+      },
+      {
+        "needle": "circuit breaker open",
+        "role": "consequence",
+        "desc": "Breaker trips on Redis after 3 failures"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 0.8
+    }
+  },
+  "metrics": {
+    "id": "30-pino-pretty-ansi",
+    "provider": "pino-pretty (ANSI colorized text)",
+    "format": "text",
+    "envelope": "none",
+    "lines_in": 179,
+    "tokens_in": 4820,
+    "tokens_out": 805,
+    "compression": 6,
+    "template_count": 13,
+    "pct_ts": 100,
+    "pct_level": 100,
+    "evidence_count": 12,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence",
+      "context"
+    ],
+    "has_root_cause": true,
+    "recall": 1,
+    "facts_found": 5,
+    "facts_total": 5,
+    "role_accuracy": 0,
+    "citation_integrity": 1,
+    "context_loss": [],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 0.8,
+    "pass": true
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "30-pino-pretty-ansi",
+    "window": "11:50:00 to 12:13:22",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 5,
+        "text": "[11:50:04.450] WARN (1234): slow query 310ms table=products",
+        "template": "T4",
+        "score": 0.44
+      },
+      {
+        "role": "trigger",
+        "line": 21,
+        "text": "[11:50:20.243] WARN (1234): slow query 211ms table=sessions",
+        "template": "T4",
+        "score": 0.44
+      },
+      {
+        "role": "root_cause",
+        "line": 29,
+        "text": "[11:50:28.147] ERROR (1234): unhandled exception msg=\"Cannot read properties of undefined (reading 'id')\" req=GET /api/cart/9919",
+        "template": "T6",
+        "score": 0.91
+      },
+      {
+        "role": "consequence",
+        "line": 48,
+        "text": "[11:50:47.294] ERROR (1234): unhandled exception msg=\"Cannot read properties of undefined (reading 'id')\" req=GET /api/cart/9938",
+        "template": "T6",
+        "score": 0.91
+      },
+      {
+        "role": "context",
+        "line": 160,
+        "text": "[12:13:00.001] WARN (1234): redis latency spike 420ms host=redis-01",
+        "template": "T7",
+        "score": 0.55
+      },
+      {
+        "role": "context",
+        "line": 164,
+        "text": "[12:13:05.667] ERROR (1234): redis connection timeout host=redis-01 port=6379 err=\"connect ETIMEDOUT\"",
+        "template": "T8",
+        "score": 0.79
+      },
+      {
+        "role": "context",
+        "line": 165,
+        "text": "[12:13:06.778] ERROR (1234): session lookup failed sessionId=sess_a3f9c1 err=\"redis connection timeout\"",
+        "template": "T9",
+        "score": 0.79
+      },
+      {
+        "role": "context",
+        "line": 167,
+        "text": "[12:13:09.001] WARN (1234): falling back to db session store sessionId=sess_b8e2d7",
+        "template": "T10",
+        "score": 0.59
+      },
+      {
+        "role": "context",
+        "line": 168,
+        "text": "[12:13:10.112] ERROR (1234): redis connection timeout host=redis-01 port=6379 err=\"connect ETIMEDOUT\"",
+        "template": "T8",
+        "score": 0.79
+      },
+      {
+        "role": "context",
+        "line": 169,
+        "text": "[12:13:11.223] ERROR (1234): session lookup failed sessionId=sess_c7f3e9 err=\"redis connection timeout\"",
+        "template": "T9",
+        "score": 0.79
+      },
+      {
+        "role": "context",
+        "line": 170,
+        "text": "[12:13:12.334] ERROR (1234): cart service unavailable downstream=redis status=503",
+        "template": "T11",
+        "score": 0.85
+      },
+      {
+        "role": "context",
+        "line": 175,
+        "text": "[12:13:17.889] WARN (1234): circuit breaker open downstream=redis after 3 failures",
+        "template": "T12",
+        "score": 0.59
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 179,
+      "template_count": 13,
+      "top_templates": [
+        {
+          "id": "T2",
+          "pattern": "(1234): GET <*> 200 <*>",
+          "count": 103
+        },
+        {
+          "id": "T5",
+          "pattern": "(1234): POST /api/orders 201 <*>",
+          "count": 33
+        },
+        {
+          "id": "T4",
+          "pattern": "(1234): slow query <*> <*>",
+          "count": 14
+        },
+        {
+          "id": "T6",
+          "pattern": "(1234): unhandled exception msg=\"Cannot read properties of undefined (reading 'id')\" req=GET <*>",
+          "count": 11
+        },
+        {
+          "id": "T1",
+          "pattern": "(1234): health probe <*> <*>",
+          "count": 4
+        }
+      ]
+    },
+    "compression": 6,
+    "stats": {
+      "lines_in": 179,
+      "tokens_in_est": 4820,
+      "tokens_out_est": 805
+    }
+  },
+  "log_lines": 179
+}

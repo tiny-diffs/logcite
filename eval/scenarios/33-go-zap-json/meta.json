@@ -1,0 +1,16 @@
+{
+  "id": "33-go-zap-json",
+  "provider": "Go uber-zap (JSON)",
+  "format": "json",
+  "envelope": "none",
+  "incident": "Elasticsearch node es-node-02 OOM-killed: JVM GC pauses escalate -> heap exhausted -> node unreachable -> shards unassigned -> index writes fail and documents are dropped, amid recurring S3 signature distractor",
+  "ground_truth": [
+    { "needle": "elasticsearch gc pause detected", "role": "trigger", "desc": "JVM GC pause on es-node-02 growing to 15s before OOM" },
+    { "needle": "elasticsearch oom kill detected", "role": "root_cause", "desc": "es-node-02 heap exhausted, process killed" },
+    { "needle": "connection reset by peer", "role": "root_cause", "desc": "TCP connection reset after node died" },
+    { "needle": "no active shards available", "role": "consequence", "desc": "Index write failures due to missing shards" },
+    { "needle": "indexing pipeline backpressure", "role": "consequence", "desc": "Write queue saturated at max depth" },
+    { "needle": "dropped documents due to full queue", "role": "consequence", "desc": "Documents permanently lost due to overflow" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.8 }
+}

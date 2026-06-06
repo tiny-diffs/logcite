@@ -1,0 +1,200 @@
+{
+  "meta": {
+    "id": "54-syslog-rfc3164",
+    "provider": "Postfix BSD syslog (RFC 3164)",
+    "format": "text",
+    "envelope": "none",
+    "incident": "SMTP relay connection timeout to downstream MTA -> connection refused -> deferred queue overflow -> messages bounced, amid recurring hostname-verification-failed distractors",
+    "ground_truth": [
+      {
+        "needle": "smtp relay queue growing",
+        "role": "trigger",
+        "desc": "Queue starting to back up before connection failure"
+      },
+      {
+        "needle": "smtp connection to smtp.example.com[10.0.3.10]:25 refused: connection refused",
+        "role": "root_cause",
+        "desc": "Downstream MTA refusing connections"
+      },
+      {
+        "needle": "status=deferred (connection refused)",
+        "role": "consequence",
+        "desc": "Messages deferred due to refused connections"
+      },
+      {
+        "needle": "smtp relay queue overflow",
+        "role": "consequence",
+        "desc": "Deferred queue exceeded maximum size"
+      },
+      {
+        "needle": "status=bounced (too many hops: deferred queue full)",
+        "role": "consequence",
+        "desc": "Messages bounced because deferred queue was full"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": false,
+      "min_recall": 0.8
+    }
+  },
+  "metrics": {
+    "id": "54-syslog-rfc3164",
+    "provider": "Postfix BSD syslog (RFC 3164)",
+    "format": "text",
+    "envelope": "none",
+    "lines_in": 69,
+    "tokens_in": 3409,
+    "tokens_out": 976,
+    "compression": 3,
+    "template_count": 11,
+    "pct_ts": 100,
+    "pct_level": 100,
+    "evidence_count": 11,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 0.4,
+    "facts_found": 2,
+    "facts_total": 5,
+    "role_accuracy": 0,
+    "citation_integrity": 1,
+    "context_loss": [
+      "smtp relay queue growing",
+      "smtp connection to smtp.example.com[10.0.3.10]:25 refused: connection refused",
+      "smtp relay queue overflow"
+    ],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": false,
+    "min_recall": 0.8,
+    "pass": false
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "54-syslog-rfc3164",
+    "window": "14:00:00 to 14:02:02",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 5,
+        "text": "<29>May 04 14:00:04 mail-relay postfix[2211]: warning: hostname verification failed for <ip>: Name or service not known",
+        "template": "T3",
+        "score": 0.62
+      },
+      {
+        "role": "trigger",
+        "line": 10,
+        "text": "<29>May 04 14:00:09 mail-relay postfix[2211]: warning: hostname verification failed for <ip>: Name or service not known",
+        "template": "T3",
+        "score": 0.62
+      },
+      {
+        "role": "trigger",
+        "line": 43,
+        "text": "<27>May 04 14:00:42 mail-relay postfix[2211]: error: smtp connection to smtp.example.com[<ip>]:25 refused: connection refused",
+        "template": "T5",
+        "score": 0.91
+      },
+      {
+        "role": "trigger",
+        "line": 44,
+        "text": "<27>May 04 14:00:43 mail-relay postfix[2211]: error: smtp connection to smtp.example.com[<ip>]:25 refused: connection refused",
+        "template": "T5",
+        "score": 0.91
+      },
+      {
+        "role": "trigger",
+        "line": 46,
+        "text": "<27>May 04 14:00:45 mail-relay postfix[2211]: error: 3A1BC2D016: to=<<email>> relay=smtp.example.com[<ip>]:25 status=deferred (connection refused)",
+        "template": "T6",
+        "score": 0.94
+      },
+      {
+        "role": "trigger",
+        "line": 47,
+        "text": "<27>May 04 14:00:46 mail-relay postfix[2211]: error: 3A1BC2D017: to=<<email>> relay=smtp.example.com[<ip>]:25 status=deferred (connection refused)",
+        "template": "T6",
+        "score": 0.94
+      },
+      {
+        "role": "trigger",
+        "line": 53,
+        "text": "<27>May 04 14:00:52 mail-relay postfix[2211]: error: 3A1BC2D021: to=<<email>> relay=smtp.example.com[<ip>]:25 status=bounced (too many hops: deferred queue full)",
+        "template": "T7",
+        "score": 0.93
+      },
+      {
+        "role": "trigger",
+        "line": 54,
+        "text": "<27>May 04 14:00:53 mail-relay postfix[2211]: error: 3A1BC2D022: to=<<email>> relay=smtp.example.com[<ip>]:25 status=bounced (too many hops: deferred queue full)",
+        "template": "T7",
+        "score": 0.93
+      },
+      {
+        "role": "root_cause",
+        "line": 59,
+        "text": "<27>May 04 14:00:58 mail-relay postfix[2211]: error: postfix master process: unable to fork smtp worker: resource temporarily unavailable",
+        "template": "T8",
+        "score": 1
+      },
+      {
+        "role": "consequence",
+        "line": 61,
+        "text": "<27>May 04 14:01:00 mail-relay postfix[2211]: error: postfix master process: unable to fork smtp worker: resource temporarily unavailable",
+        "template": "T8",
+        "score": 1
+      },
+      {
+        "role": "consequence",
+        "line": 62,
+        "text": "<27>May 04 14:01:01 mail-relay postfix[2211]: error: fatal: postfix/smtp[2299]: lost connection with smtp.example.com[<ip>] while receiving the initial server greeting",
+        "template": "T9",
+        "score": 1
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 69,
+      "template_count": 11,
+      "top_templates": [
+        {
+          "id": "T1",
+          "pattern": "mail-relay postfix[2211]: <*> <*> <*>",
+          "count": 17
+        },
+        {
+          "id": "T2",
+          "pattern": "mail-relay postfix[2211]: <*> to=<<email>> relay=smtp.example.com[<ip>]:25 status=sent (250 2.0.0 OK)",
+          "count": 15
+        },
+        {
+          "id": "T3",
+          "pattern": "mail-relay postfix[2211]: warning: hostname verification failed for <ip>: Name or service not known",
+          "count": 11
+        },
+        {
+          "id": "T5",
+          "pattern": "mail-relay postfix[2211]: <*> smtp <*> <*> <*> <*> <*> <*>",
+          "count": 8
+        },
+        {
+          "id": "T7",
+          "pattern": "mail-relay postfix[2211]: error: <*> to=<<email>> relay=smtp.example.com[<ip>]:25 status=bounced (too many hops: deferred queue full)",
+          "count": 6
+        }
+      ]
+    },
+    "compression": 3,
+    "stats": {
+      "lines_in": 69,
+      "tokens_in_est": 3409,
+      "tokens_out_est": 976
+    }
+  },
+  "log_lines": 69
+}

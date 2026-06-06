@@ -1,0 +1,212 @@
+{
+  "meta": {
+    "id": "11-cloudwatch-lambda",
+    "provider": "AWS CloudWatch Logs (Lambda raw text)",
+    "format": "text",
+    "envelope": "none",
+    "incident": "DynamoDB ProvisionedThroughputExceededException on user-profiles table: slow queries escalate to throughput errors -> Lambda timeouts -> SQS batch failures -> dead letter queue flooding; recurring Secrets Manager ThrottlingException distractor throughout",
+    "ground_truth": [
+      {
+        "needle": "dynamodb.getitem slow",
+        "role": "trigger",
+        "desc": "DynamoDB latency climbing past 150ms threshold before hard failures"
+      },
+      {
+        "needle": "provisionedthroughputexceededexception",
+        "role": "root_cause",
+        "desc": "DynamoDB table throughput limit hit, all reads failing"
+      },
+      {
+        "needle": "task timed out after 3.00 seconds",
+        "role": "consequence",
+        "desc": "Lambda functions timing out waiting on DynamoDB retries"
+      },
+      {
+        "needle": "message moved to dead letter queue",
+        "role": "consequence",
+        "desc": "SQS messages exhausted retries and spilled to DLQ"
+      },
+      {
+        "needle": "sqs queue depth alarm",
+        "role": "consequence",
+        "desc": "SQS visible message backlog exceeded threshold"
+      },
+      {
+        "needle": "throttlingexception: rate exceeded",
+        "role": "trigger",
+        "desc": "recurring benign Secrets Manager throttle distractor unrelated to incident"
+      }
+    ],
+    "expect": {
+      "ts": false,
+      "level": true,
+      "min_recall": 0.9
+    }
+  },
+  "metrics": {
+    "id": "11-cloudwatch-lambda",
+    "provider": "AWS CloudWatch Logs (Lambda raw text)",
+    "format": "text",
+    "envelope": "none",
+    "lines_in": 2830,
+    "tokens_in": 161256,
+    "tokens_out": 868,
+    "compression": 186,
+    "template_count": 18,
+    "pct_ts": 0,
+    "pct_level": 56.3,
+    "evidence_count": 12,
+    "roles": [
+      "context",
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 0.67,
+    "facts_found": 4,
+    "facts_total": 6,
+    "role_accuracy": 0,
+    "citation_integrity": 1,
+    "context_loss": [
+      "dynamodb.getitem slow",
+      "throttlingexception: rate exceeded"
+    ],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": false,
+    "expect_level": true,
+    "min_recall": 0.9,
+    "pass": false
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "11-cloudwatch-lambda",
+    "window": "unknown",
+    "evidence": [
+      {
+        "role": "context",
+        "line": 1732,
+        "text": "[ERROR] dynamodb.getItem failed after 3 retries table=user-profiles error=ProvisionedThroughputExceededException giving up\tRequestId: <uuid>",
+        "template": "T13",
+        "score": 0.71
+      },
+      {
+        "role": "context",
+        "line": 1741,
+        "text": "[ERROR] dynamodb.getItem failed after 3 retries table=user-profiles error=ProvisionedThroughputExceededException giving up\tRequestId: <uuid>",
+        "template": "T13",
+        "score": 0.71
+      },
+      {
+        "role": "context",
+        "line": 1927,
+        "text": "[ERROR] dynamodb.getItem error table=user-profiles pk=USER#98846 ProvisionedThroughputExceededException: The level of configured provisioned throughput for the table was exceeded. Consider increasing your provisioning level with the UpdateTable API\tRequestId: <uuid>",
+        "template": "T10",
+        "score": 0.91
+      },
+      {
+        "role": "context",
+        "line": 2022,
+        "text": "[ERROR] dynamodb.getItem error table=user-profiles pk=USER#95782 ProvisionedThroughputExceededException: The level of configured provisioned throughput for the table was exceeded. Consider increasing your provisioning level with the UpdateTable API\tRequestId: <uuid>",
+        "template": "T10",
+        "score": 0.91
+      },
+      {
+        "role": "context",
+        "line": 2110,
+        "text": "[ERROR] task timed out after 3.00 seconds\tRequestId: <uuid>",
+        "template": "T14",
+        "score": 0.72
+      },
+      {
+        "role": "context",
+        "line": 2117,
+        "text": "[ERROR] task timed out after 3.00 seconds\tRequestId: <uuid>",
+        "template": "T14",
+        "score": 0.72
+      },
+      {
+        "role": "trigger",
+        "line": 2319,
+        "text": "[ERROR] batch item failure: messageId=832012 processing failed, returning to queue\tRequestId: <uuid>",
+        "template": "T15",
+        "score": 0.94
+      },
+      {
+        "role": "trigger",
+        "line": 2320,
+        "text": "[WARN] sqs queue depth alarm: queue=user-profile-updates approximateNumberOfMessagesNotVisible=200 threshold=500\tRequestId: <uuid>",
+        "template": "T16",
+        "score": 0.48
+      },
+      {
+        "role": "trigger",
+        "line": 2326,
+        "text": "[ERROR] batch item failure: messageId=915031 processing failed, returning to queue\tRequestId: <uuid>",
+        "template": "T15",
+        "score": 0.94
+      },
+      {
+        "role": "trigger",
+        "line": 2327,
+        "text": "[WARN] sqs queue depth alarm: queue=user-profile-updates approximateNumberOfMessagesNotVisible=250 threshold=500\tRequestId: <uuid>",
+        "template": "T16",
+        "score": 0.48
+      },
+      {
+        "role": "root_cause",
+        "line": 2457,
+        "text": "[ERROR] message moved to dead letter queue: queue=user-profile-updates-dlq messageId=948666 receiveCount=4 reason=processing failed after max retries\tRequestId: <uuid>",
+        "template": "T17",
+        "score": 0.97
+      },
+      {
+        "role": "consequence",
+        "line": 2462,
+        "text": "[ERROR] message moved to dead letter queue: queue=user-profile-updates-dlq messageId=830146 receiveCount=4 reason=processing failed after max retries\tRequestId: <uuid>",
+        "template": "T17",
+        "score": 0.97
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 2830,
+      "template_count": 18,
+      "top_templates": [
+        {
+          "id": "T0",
+          "pattern": "START RequestId: <uuid> Version: $LATEST",
+          "count": 412
+        },
+        {
+          "id": "T5",
+          "pattern": "END RequestId: <uuid>",
+          "count": 412
+        },
+        {
+          "id": "T6",
+          "pattern": "REPORT RequestId: <uuid> Duration: <*> ms Billed Duration: <*> ms Memory Size: 128 MB Max Memory Used: <*> MB",
+          "count": 412
+        },
+        {
+          "id": "T1",
+          "pattern": "[] processing event <*> <*> RequestId: <uuid>",
+          "count": 370
+        },
+        {
+          "id": "T4",
+          "pattern": "[] response statusCode=200 <*> RequestId: <uuid>",
+          "count": 280
+        }
+      ]
+    },
+    "compression": 186,
+    "stats": {
+      "lines_in": 2830,
+      "tokens_in_est": 161256,
+      "tokens_out_est": 868
+    }
+  },
+  "log_lines": 2830
+}

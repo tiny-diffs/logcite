@@ -1,0 +1,15 @@
+{
+  "id": "53-syslog-rfc5424",
+  "provider": "nginx syslog (RFC 5424)",
+  "format": "text",
+  "envelope": "none",
+  "incident": "nginx upstream latency escalating -> connect timeouts on all backends -> all upstream group failed (502s) -> nginx worker OOM-killed -> 503s until worker restart, amid recurring TLS cert expiry warnings",
+  "ground_truth": [
+    { "needle": "upstream backend-01 response time elevated", "role": "trigger", "desc": "Upstream response time warnings before failure" },
+    { "needle": "upstream connect timeout after 2000ms: no live backends available", "role": "root_cause", "desc": "All backends timing out, none available" },
+    { "needle": "all backends in upstream group failed: no live backends, returning 502 to client", "role": "root_cause", "desc": "nginx giving up on all upstream backends" },
+    { "needle": "nginx worker process killed: received sigkill from kernel oom-killer", "role": "consequence", "desc": "nginx worker OOM killed" },
+    { "needle": "error=connect_timeout", "role": "consequence", "desc": "Individual request 502 errors due to timeout" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.8 }
+}

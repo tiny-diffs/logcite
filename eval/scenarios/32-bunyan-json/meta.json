@@ -1,0 +1,15 @@
+{
+  "id": "32-bunyan-json",
+  "provider": "Bunyan JSON",
+  "format": "json",
+  "envelope": "none",
+  "incident": "catalog-svc upstream crashes: latency spikes -> connection refused -> health check failures -> removed from pool -> all catalog routes return 503, amid recurring TLS handshake error distractor",
+  "ground_truth": [
+    { "needle": "upstream latency p95", "role": "trigger", "desc": "catalog-svc response time exceeding p95 threshold" },
+    { "needle": "connection refused", "role": "root_cause", "desc": "TCP connect to catalog-svc addr rejected" },
+    { "needle": "upstream health check failed", "role": "consequence", "desc": "Health check marked catalog-svc down after consecutive failures" },
+    { "needle": "removing upstream from pool", "role": "consequence", "desc": "catalog-svc evicted from gateway upstream pool" },
+    { "needle": "no healthy upstreams available", "role": "consequence", "desc": "All catalog requests now returning 503" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 1.0 }
+}

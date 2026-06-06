@@ -1,0 +1,111 @@
+{
+  "meta": {
+    "id": "42-haproxy",
+    "provider": "HAProxy (syslog)",
+    "format": "text",
+    "envelope": "syslog-rfc3164",
+    "incident": "Backend servers fail Layer4 health checks (Connection refused) one by one until the backend has no server available and every request returns 503/NOSRV. HAProxy lines carry no severity word and few INTEREST keywords, so this stresses surfacing on level-less infra logs.",
+    "ground_truth": [
+      {
+        "needle": "connection refused",
+        "role": "root_cause",
+        "desc": "Layer4 health check fails, server marked DOWN"
+      },
+      {
+        "needle": "is down",
+        "role": "trigger",
+        "desc": "server app-node-1 goes DOWN"
+      },
+      {
+        "needle": "no server available",
+        "role": "consequence",
+        "desc": "backend fully drained"
+      },
+      {
+        "needle": "nosrv",
+        "role": "consequence",
+        "desc": "requests routed to no server, 503"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": false,
+      "min_recall": 0.75
+    }
+  },
+  "metrics": {
+    "id": "42-haproxy",
+    "provider": "HAProxy (syslog)",
+    "format": "text",
+    "envelope": "syslog-rfc3164",
+    "lines_in": 185,
+    "tokens_in": 18209,
+    "tokens_out": 293,
+    "compression": 62,
+    "template_count": 5,
+    "pct_ts": 100,
+    "pct_level": 3.8,
+    "evidence_count": 0,
+    "roles": [],
+    "has_root_cause": false,
+    "recall": 0.75,
+    "facts_found": 3,
+    "facts_total": 4,
+    "role_accuracy": 0,
+    "citation_integrity": 1,
+    "context_loss": [
+      "nosrv"
+    ],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": false,
+    "min_recall": 0.75,
+    "pass": true
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "42-haproxy",
+    "window": "13:45:00 to 14:02:23",
+    "evidence": [],
+    "routine_summary": {
+      "total_lines": 185,
+      "template_count": 5,
+      "top_templates": [
+        {
+          "id": "T1",
+          "pattern": "lb01 haproxy[1234]: <*> <*> http-in <*> <*> <*> <*> - - <*> <*> <*> <*> <*> HTTP/1.1\"",
+          "count": 174
+        },
+        {
+          "id": "T2",
+          "pattern": "lb01 haproxy[1234]: Server <*> is DOWN, reason: Layer4 connection problem, info: \"Connection refused\", check duration: 1ms. <*> active and 0 backup servers left. 0 sessions active, 0 requeued, 0 remaining in queue.",
+          "count": 4
+        },
+        {
+          "id": "T4",
+          "pattern": "lb01 haproxy[1234]: Server <*> is UP, reason: Layer7 check passed, code: 200, info: \"OK\", check duration: <*> <*> active and 0 backup servers left. 0 sessions active, 0 requeued, 0 remaining in queue.",
+          "count": 3
+        },
+        {
+          "id": "T0",
+          "pattern": "lb01 haproxy[1234]: Proxy <*> started.",
+          "count": 2
+        },
+        {
+          "id": "T3",
+          "pattern": "lb01 haproxy[1234]: backend app-backend has no server available!",
+          "count": 2
+        }
+      ]
+    },
+    "compression": 62,
+    "stats": {
+      "lines_in": 185,
+      "tokens_in_est": 18209,
+      "tokens_out_est": 293
+    }
+  },
+  "log_lines": 185
+}

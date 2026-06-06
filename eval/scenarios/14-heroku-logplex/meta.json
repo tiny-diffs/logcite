@@ -1,0 +1,15 @@
+{
+  "id": "14-heroku-logplex",
+  "provider": "Heroku logplex (text lines)",
+  "format": "text",
+  "envelope": "heroku",
+  "incident": "PostgreSQL deadlock storm on listings table: slow queries escalate -> concurrent UPDATE deadlocks -> connection pool blocked -> 503s from H18/H13 router errors -> dyno SIGKILL (R14 memory quota exceeded) and crash (H10); recurring memory quota warnings as distractor",
+  "ground_truth": [
+    { "needle": "pg slow query", "role": "trigger", "desc": "query latency rising past 200ms threshold before deadlocks started" },
+    { "needle": "deadlock detected on table \"listings\"", "role": "root_cause", "desc": "concurrent UPDATE transactions deadlocking on listings table" },
+    { "needle": "connection pool blocked: all 10 connections waiting on locks", "role": "consequence", "desc": "all pool connections stuck behind lock waiters" },
+    { "needle": "state changed from up to crashed", "role": "consequence", "desc": "dyno killed by OOM after memory exhaustion from held connections" },
+    { "needle": "memory quota exceeded: 512mb limit", "role": "trigger", "desc": "recurring benign memory warning distractor preceding the crash" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.9 }
+}

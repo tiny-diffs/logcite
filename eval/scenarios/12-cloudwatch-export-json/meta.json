@@ -1,0 +1,15 @@
+{
+  "id": "12-cloudwatch-export-json",
+  "provider": "AWS CloudWatch Logs (exported JSON events)",
+  "format": "json",
+  "envelope": "none",
+  "incident": "Redis cluster node failure: pool latency spike -> ECONNRESET -> ECONNREFUSED all nodes unreachable -> Redis client closed -> session lookups and cart/orders handlers returning 500s; recurring JWT near-expiry warnings as distractor",
+  "ground_truth": [
+    { "needle": "connection pool latency spike", "role": "trigger", "desc": "Redis pool latency rising before connection loss" },
+    { "needle": "econnrefused 10.0.1.45:6379", "role": "root_cause", "desc": "Redis cluster node refused connections, all nodes unreachable" },
+    { "needle": "redis client is closed", "role": "consequence", "desc": "Redis client shut down after connection failure" },
+    { "needle": "session lookup failed", "role": "consequence", "desc": "session data inaccessible for authenticated users" },
+    { "needle": "jwt validation: token near expiry", "role": "trigger", "desc": "recurring benign JWT expiry warning distractor unrelated to outage" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.9 }
+}

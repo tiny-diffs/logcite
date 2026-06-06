@@ -1,0 +1,153 @@
+{"level": "warn", "message": "invalid card number format customerId=cust-8800", "timestamp": "2026-05-04T08:00:00.000Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 45ms", "timestamp": "2026-05-04T08:00:01.097Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0001"}
+{"level": "info", "message": "POST /pay 200 46ms", "timestamp": "2026-05-04T08:00:02.194Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0002"}
+{"level": "info", "message": "POST /pay 200 47ms", "timestamp": "2026-05-04T08:00:03.291Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0003"}
+{"level": "info", "message": "POST /pay 200 48ms", "timestamp": "2026-05-04T08:00:04.388Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0004"}
+{"level": "info", "message": "POST /pay 200 49ms", "timestamp": "2026-05-04T08:00:05.485Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0005"}
+{"level": "info", "message": "POST /pay 200 50ms", "timestamp": "2026-05-04T08:00:06.582Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0006"}
+{"level": "info", "message": "POST /pay 200 51ms", "timestamp": "2026-05-04T08:00:07.679Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0007"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:00:08.776Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 53ms", "timestamp": "2026-05-04T08:00:09.873Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0009"}
+{"level": "info", "message": "POST /pay 200 54ms", "timestamp": "2026-05-04T08:00:10.970Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0010"}
+{"level": "info", "message": "POST /pay 200 55ms", "timestamp": "2026-05-04T08:00:11.067Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0011"}
+{"level": "info", "message": "POST /pay 200 56ms", "timestamp": "2026-05-04T08:00:12.164Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0012"}
+{"level": "info", "message": "POST /pay 200 57ms", "timestamp": "2026-05-04T08:00:13.261Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0013"}
+{"level": "info", "message": "POST /pay 200 58ms", "timestamp": "2026-05-04T08:00:14.358Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0014"}
+{"level": "info", "message": "POST /pay 200 59ms", "timestamp": "2026-05-04T08:00:15.455Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0015"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:00:16.552Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 61ms", "timestamp": "2026-05-04T08:00:17.649Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0017"}
+{"level": "info", "message": "POST /pay 200 62ms", "timestamp": "2026-05-04T08:00:18.746Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0018"}
+{"level": "info", "message": "POST /pay 200 63ms", "timestamp": "2026-05-04T08:00:19.843Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0019"}
+{"level": "warn", "message": "invalid card number format customerId=cust-8820", "timestamp": "2026-05-04T08:00:20.940Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 65ms", "timestamp": "2026-05-04T08:00:21.037Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0021"}
+{"level": "info", "message": "POST /pay 200 66ms", "timestamp": "2026-05-04T08:00:22.134Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0022"}
+{"level": "info", "message": "POST /pay 200 67ms", "timestamp": "2026-05-04T08:00:23.231Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0023"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:00:24.328Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 69ms", "timestamp": "2026-05-04T08:00:25.425Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0025"}
+{"level": "info", "message": "POST /pay 200 70ms", "timestamp": "2026-05-04T08:00:26.522Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0026"}
+{"level": "info", "message": "POST /pay 200 71ms", "timestamp": "2026-05-04T08:00:27.619Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0027"}
+{"level": "info", "message": "POST /pay 200 72ms", "timestamp": "2026-05-04T08:00:28.716Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0028"}
+{"level": "info", "message": "POST /pay 200 73ms", "timestamp": "2026-05-04T08:00:29.813Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0029"}
+{"level": "info", "message": "POST /pay 200 44ms", "timestamp": "2026-05-04T08:00:30.910Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0030"}
+{"level": "info", "message": "POST /pay 200 45ms", "timestamp": "2026-05-04T08:00:31.007Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0031"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:00:32.104Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 47ms", "timestamp": "2026-05-04T08:00:33.201Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0033"}
+{"level": "info", "message": "POST /pay 200 48ms", "timestamp": "2026-05-04T08:00:34.298Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0034"}
+{"level": "info", "message": "POST /pay 200 49ms", "timestamp": "2026-05-04T08:00:35.395Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0035"}
+{"level": "info", "message": "POST /pay 200 50ms", "timestamp": "2026-05-04T08:00:36.492Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0036"}
+{"level": "info", "message": "POST /pay 200 51ms", "timestamp": "2026-05-04T08:00:37.589Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0037"}
+{"level": "info", "message": "POST /pay 200 52ms", "timestamp": "2026-05-04T08:00:38.686Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0038"}
+{"level": "info", "message": "POST /pay 200 53ms", "timestamp": "2026-05-04T08:00:39.783Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0039"}
+{"level": "warn", "message": "invalid card number format customerId=cust-8840", "timestamp": "2026-05-04T08:00:40.880Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 55ms", "timestamp": "2026-05-04T08:00:41.977Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0041"}
+{"level": "info", "message": "POST /pay 200 56ms", "timestamp": "2026-05-04T08:00:42.074Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0042"}
+{"level": "info", "message": "POST /pay 200 57ms", "timestamp": "2026-05-04T08:00:43.171Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0043"}
+{"level": "info", "message": "POST /pay 200 58ms", "timestamp": "2026-05-04T08:00:44.268Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0044"}
+{"level": "info", "message": "POST /pay 200 59ms", "timestamp": "2026-05-04T08:00:45.365Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0045"}
+{"level": "info", "message": "POST /pay 200 60ms", "timestamp": "2026-05-04T08:00:46.462Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0046"}
+{"level": "info", "message": "POST /pay 200 61ms", "timestamp": "2026-05-04T08:00:47.559Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0047"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:00:48.656Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 63ms", "timestamp": "2026-05-04T08:00:49.753Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0049"}
+{"level": "info", "message": "POST /pay 200 64ms", "timestamp": "2026-05-04T08:00:50.850Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0050"}
+{"level": "info", "message": "POST /pay 200 65ms", "timestamp": "2026-05-04T08:00:51.947Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0051"}
+{"level": "info", "message": "POST /pay 200 66ms", "timestamp": "2026-05-04T08:00:52.044Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0052"}
+{"level": "info", "message": "POST /pay 200 67ms", "timestamp": "2026-05-04T08:00:53.141Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0053"}
+{"level": "info", "message": "POST /pay 200 68ms", "timestamp": "2026-05-04T08:00:54.238Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0054"}
+{"level": "info", "message": "POST /pay 200 69ms", "timestamp": "2026-05-04T08:00:55.335Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0055"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:00:56.432Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 71ms", "timestamp": "2026-05-04T08:00:57.529Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0057"}
+{"level": "info", "message": "POST /pay 200 72ms", "timestamp": "2026-05-04T08:00:58.626Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0058"}
+{"level": "info", "message": "POST /pay 200 73ms", "timestamp": "2026-05-04T08:00:59.723Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0059"}
+{"level": "warn", "message": "invalid card number format customerId=cust-8860", "timestamp": "2026-05-04T08:01:00.820Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 45ms", "timestamp": "2026-05-04T08:01:01.917Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0061"}
+{"level": "info", "message": "POST /pay 200 46ms", "timestamp": "2026-05-04T08:01:02.014Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0062"}
+{"level": "info", "message": "POST /pay 200 47ms", "timestamp": "2026-05-04T08:01:03.111Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0063"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:01:04.208Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 49ms", "timestamp": "2026-05-04T08:01:05.305Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0065"}
+{"level": "info", "message": "POST /pay 200 50ms", "timestamp": "2026-05-04T08:01:06.402Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0066"}
+{"level": "info", "message": "POST /pay 200 51ms", "timestamp": "2026-05-04T08:01:07.499Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0067"}
+{"level": "info", "message": "POST /pay 200 52ms", "timestamp": "2026-05-04T08:01:08.596Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0068"}
+{"level": "info", "message": "POST /pay 200 53ms", "timestamp": "2026-05-04T08:01:09.693Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0069"}
+{"level": "info", "message": "POST /pay 200 54ms", "timestamp": "2026-05-04T08:01:10.790Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0070"}
+{"level": "info", "message": "POST /pay 200 55ms", "timestamp": "2026-05-04T08:01:11.887Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0071"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:01:12.984Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 57ms", "timestamp": "2026-05-04T08:01:13.081Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0073"}
+{"level": "info", "message": "POST /pay 200 58ms", "timestamp": "2026-05-04T08:01:14.178Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0074"}
+{"level": "info", "message": "POST /pay 200 59ms", "timestamp": "2026-05-04T08:01:15.275Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0075"}
+{"level": "info", "message": "POST /pay 200 60ms", "timestamp": "2026-05-04T08:01:16.372Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0076"}
+{"level": "info", "message": "POST /pay 200 61ms", "timestamp": "2026-05-04T08:01:17.469Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0077"}
+{"level": "info", "message": "POST /pay 200 62ms", "timestamp": "2026-05-04T08:01:18.566Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0078"}
+{"level": "info", "message": "POST /pay 200 63ms", "timestamp": "2026-05-04T08:01:19.663Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0079"}
+{"level": "warn", "message": "invalid card number format customerId=cust-8880", "timestamp": "2026-05-04T08:01:20.760Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 65ms", "timestamp": "2026-05-04T08:01:21.857Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0081"}
+{"level": "info", "message": "POST /pay 200 66ms", "timestamp": "2026-05-04T08:01:22.954Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0082"}
+{"level": "info", "message": "POST /pay 200 67ms", "timestamp": "2026-05-04T08:01:23.051Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0083"}
+{"level": "info", "message": "POST /pay 200 68ms", "timestamp": "2026-05-04T08:01:24.148Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0084"}
+{"level": "info", "message": "POST /pay 200 69ms", "timestamp": "2026-05-04T08:01:25.245Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0085"}
+{"level": "info", "message": "POST /pay 200 70ms", "timestamp": "2026-05-04T08:01:26.342Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0086"}
+{"level": "info", "message": "POST /pay 200 71ms", "timestamp": "2026-05-04T08:01:27.439Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0087"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:01:28.536Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 73ms", "timestamp": "2026-05-04T08:01:29.633Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0089"}
+{"level": "info", "message": "POST /pay 200 44ms", "timestamp": "2026-05-04T08:01:30.730Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0090"}
+{"level": "info", "message": "POST /pay 200 45ms", "timestamp": "2026-05-04T08:01:31.827Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0091"}
+{"level": "info", "message": "POST /pay 200 46ms", "timestamp": "2026-05-04T08:01:32.924Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0092"}
+{"level": "info", "message": "POST /pay 200 47ms", "timestamp": "2026-05-04T08:01:33.021Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0093"}
+{"level": "info", "message": "POST /pay 200 48ms", "timestamp": "2026-05-04T08:01:34.118Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0094"}
+{"level": "info", "message": "POST /pay 200 49ms", "timestamp": "2026-05-04T08:01:35.215Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0095"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:01:36.312Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 51ms", "timestamp": "2026-05-04T08:01:37.409Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0097"}
+{"level": "info", "message": "POST /pay 200 52ms", "timestamp": "2026-05-04T08:01:38.506Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0098"}
+{"level": "info", "message": "POST /pay 200 53ms", "timestamp": "2026-05-04T08:01:39.603Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0099"}
+{"level": "warn", "message": "invalid card number format customerId=cust-8900", "timestamp": "2026-05-04T08:01:40.700Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 55ms", "timestamp": "2026-05-04T08:01:41.797Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0101"}
+{"level": "info", "message": "POST /pay 200 56ms", "timestamp": "2026-05-04T08:01:42.894Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0102"}
+{"level": "info", "message": "POST /pay 200 57ms", "timestamp": "2026-05-04T08:01:43.991Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0103"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:01:44.088Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 59ms", "timestamp": "2026-05-04T08:01:45.185Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0105"}
+{"level": "info", "message": "POST /pay 200 60ms", "timestamp": "2026-05-04T08:01:46.282Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0106"}
+{"level": "info", "message": "POST /pay 200 61ms", "timestamp": "2026-05-04T08:01:47.379Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0107"}
+{"level": "info", "message": "POST /pay 200 62ms", "timestamp": "2026-05-04T08:01:48.476Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0108"}
+{"level": "info", "message": "POST /pay 200 63ms", "timestamp": "2026-05-04T08:01:49.573Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0109"}
+{"level": "info", "message": "POST /pay 200 64ms", "timestamp": "2026-05-04T08:01:50.670Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0110"}
+{"level": "info", "message": "POST /pay 200 65ms", "timestamp": "2026-05-04T08:01:51.767Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0111"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T08:01:52.864Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 67ms", "timestamp": "2026-05-04T08:01:53.961Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0113"}
+{"level": "info", "message": "POST /pay 200 68ms", "timestamp": "2026-05-04T08:01:54.058Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0114"}
+{"level": "info", "message": "POST /pay 200 69ms", "timestamp": "2026-05-04T08:01:55.155Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0115"}
+{"level": "info", "message": "POST /pay 200 70ms", "timestamp": "2026-05-04T08:01:56.252Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0116"}
+{"level": "info", "message": "POST /pay 200 71ms", "timestamp": "2026-05-04T08:01:57.349Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0117"}
+{"level": "info", "message": "POST /pay 200 72ms", "timestamp": "2026-05-04T08:01:58.446Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0118"}
+{"level": "info", "message": "POST /pay 200 73ms", "timestamp": "2026-05-04T08:01:59.543Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0119"}
+{"level": "info", "message": "PaymentService started", "timestamp": "2026-05-04T09:00:00.001Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T09:00:01.112Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 45ms", "timestamp": "2026-05-04T09:00:02.223Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0200"}
+{"level": "info", "message": "POST /pay 200 51ms", "timestamp": "2026-05-04T09:00:03.334Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0201"}
+{"level": "warn", "message": "stripe latency 1250ms (p99 threshold=1000ms)", "timestamp": "2026-05-04T09:00:04.445Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 68ms", "timestamp": "2026-05-04T09:00:05.556Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0202"}
+{"level": "info", "message": "health check ok", "timestamp": "2026-05-04T09:00:06.667Z", "service": "payment-svc", "pid": 7711}
+{"level": "warn", "message": "invalid card number format customerId=cust-9901", "timestamp": "2026-05-04T09:00:07.778Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 44ms", "timestamp": "2026-05-04T09:00:08.889Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0203"}
+{"level": "warn", "message": "stripe latency 1820ms (p99 threshold=1000ms)", "timestamp": "2026-05-04T09:00:09.001Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "POST /pay 200 53ms", "timestamp": "2026-05-04T09:00:10.112Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0204"}
+{"level": "warn", "message": "invalid card number format customerId=cust-9902", "timestamp": "2026-05-04T09:00:11.223Z", "service": "payment-svc", "pid": 7711}
+{"level": "error", "message": "stripe api error: Request failed with status code 429", "timestamp": "2026-05-04T09:00:12.334Z", "service": "payment-svc", "pid": 7711, "statusCode": 429}
+{"level": "error", "message": "payment processing failed orderId=ord-0205 err=\"stripe rate limit exceeded\"", "timestamp": "2026-05-04T09:00:13.445Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0205"}
+{"level": "warn", "message": "retrying payment orderId=ord-0205 attempt=1/3 backoff=500ms", "timestamp": "2026-05-04T09:00:13.956Z", "service": "payment-svc", "pid": 7711}
+{"level": "error", "message": "stripe api error: Request failed with status code 429", "timestamp": "2026-05-04T09:00:14.667Z", "service": "payment-svc", "pid": 7711, "statusCode": 429}
+{"level": "error", "message": "payment processing failed orderId=ord-0206 err=\"stripe rate limit exceeded\"", "timestamp": "2026-05-04T09:00:15.778Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0206"}
+{"level": "warn", "message": "retrying payment orderId=ord-0206 attempt=1/3 backoff=500ms", "timestamp": "2026-05-04T09:00:16.289Z", "service": "payment-svc", "pid": 7711}
+{"level": "warn", "message": "invalid card number format customerId=cust-9903", "timestamp": "2026-05-04T09:00:16.890Z", "service": "payment-svc", "pid": 7711}
+{"level": "error", "message": "stripe api error: Request failed with status code 429", "timestamp": "2026-05-04T09:00:17.001Z", "service": "payment-svc", "pid": 7711, "statusCode": 429}
+{"level": "error", "message": "stripe rate limit exceeded all retries exhausted orderId=ord-0205", "timestamp": "2026-05-04T09:00:18.112Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0205"}
+{"level": "error", "message": "stripe rate limit exceeded all retries exhausted orderId=ord-0206", "timestamp": "2026-05-04T09:00:19.223Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0206"}
+{"level": "error", "message": "webhook dispatch failed event=payment.failed target=https://hooks.example.com/stripe err=\"connection refused\"", "timestamp": "2026-05-04T09:00:20.334Z", "service": "payment-svc", "pid": 7711}
+{"level": "warn", "message": "payment queue backlog depth=47 (threshold=10)", "timestamp": "2026-05-04T09:00:21.445Z", "service": "payment-svc", "pid": 7711}
+{"level": "error", "message": "stripe api error: Request failed with status code 429", "timestamp": "2026-05-04T09:00:22.556Z", "service": "payment-svc", "pid": 7711, "statusCode": 429}
+{"level": "error", "message": "payment processing failed orderId=ord-0207 err=\"stripe rate limit exceeded\"", "timestamp": "2026-05-04T09:00:23.667Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0207"}
+{"level": "warn", "message": "invalid card number format customerId=cust-9904", "timestamp": "2026-05-04T09:00:24.778Z", "service": "payment-svc", "pid": 7711}
+{"level": "error", "message": "dead letter queue overflow payment events dropped count=12", "timestamp": "2026-05-04T09:00:25.889Z", "service": "payment-svc", "pid": 7711}
+{"level": "info", "message": "health check degraded", "timestamp": "2026-05-04T09:00:26.001Z", "service": "payment-svc", "pid": 7711}
+{"level": "error", "message": "stripe api error: Request failed with status code 429", "timestamp": "2026-05-04T09:00:27.112Z", "service": "payment-svc", "pid": 7711, "statusCode": 429}
+{"level": "error", "message": "payment processing failed orderId=ord-0208 err=\"stripe rate limit exceeded\"", "timestamp": "2026-05-04T09:00:28.223Z", "service": "payment-svc", "pid": 7711, "orderId": "ord-0208"}
+{"level": "warn", "message": "invalid card number format customerId=cust-9905", "timestamp": "2026-05-04T09:00:29.334Z", "service": "payment-svc", "pid": 7711}
+{"level": "error", "message": "alert fired: payment success rate below 10% for 2 minutes", "timestamp": "2026-05-04T09:00:30.445Z", "service": "payment-svc", "pid": 7711}

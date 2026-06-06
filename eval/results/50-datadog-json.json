@@ -1,0 +1,198 @@
+{
+  "meta": {
+    "id": "50-datadog-json",
+    "provider": "Datadog log intake JSON",
+    "format": "json",
+    "envelope": "none",
+    "incident": "Stripe API latency spike -> repeated timeouts -> circuit breaker open -> all charge endpoints returning 503, amid recurring idempotency-key-reuse warnings",
+    "ground_truth": [
+      {
+        "needle": "stripe latency elevated",
+        "role": "trigger",
+        "desc": "Stripe p99 latency rising above threshold before failures"
+      },
+      {
+        "needle": "stripe api timeout after 2000ms",
+        "role": "root_cause",
+        "desc": "Stripe API calls timing out"
+      },
+      {
+        "needle": "stripe circuit breaker open after 10 failures",
+        "role": "consequence",
+        "desc": "Circuit breaker tripped on Stripe"
+      },
+      {
+        "needle": "charge failed",
+        "role": "consequence",
+        "desc": "Customer charges failing"
+      },
+      {
+        "needle": "service=stripe status=unavailable",
+        "role": "consequence",
+        "desc": "Health probe reporting Stripe down"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 0.8
+    }
+  },
+  "metrics": {
+    "id": "50-datadog-json",
+    "provider": "Datadog log intake JSON",
+    "format": "json",
+    "envelope": "none",
+    "lines_in": 54,
+    "tokens_in": 3393,
+    "tokens_out": 1168,
+    "compression": 3,
+    "template_count": 11,
+    "pct_ts": 100,
+    "pct_level": 100,
+    "evidence_count": 11,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 0.8,
+    "facts_found": 4,
+    "facts_total": 5,
+    "role_accuracy": 0,
+    "citation_integrity": 1,
+    "context_loss": [
+      "stripe latency elevated"
+    ],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 0.8,
+    "pass": true
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "50-datadog-json",
+    "window": "14:20:00 to 14:20:53",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 5,
+        "text": "{\"date\":1746454804000,\"status\":\"warn\",\"service\":\"payments-api\",\"message\":\"idempotency key reused key=pay_aaa111 client=cust_003\",\"ddtags\":\"env:prod,version:3.41.0\",\"host\":\"ip-10-0-1-42\"}",
+        "template": "T3",
+        "score": 0.42
+      },
+      {
+        "role": "trigger",
+        "line": 9,
+        "text": "{\"date\":1746454808000,\"status\":\"warn\",\"service\":\"payments-api\",\"message\":\"idempotency key reused key=pay_bbb222 client=cust_007\",\"ddtags\":\"env:prod,version:3.41.0\",\"host\":\"ip-10-0-1-42\"}",
+        "template": "T3",
+        "score": 0.42
+      },
+      {
+        "role": "trigger",
+        "line": 27,
+        "text": "{\"date\":1746454826000,\"status\":\"error\",\"service\":\"payments-api\",\"message\":\"stripe api timeout after 2000ms charge_id=ch_3Nx request_id=req_9a1\",\"ddtags\":\"env:prod,version:3.41.0\",\"host\":\"ip-10-0-1-42\"}",
+        "template": "T4",
+        "score": 0.77
+      },
+      {
+        "role": "trigger",
+        "line": 28,
+        "text": "{\"date\":1746454827000,\"status\":\"error\",\"service\":\"payments-api\",\"message\":\"stripe api timeout after 2000ms charge_id=ch_3Ny request_id=req_9a2\",\"ddtags\":\"env:prod,version:3.41.0\",\"host\":\"ip-10-0-1-42\"}",
+        "template": "T4",
+        "score": 0.77
+      },
+      {
+        "role": "trigger",
+        "line": 29,
+        "text": "{\"date\":1746454828000,\"status\":\"error\",\"service\":\"payments-api\",\"message\":\"charge failed customer_id=cust_016 reason=stripe api timeout\",\"ddtags\":\"env:prod,version:3.41.0\",\"host\":\"ip-10-0-1-42\"}",
+        "template": "T5",
+        "score": 0.77
+      },
+      {
+        "role": "trigger",
+        "line": 32,
+        "text": "{\"date\":1746454831000,\"status\":\"error\",\"service\":\"payments-api\",\"message\":\"charge failed customer_id=cust_018 reason=stripe api timeout\",\"ddtags\":\"env:prod,version:3.41.0\",\"host\":\"ip-10-0-1-42\"}",
+        "template": "T5",
+        "score": 0.77
+      },
+      {
+        "role": "trigger",
+        "line": 34,
+        "text": "{\"date\":1746454833000,\"status\":\"error\",\"service\":\"payments-api\",\"message\":\"retry 1/3 stripe charge ch_3Nz backoff=500ms\",\"ddtags\":\"env:prod,version:3.41.0\",\"host\":\"ip-10-0-1-42\"}",
+        "template": "T6",
+        "score": 0.8
+      },
+      {
+        "role": "trigger",
+        "line": 35,
+        "text": "{\"date\":1746454834000,\"status\":\"error\",\"service\":\"payments-api\",\"message\":\"retry 2/3 stripe charge ch_3Nz backoff=1000ms\",\"ddtags\":\"env:prod,version:3.41.0\",\"host\":\"ip-10-0-1-42\"}",
+        "template": "T6",
+        "score": 0.8
+      },
+      {
+        "role": "trigger",
+        "line": 36,
+        "text": "{\"date\":1746454835000,\"status\":\"error\",\"service\":\"payments-api\",\"message\":\"payment processor unavailable: stripe circuit breaker open after 10 failures\",\"ddtags\":\"env:prod,version:3.41.0\",\"host\":\"ip-10-0-1-42\"}",
+        "template": "T7",
+        "score": 0.85
+      },
+      {
+        "role": "root_cause",
+        "line": 37,
+        "text": "{\"date\":1746454836000,\"status\":\"error\",\"service\":\"payments-api\",\"message\":\"POST /v1/charge 503 2102ms customer_id=cust_020\",\"ddtags\":\"env:prod,version:3.41.0\",\"host\":\"ip-10-0-1-42\"}",
+        "template": "T8",
+        "score": 0.9
+      },
+      {
+        "role": "consequence",
+        "line": 41,
+        "text": "{\"date\":1746454840000,\"status\":\"error\",\"service\":\"payments-api\",\"message\":\"POST /v1/charge 503 2105ms customer_id=cust_024\",\"ddtags\":\"env:prod,version:3.41.0\",\"host\":\"ip-10-0-1-42\"}",
+        "template": "T8",
+        "score": 0.9
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 54,
+      "template_count": 11,
+      "top_templates": [
+        {
+          "id": "T2",
+          "pattern": "service=payments-api status=info <*> <*> <*> <*> <*>",
+          "count": 14
+        },
+        {
+          "id": "T3",
+          "pattern": "service=payments-api status=warn <*> <*> <*> <*> <*>",
+          "count": 10
+        },
+        {
+          "id": "T8",
+          "pattern": "service=payments-api status=error message=POST /v1/charge 503 <*> <*>",
+          "count": 8
+        },
+        {
+          "id": "T1",
+          "pattern": "service=payments-api status=info message=GET /health 200 <*>",
+          "count": 7
+        },
+        {
+          "id": "T9",
+          "pattern": "service=payments-api status=info message=GET /health 503 2ms service=stripe status=unavailable",
+          "count": 4
+        }
+      ]
+    },
+    "compression": 3,
+    "stats": {
+      "lines_in": 54,
+      "tokens_in_est": 3393,
+      "tokens_out_est": 1168
+    }
+  },
+  "log_lines": 54
+}

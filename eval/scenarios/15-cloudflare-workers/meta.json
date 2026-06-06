@@ -1,0 +1,15 @@
+{
+  "id": "15-cloudflare-workers",
+  "provider": "Cloudflare Workers (tail log JSON events)",
+  "format": "json",
+  "envelope": "none",
+  "incident": "D1 AUTH_KEYS database locked (SQLITE_BUSY): early null-key fallback warnings -> D1 query slow -> SQLITE_BUSY errors -> signing key unavailable -> all token issuance failing 500 -> auth middleware rejecting valid sessions with 401; recurring KV RATE_LIMITS reads as benign distractor",
+  "ground_truth": [
+    { "needle": "d1 binding=auth_keys lookup=current_key_id returned null", "role": "trigger", "desc": "D1 signing key lookup returning null before database locked hard" },
+    { "needle": "d1_error: sqlite_busy: database is locked", "role": "root_cause", "desc": "D1 AUTH_KEYS database locked, all signing key reads failing" },
+    { "needle": "token issuance failed: cannot sign jwt, signing key unavailable", "role": "consequence", "desc": "no new JWTs can be issued, auth endpoints returning 500" },
+    { "needle": "auth middleware: token verification failed for request", "role": "consequence", "desc": "existing sessions rejected with 401 due to null signing key" },
+    { "needle": "d1 query auth_keys slow", "role": "trigger", "desc": "D1 query latency rising before hard lock, early warning of contention" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.9 }
+}

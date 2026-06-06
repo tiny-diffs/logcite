@@ -1,0 +1,209 @@
+{
+  "meta": {
+    "id": "33-go-zap-json",
+    "provider": "Go uber-zap (JSON)",
+    "format": "json",
+    "envelope": "none",
+    "incident": "Elasticsearch node es-node-02 OOM-killed: JVM GC pauses escalate -> heap exhausted -> node unreachable -> shards unassigned -> index writes fail and documents are dropped, amid recurring S3 signature distractor",
+    "ground_truth": [
+      {
+        "needle": "elasticsearch gc pause detected",
+        "role": "trigger",
+        "desc": "JVM GC pause on es-node-02 growing to 15s before OOM"
+      },
+      {
+        "needle": "elasticsearch oom kill detected",
+        "role": "root_cause",
+        "desc": "es-node-02 heap exhausted, process killed"
+      },
+      {
+        "needle": "connection reset by peer",
+        "role": "root_cause",
+        "desc": "TCP connection reset after node died"
+      },
+      {
+        "needle": "no active shards available",
+        "role": "consequence",
+        "desc": "Index write failures due to missing shards"
+      },
+      {
+        "needle": "indexing pipeline backpressure",
+        "role": "consequence",
+        "desc": "Write queue saturated at max depth"
+      },
+      {
+        "needle": "dropped documents due to full queue",
+        "role": "consequence",
+        "desc": "Documents permanently lost due to overflow"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 0.8
+    }
+  },
+  "metrics": {
+    "id": "33-go-zap-json",
+    "provider": "Go uber-zap (JSON)",
+    "format": "json",
+    "envelope": "none",
+    "lines_in": 2275,
+    "tokens_in": 119463,
+    "tokens_out": 1099,
+    "compression": 109,
+    "template_count": 12,
+    "pct_ts": 100,
+    "pct_level": 100,
+    "evidence_count": 12,
+    "roles": [
+      "context",
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 1,
+    "facts_found": 6,
+    "facts_total": 6,
+    "role_accuracy": 0.83,
+    "citation_integrity": 1,
+    "context_loss": [],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 0.8,
+    "pass": true
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "33-go-zap-json",
+    "window": "08:00:00 to 08:25:19",
+    "evidence": [
+      {
+        "role": "context",
+        "line": 231,
+        "text": "{\"level\": \"error\", \"ts\": 1746518530.1, \"caller\": \"storage/s3.go:201\", \"msg\": \"s3 presign error: SignatureDoesNotMatch\", \"bucket\": \"search-index-backup\", \"key\": \"snapshot-daily.tar.gz\"}",
+        "template": "T4",
+        "score": 0.66
+      },
+      {
+        "role": "trigger",
+        "line": 261,
+        "text": "{\"level\": \"warn\", \"ts\": 1746519100.0, \"caller\": \"es/client.go:134\", \"msg\": \"elasticsearch gc pause detected node=es-node-02 duration_ms=4200\"}",
+        "template": "T5",
+        "score": 0.75
+      },
+      {
+        "role": "trigger",
+        "line": 263,
+        "text": "{\"level\": \"warn\", \"ts\": 1746519102.5, \"caller\": \"es/client.go:134\", \"msg\": \"elasticsearch gc pause detected node=es-node-02 duration_ms=8700\"}",
+        "template": "T5",
+        "score": 0.75
+      },
+      {
+        "role": "trigger",
+        "line": 266,
+        "text": "{\"level\": \"error\", \"ts\": 1746519110.0, \"caller\": \"es/client.go:158\", \"msg\": \"elasticsearch node unreachable: connection reset by peer\", \"node\": \"es-node-02\", \"addr\": \"<ip>:9200\"}",
+        "template": "T6",
+        "score": 0.83
+      },
+      {
+        "role": "root_cause",
+        "line": 267,
+        "text": "{\"level\": \"error\", \"ts\": 1746519111.0, \"caller\": \"es/transport.go:84\", \"msg\": \"elasticsearch oom kill detected node=es-node-02 heap_used_bytes=31457280000 heap_max_bytes=32212254720\"}",
+        "template": "T7",
+        "score": 1
+      },
+      {
+        "role": "consequence",
+        "line": 268,
+        "text": "{\"level\": \"error\", \"ts\": 1746519112.0, \"caller\": \"es/client.go:158\", \"msg\": \"elasticsearch node unreachable: connection reset by peer\", \"node\": \"es-node-02\", \"addr\": \"<ip>:9200\"}",
+        "template": "T6",
+        "score": 0.83
+      },
+      {
+        "role": "consequence",
+        "line": 269,
+        "text": "{\"level\": \"error\", \"ts\": 1746519113.0, \"caller\": \"indexer/pipeline.go:201\", \"msg\": \"index write failed shard=3 err=\\\"no active shards available\\\"\", \"doc_id\": \"doc-98812\"}",
+        "template": "T8",
+        "score": 0.7
+      },
+      {
+        "role": "consequence",
+        "line": 270,
+        "text": "{\"level\": \"error\", \"ts\": 1746519114.0, \"caller\": \"indexer/pipeline.go:201\", \"msg\": \"index write failed shard=3 err=\\\"no active shards available\\\"\", \"doc_id\": \"doc-98813\"}",
+        "template": "T8",
+        "score": 0.7
+      },
+      {
+        "role": "consequence",
+        "line": 271,
+        "text": "{\"level\": \"warn\", \"ts\": 1746519115.0, \"caller\": \"indexer/pipeline.go:220\", \"msg\": \"indexing pipeline backpressure queue_depth=1024 (max=1024)\"}",
+        "template": "T9",
+        "score": 0.79
+      },
+      {
+        "role": "consequence",
+        "line": 273,
+        "text": "{\"level\": \"error\", \"ts\": 1746519117.0, \"caller\": \"search/query.go:99\", \"msg\": \"search degraded: yellow cluster status shards_unassigned=14\"}",
+        "template": "T10",
+        "score": 0.7
+      },
+      {
+        "role": "consequence",
+        "line": 275,
+        "text": "{\"level\": \"error\", \"ts\": 1746519119.0, \"caller\": \"indexer/pipeline.go:240\", \"msg\": \"dropped documents due to full queue count=87 oldest_doc_id=doc-98726\"}",
+        "template": "T11",
+        "score": 1
+      },
+      {
+        "role": "consequence",
+        "line": 313,
+        "text": "{\"level\": \"error\", \"ts\": 1746519134.8, \"caller\": \"search/query.go:99\", \"msg\": \"search degraded: yellow cluster status shards_unassigned=14\"}",
+        "template": "T10",
+        "score": 0.7
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 2275,
+      "template_count": 12,
+      "top_templates": [
+        {
+          "id": "T2",
+          "pattern": "<*> msg=GET <*> 200",
+          "count": 1911
+        },
+        {
+          "id": "T4",
+          "pattern": "msg=s3 presign error: SignatureDoesNotMatch",
+          "count": 142
+        },
+        {
+          "id": "T1",
+          "pattern": "msg=auth token near expiry",
+          "count": 77
+        },
+        {
+          "id": "T10",
+          "pattern": "msg=search degraded: yellow cluster status shards_unassigned=14",
+          "count": 51
+        },
+        {
+          "id": "T8",
+          "pattern": "msg=index write failed shard=3 err=\"no active shards available\"",
+          "count": 48
+        }
+      ]
+    },
+    "compression": 109,
+    "stats": {
+      "lines_in": 2275,
+      "tokens_in_est": 119463,
+      "tokens_out_est": 1099
+    }
+  },
+  "log_lines": 2275
+}

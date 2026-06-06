@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "id": "00-pino-nestjs-db-outage",
+    "provider": "NestJS + Pino (JSON)",
+    "format": "json",
+    "envelope": "none",
+    "incident": "DB connection pool exhaustion: slow-acquire warning -> OperationalError -> retry/timeout/breaker cascade, amid a recurring rate-limit distractor",
+    "ground_truth": [
+      {
+        "needle": "pool acquire slow",
+        "role": "trigger",
+        "desc": "pool acquisition slowing before failure"
+      },
+      {
+        "needle": "operationalerror",
+        "role": "root_cause",
+        "desc": "psycopg2 connection to db_users failed"
+      },
+      {
+        "needle": "upstream timeout",
+        "role": "consequence",
+        "desc": "downstream request timed out"
+      },
+      {
+        "needle": "circuit breaker",
+        "role": "consequence",
+        "desc": "breaker tripped on db"
+      },
+      {
+        "needle": "pool exhausted",
+        "role": "consequence",
+        "desc": "no connections left"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 1
+    }
+  },
+  "metrics": {
+    "id": "00-pino-nestjs-db-outage",
+    "provider": "NestJS + Pino (JSON)",
+    "format": "json",
+    "envelope": "none",
+    "lines_in": 32,
+    "tokens_in": 1082,
+    "tokens_out": 877,
+    "compression": 1,
+    "template_count": 14,
+    "pct_ts": 100,
+    "pct_level": 100,
+    "evidence_count": 12,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 1,
+    "facts_found": 5,
+    "facts_total": 5,
+    "role_accuracy": 1,
+    "citation_integrity": 1,
+    "context_loss": [],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 1,
+    "pass": true
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "00-pino-nestjs-db-outage",
+    "window": "14:22:10 to 14:22:41",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 5,
+        "text": "{\"level\":50,\"time\":1746368534000,\"pid\":1,\"context\":\"RateLimitGuard\",\"msg\":\"rate limit exceeded client=c1042\"}",
+        "template": "T4",
+        "score": 0.71
+      },
+      {
+        "role": "trigger",
+        "line": 9,
+        "text": "{\"level\":50,\"time\":1746368538000,\"pid\":1,\"context\":\"RateLimitGuard\",\"msg\":\"rate limit exceeded client=c2261\"}",
+        "template": "T4",
+        "score": 0.71
+      },
+      {
+        "role": "trigger",
+        "line": 20,
+        "text": "{\"level\":40,\"time\":1746368549000,\"pid\":1,\"context\":\"TypeOrmPool\",\"msg\":\"pool acquire slow 240ms (size=20 idle=1)\"}",
+        "template": "T7",
+        "score": 0.53
+      },
+      {
+        "role": "trigger",
+        "line": 21,
+        "text": "{\"level\":40,\"time\":1746368550000,\"pid\":1,\"context\":\"TypeOrmPool\",\"msg\":\"pool acquire slow 480ms (size=20 idle=0)\"}",
+        "template": "T7",
+        "score": 0.53
+      },
+      {
+        "role": "root_cause",
+        "line": 22,
+        "text": "{\"level\":50,\"time\":1746368551000,\"pid\":1,\"context\":\"DbService\",\"msg\":\"OperationalError: connection to db_users failed: too many clients already\"}",
+        "template": "T8",
+        "score": 0.85
+      },
+      {
+        "role": "consequence",
+        "line": 23,
+        "text": "{\"level\":50,\"time\":1746368552000,\"pid\":1,\"context\":\"DbService\",\"msg\":\"retry 1/3 db_users after OperationalError\"}",
+        "template": "T9",
+        "score": 0.79
+      },
+      {
+        "role": "consequence",
+        "line": 24,
+        "text": "{\"level\":50,\"time\":1746368553000,\"pid\":1,\"context\":\"OrdersService\",\"msg\":\"upstream timeout id=abc124 waiting on db_users\"}",
+        "template": "T10",
+        "score": 0.79
+      },
+      {
+        "role": "consequence",
+        "line": 25,
+        "text": "{\"level\":50,\"time\":1746368554000,\"pid\":1,\"context\":\"DbService\",\"msg\":\"retry 2/3 db_users after OperationalError\"}",
+        "template": "T9",
+        "score": 0.79
+      },
+      {
+        "role": "consequence",
+        "line": 26,
+        "text": "{\"level\":40,\"time\":1746368555000,\"pid\":1,\"context\":\"CircuitBreaker\",\"msg\":\"circuit breaker open svc=db_users after 5 failures\"}",
+        "template": "T11",
+        "score": 0.59
+      },
+      {
+        "role": "consequence",
+        "line": 27,
+        "text": "{\"level\":50,\"time\":1746368556000,\"pid\":1,\"context\":\"TypeOrmPool\",\"msg\":\"pool exhausted, queue=18 waiters, no connections available\"}",
+        "template": "T12",
+        "score": 0.85
+      },
+      {
+        "role": "consequence",
+        "line": 28,
+        "text": "{\"level\":50,\"time\":1746368557000,\"pid\":1,\"context\":\"OrdersService\",\"msg\":\"upstream timeout id=abc131 waiting on db_users\"}",
+        "template": "T10",
+        "score": 0.79
+      },
+      {
+        "role": "consequence",
+        "line": 30,
+        "text": "{\"level\":50,\"time\":1746368559000,\"pid\":1,\"context\":\"DbService\",\"msg\":\"retry 3/3 db_users failed, giving up\"}",
+        "template": "T13",
+        "score": 0.85
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 32,
+      "template_count": 14,
+      "top_templates": [
+        {
+          "id": "T2",
+          "pattern": "msg=GET <*> <*> <*>",
+          "count": 6
+        },
+        {
+          "id": "T1",
+          "pattern": "msg=health probe <*> <*>",
+          "count": 5
+        },
+        {
+          "id": "T4",
+          "pattern": "msg=rate limit exceeded <*>",
+          "count": 5
+        },
+        {
+          "id": "T3",
+          "pattern": "msg=cache hit <*>",
+          "count": 3
+        },
+        {
+          "id": "T7",
+          "pattern": "msg=pool acquire slow <*> (size=20 <*>",
+          "count": 2
+        }
+      ]
+    },
+    "compression": 1,
+    "stats": {
+      "lines_in": 32,
+      "tokens_in_est": 1082,
+      "tokens_out_est": 877
+    }
+  },
+  "log_lines": 32
+}

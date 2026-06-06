@@ -1,0 +1,16 @@
+{
+  "id": "37-rails-production",
+  "provider": "Rails production.log (text with multi-line exception backtraces)",
+  "format": "text",
+  "envelope": "none",
+  "incident": "PostgreSQL hot-standby replica lag causes query cancellation: slow-query warnings -> PG::QueryCanceled StatementInvalid with backtraces -> order creation rollbacks and replica lag alarm fires, amid recurring Rack::Attack throttle distractor",
+  "ground_truth": [
+    { "needle": "activerecord::querytimeout", "role": "trigger", "desc": "Rails AR queries exceeding 3s timeout before cancellation" },
+    { "needle": "pg::querycanceled", "role": "root_cause", "desc": "PostgreSQL canceling statements due to hot-standby recovery conflict" },
+    { "needle": "orders_controller.rb:58", "role": "root_cause", "desc": "Stack frame identifying the order create action" },
+    { "needle": "replication lag exceeded threshold", "role": "consequence", "desc": "Replica lag exceeding 10MB threshold alert" },
+    { "needle": "order creation failed: rollback triggered", "role": "consequence", "desc": "Orders rolling back due to query cancellation" },
+    { "needle": "database=degraded", "role": "consequence", "desc": "Health check reporting database in degraded state" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.8 }
+}

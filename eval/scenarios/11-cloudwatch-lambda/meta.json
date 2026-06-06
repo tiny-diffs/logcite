@@ -1,0 +1,16 @@
+{
+  "id": "11-cloudwatch-lambda",
+  "provider": "AWS CloudWatch Logs (Lambda raw text)",
+  "format": "text",
+  "envelope": "none",
+  "incident": "DynamoDB ProvisionedThroughputExceededException on user-profiles table: slow queries escalate to throughput errors -> Lambda timeouts -> SQS batch failures -> dead letter queue flooding; recurring Secrets Manager ThrottlingException distractor throughout",
+  "ground_truth": [
+    { "needle": "dynamodb.getitem slow", "role": "trigger", "desc": "DynamoDB latency climbing past 150ms threshold before hard failures" },
+    { "needle": "provisionedthroughputexceededexception", "role": "root_cause", "desc": "DynamoDB table throughput limit hit, all reads failing" },
+    { "needle": "task timed out after 3.00 seconds", "role": "consequence", "desc": "Lambda functions timing out waiting on DynamoDB retries" },
+    { "needle": "message moved to dead letter queue", "role": "consequence", "desc": "SQS messages exhausted retries and spilled to DLQ" },
+    { "needle": "sqs queue depth alarm", "role": "consequence", "desc": "SQS visible message backlog exceeded threshold" },
+    { "needle": "throttlingexception: rate exceeded", "role": "trigger", "desc": "recurring benign Secrets Manager throttle distractor unrelated to incident" }
+  ],
+  "expect": { "ts": false, "level": true, "min_recall": 0.9 }
+}

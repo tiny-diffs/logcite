@@ -1,0 +1,42 @@
+{"timestamp":1748649600012,"message":"[INFO] 2026-05-30T14:00:00.012Z [app] server started port=8080 env=production"}
+{"timestamp":1748649601101,"message":"[INFO] 2026-05-30T14:00:01.101Z [http] GET /api/products 200 23ms userId=user_44821"}
+{"timestamp":1748649601892,"message":"[INFO] 2026-05-30T14:00:01.892Z [http] POST /api/cart 201 18ms userId=user_33109"}
+{"timestamp":1748649602341,"message":"[INFO] 2026-05-30T14:00:02.341Z [http] GET /api/profile 200 31ms userId=user_87654"}
+{"timestamp":1748649603012,"message":"[WARN] 2026-05-30T14:00:03.012Z [auth] jwt validation: token near expiry sub=user_44821 exp_in=120s"}
+{"timestamp":1748649603555,"message":"[INFO] 2026-05-30T14:00:03.555Z [http] GET /api/products 200 19ms userId=user_55123"}
+{"timestamp":1748649604001,"message":"[INFO] 2026-05-30T14:00:04.001Z [http] POST /api/orders 201 45ms userId=user_33109"}
+{"timestamp":1748649604788,"message":"[WARN] 2026-05-30T14:00:04.788Z [auth] jwt validation: token near expiry sub=user_87654 exp_in=115s"}
+{"timestamp":1748649605213,"message":"[INFO] 2026-05-30T14:00:05.213Z [http] GET /api/profile 200 28ms userId=user_12345"}
+{"timestamp":1748649605901,"message":"[INFO] 2026-05-30T14:00:05.901Z [cache] redis.get key=catalog:electronics hit=true latency=1ms"}
+{"timestamp":1748649606341,"message":"[WARN] 2026-05-30T14:00:06.341Z [auth] jwt validation: token near expiry sub=user_55123 exp_in=108s"}
+{"timestamp":1748649606889,"message":"[INFO] 2026-05-30T14:00:06.889Z [http] GET /api/products 200 17ms userId=user_99001"}
+{"timestamp":1748649607212,"message":"[INFO] 2026-05-30T14:00:07.212Z [cache] redis.get key=catalog:home hit=true latency=2ms"}
+{"timestamp":1748649607601,"message":"[WARN] 2026-05-30T14:00:07.601Z [auth] jwt validation: token near expiry sub=user_12345 exp_in=101s"}
+{"timestamp":1748649608001,"message":"[INFO] 2026-05-30T14:00:08.001Z [http] POST /api/cart 201 22ms userId=user_44821"}
+{"timestamp":1748649608512,"message":"[INFO] 2026-05-30T14:00:08.512Z [http] GET /api/orders 200 37ms userId=user_33109"}
+{"timestamp":1748649609001,"message":"[WARN] 2026-05-30T14:00:09.001Z [auth] jwt validation: token near expiry sub=user_99001 exp_in=95s"}
+{"timestamp":1748649609441,"message":"[INFO] 2026-05-30T14:00:09.441Z [cache] redis.get key=catalog:sports hit=true latency=1ms"}
+{"timestamp":1748649609912,"message":"[INFO] 2026-05-30T14:00:09.912Z [http] GET /api/profile 200 29ms userId=user_55123"}
+{"timestamp":1748649610312,"message":"[WARN] 2026-05-30T14:00:10.312Z [redis] connection pool latency spike: host=redis-cluster-01.internal port=6379 latency=88ms threshold=50ms pool_size=20 idle=3"}
+{"timestamp":1748649610801,"message":"[INFO] 2026-05-30T14:00:10.801Z [http] GET /api/products 200 34ms userId=user_87654"}
+{"timestamp":1748649611201,"message":"[WARN] 2026-05-30T14:00:11.201Z [auth] jwt validation: token near expiry sub=user_44821 exp_in=89s"}
+{"timestamp":1748649611601,"message":"[WARN] 2026-05-30T14:00:11.601Z [redis] connection pool latency spike: host=redis-cluster-01.internal port=6379 latency=145ms threshold=50ms pool_size=20 idle=1"}
+{"timestamp":1748649612001,"message":"[INFO] 2026-05-30T14:00:12.001Z [http] POST /api/orders 201 89ms userId=user_99001"}
+{"timestamp":1748649612401,"message":"[WARN] 2026-05-30T14:00:12.401Z [redis] connection pool latency spike: host=redis-cluster-01.internal port=6379 latency=310ms threshold=50ms pool_size=20 idle=0"}
+{"timestamp":1748649612901,"message":"[ERROR] 2026-05-30T14:00:12.901Z [redis] ECONNRESET: read ECONNRESET socket hang up host=redis-cluster-01.internal port=6379 cmd=GET key=catalog:electronics"}
+{"timestamp":1748649613201,"message":"[ERROR] 2026-05-30T14:00:13.201Z [redis] ECONNRESET: read ECONNRESET socket hang up host=redis-cluster-01.internal port=6379 cmd=SET key=session:user_33109 ttl=3600"}
+{"timestamp":1748649613501,"message":"[ERROR] 2026-05-30T14:00:13.501Z [redis] connection refused: connect ECONNREFUSED 10.0.1.45:6379 host=redis-cluster-01.internal all nodes unreachable"}
+{"timestamp":1748649613801,"message":"[ERROR] 2026-05-30T14:00:13.801Z [app] unhandled exception in request handler: Error: Redis client is closed\n    at RedisClient.sendCommand (/app/node_modules/redis/dist/client/index.js:274:23)\n    at Object.get (/app/src/cache/redis.service.ts:44:32)\n    at CartController.addItem (/app/src/cart/cart.controller.ts:89:18)"}
+{"timestamp":1748649614101,"message":"[WARN] 2026-05-30T14:00:14.101Z [auth] jwt validation: token near expiry sub=user_87654 exp_in=82s"}
+{"timestamp":1748649614401,"message":"[ERROR] 2026-05-30T14:00:14.401Z [redis] connection refused: connect ECONNREFUSED 10.0.1.45:6379 host=redis-cluster-01.internal all nodes unreachable"}
+{"timestamp":1748649614701,"message":"[ERROR] 2026-05-30T14:00:14.701Z [session] session lookup failed for userId=user_44821: Error: Redis client is closed cannot retrieve session data"}
+{"timestamp":1748649615001,"message":"[ERROR] 2026-05-30T14:00:15.001Z [session] session lookup failed for userId=user_55123: Error: Redis client is closed cannot retrieve session data"}
+{"timestamp":1748649615301,"message":"[ERROR] 2026-05-30T14:00:15.301Z [redis] connection refused: connect ECONNREFUSED 10.0.1.45:6379 host=redis-cluster-01.internal all nodes unreachable"}
+{"timestamp":1748649615601,"message":"[ERROR] 2026-05-30T14:00:15.601Z [http] GET /api/cart 500 4ms userId=user_33109 error=Redis client is closed"}
+{"timestamp":1748649615901,"message":"[ERROR] 2026-05-30T14:00:15.901Z [http] POST /api/orders 500 3ms userId=user_99001 error=Redis client is closed"}
+{"timestamp":1748649616201,"message":"[WARN] 2026-05-30T14:00:16.201Z [auth] jwt validation: token near expiry sub=user_33109 exp_in=76s"}
+{"timestamp":1748649616501,"message":"[ERROR] 2026-05-30T14:00:16.501Z [session] session lookup failed for userId=user_87654: Error: Redis client is closed cannot retrieve session data"}
+{"timestamp":1748649616801,"message":"[ERROR] 2026-05-30T14:00:16.801Z [http] GET /api/profile 500 3ms userId=user_87654 error=Redis client is closed"}
+{"timestamp":1748649617101,"message":"[ERROR] 2026-05-30T14:00:17.101Z [redis] connection refused: connect ECONNREFUSED 10.0.1.45:6379 host=redis-cluster-01.internal all nodes unreachable"}
+{"timestamp":1748649617401,"message":"[ERROR] 2026-05-30T14:00:17.401Z [http] GET /api/products 500 2ms userId=user_44821 error=Redis client is closed"}
+{"timestamp":1748649617701,"message":"[INFO] 2026-05-30T14:00:17.701Z [http] GET /api/health 200 1ms status=degraded redis=down"}

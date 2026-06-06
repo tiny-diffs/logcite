@@ -1,0 +1,203 @@
+{
+  "meta": {
+    "id": "52-logfmt",
+    "provider": "Heroku/Go logfmt",
+    "format": "logfmt",
+    "envelope": "heroku",
+    "incident": "Recommendations service memory pressure -> OOM killed (process exceeded memory quota) -> 502s upstream -> stale cache then 503s on feeds endpoint, amid recurring deprecated-endpoint-called distractors",
+    "ground_truth": [
+      {
+        "needle": "upstream memory pressure",
+        "role": "trigger",
+        "desc": "Memory climbing above threshold on recommendations service"
+      },
+      {
+        "needle": "recommendations service oom killed: process exceeded memory quota",
+        "role": "root_cause",
+        "desc": "OOM kill of recommendations process"
+      },
+      {
+        "needle": "upstream 502 bad gateway",
+        "role": "consequence",
+        "desc": "502s returned by recommendations upstream"
+      },
+      {
+        "needle": "fallback cache expired, no recommendations available",
+        "role": "consequence",
+        "desc": "Fallback cache exhausted"
+      },
+      {
+        "needle": "request failed: recommendations unavailable",
+        "role": "consequence",
+        "desc": "Feed endpoint returning 503"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 0.8
+    }
+  },
+  "metrics": {
+    "id": "52-logfmt",
+    "provider": "Heroku/Go logfmt",
+    "format": "logfmt",
+    "envelope": "heroku",
+    "lines_in": 3167,
+    "tokens_in": 163953,
+    "tokens_out": 1122,
+    "compression": 146,
+    "template_count": 9,
+    "pct_ts": 100,
+    "pct_level": 100,
+    "evidence_count": 12,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 1,
+    "facts_found": 5,
+    "facts_total": 5,
+    "role_accuracy": 0.4,
+    "citation_integrity": 1,
+    "context_loss": [],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 0.8,
+    "pass": true
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "52-logfmt",
+    "window": "14:20:00 to 15:06:39",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 205,
+        "text": "level=warn msg=\"upstream memory pressure\" ts=2025-05-05T14:23:00Z request_id=req_1180 dyno=web.1 service=recommendations mem_mb=512 threshold_mb=768",
+        "template": "T3",
+        "score": 0.53
+      },
+      {
+        "role": "trigger",
+        "line": 211,
+        "text": "level=warn msg=\"upstream memory pressure\" ts=2025-05-05T14:23:05Z request_id=req_1185 dyno=web.2 service=recommendations mem_mb=552 threshold_mb=768",
+        "template": "T3",
+        "score": 0.53
+      },
+      {
+        "role": "trigger",
+        "line": 236,
+        "text": "level=error msg=\"upstream 502 bad gateway\" ts=2025-05-05T14:23:30Z request_id=req_1210 dyno=web.3 service=recommendations status=502",
+        "template": "T4",
+        "score": 0.74
+      },
+      {
+        "role": "trigger",
+        "line": 237,
+        "text": "level=error msg=\"recommendations service oom killed: process exceeded memory quota\" ts=2025-05-05T14:23:30Z request_id=req_1210 dyno=web.3 service=recommendations mem_mb=1024 quota_mb=512",
+        "template": "T5",
+        "score": 0.8
+      },
+      {
+        "role": "trigger",
+        "line": 238,
+        "text": "level=error msg=\"upstream 502 bad gateway\" ts=2025-05-05T14:23:31Z request_id=req_1211 dyno=web.4 service=recommendations status=502",
+        "template": "T4",
+        "score": 0.74
+      },
+      {
+        "role": "trigger",
+        "line": 243,
+        "text": "level=error msg=\"recommendations service oom killed: process exceeded memory quota\" ts=2025-05-05T14:23:35Z request_id=req_1215 dyno=web.4 service=recommendations mem_mb=1024 quota_mb=512",
+        "template": "T5",
+        "score": 0.8
+      },
+      {
+        "role": "root_cause",
+        "line": 260,
+        "text": "level=error msg=\"request failed: recommendations unavailable\" ts=2025-05-05T14:23:50Z request_id=req_1230 dyno=web.3 method=GET path=/api/v2/feeds status=503 duration_ms=5001",
+        "template": "T6",
+        "score": 0.95
+      },
+      {
+        "role": "consequence",
+        "line": 261,
+        "text": "level=warn msg=\"serving stale cache fallback\" ts=2025-05-05T14:23:51Z request_id=req_1231 dyno=web.4 service=recommendations cache_age_s=11 max_age_s=60",
+        "template": "T7",
+        "score": 0.49
+      },
+      {
+        "role": "consequence",
+        "line": 262,
+        "text": "level=error msg=\"fallback cache expired, no recommendations available\" ts=2025-05-05T14:23:52Z request_id=req_1232 dyno=web.1 service=recommendations cache_age_s=72",
+        "template": "T8",
+        "score": 0.75
+      },
+      {
+        "role": "consequence",
+        "line": 263,
+        "text": "level=error msg=\"request failed: recommendations unavailable\" ts=2025-05-05T14:23:53Z request_id=req_1233 dyno=web.2 method=GET path=/api/v2/feeds status=503 duration_ms=5001",
+        "template": "T6",
+        "score": 0.95
+      },
+      {
+        "role": "consequence",
+        "line": 264,
+        "text": "level=warn msg=\"serving stale cache fallback\" ts=2025-05-05T14:23:54Z request_id=req_1234 dyno=web.3 service=recommendations cache_age_s=14 max_age_s=60",
+        "template": "T7",
+        "score": 0.49
+      },
+      {
+        "role": "consequence",
+        "line": 265,
+        "text": "level=error msg=\"fallback cache expired, no recommendations available\" ts=2025-05-05T14:23:55Z request_id=req_1235 dyno=web.4 service=recommendations cache_age_s=75",
+        "template": "T8",
+        "score": 0.75
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 3167,
+      "template_count": 9,
+      "top_templates": [
+        {
+          "id": "T0",
+          "pattern": "level=info msg=\"request completed\" <*> <*> <*> method=GET path=/api/v2/feeds status=200 <*>",
+          "count": 2724
+        },
+        {
+          "id": "T1",
+          "pattern": "level=info msg=\"health check ok\" <*> <*> <*> status=200",
+          "count": 270
+        },
+        {
+          "id": "T2",
+          "pattern": "level=warn msg=\"deprecated endpoint called\" <*> <*> <*> path=/api/v1/feeds client=legacy-sdk",
+          "count": 93
+        },
+        {
+          "id": "T4",
+          "pattern": "level=error msg=\"upstream 502 bad gateway\" <*> <*> <*> service=recommendations status=502",
+          "count": 20
+        },
+        {
+          "id": "T6",
+          "pattern": "level=error msg=\"request failed: recommendations unavailable\" <*> <*> <*> method=GET path=/api/v2/feeds status=503 duration_ms=5001",
+          "count": 17
+        }
+      ]
+    },
+    "compression": 146,
+    "stats": {
+      "lines_in": 3167,
+      "tokens_in_est": 163953,
+      "tokens_out_est": 1122
+    }
+  },
+  "log_lines": 3167
+}

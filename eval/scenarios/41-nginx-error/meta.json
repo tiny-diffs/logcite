@@ -1,0 +1,14 @@
+{
+  "id": "41-nginx-error",
+  "provider": "nginx error log",
+  "format": "text",
+  "envelope": "none",
+  "incident": "Upstream app-svc crashes at 14:08: initial connect() refused errors escalate to no live upstreams / no servers available (crit), amid recurring upstream response timeout distractor on /api/v1/slow",
+  "ground_truth": [
+    { "needle": "connect() failed (111: connection refused)", "role": "root_cause", "desc": "upstream app-svc refusing TCP connections" },
+    { "needle": "no live upstreams while connecting to upstream", "role": "consequence", "desc": "entire upstream group marked down" },
+    { "needle": "no servers are available", "role": "consequence", "desc": "nginx crit: upstream group fully exhausted" },
+    { "needle": "upstream response timeout (60s) exceeded", "role": "trigger", "desc": "recurring slow-upstream distractor preceding crash" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.9 }
+}

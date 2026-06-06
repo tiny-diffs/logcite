@@ -1,0 +1,15 @@
+{
+  "id": "30-pino-pretty-ansi",
+  "provider": "pino-pretty (ANSI colorized text)",
+  "format": "text",
+  "envelope": "none",
+  "incident": "Redis node redis-01 becomes unreachable: latency spikes -> ETIMEDOUT -> session lookups fail -> cart service returns 503, amid a recurring undefined-property cart error distractor",
+  "ground_truth": [
+    { "needle": "redis latency spike", "role": "trigger", "desc": "Redis response time climbing before full timeout" },
+    { "needle": "connect etimedout", "role": "root_cause", "desc": "TCP connect to Redis timed out" },
+    { "needle": "session lookup failed", "role": "consequence", "desc": "Sessions cannot be resolved from Redis" },
+    { "needle": "cart service unavailable", "role": "consequence", "desc": "Cart endpoint returns 503" },
+    { "needle": "circuit breaker open", "role": "consequence", "desc": "Breaker trips on Redis after 3 failures" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.8 }
+}

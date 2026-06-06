@@ -1,0 +1,15 @@
+{
+  "id": "00-pino-nestjs-db-outage",
+  "provider": "NestJS + Pino (JSON)",
+  "format": "json",
+  "envelope": "none",
+  "incident": "DB connection pool exhaustion: slow-acquire warning -> OperationalError -> retry/timeout/breaker cascade, amid a recurring rate-limit distractor",
+  "ground_truth": [
+    { "needle": "pool acquire slow", "role": "trigger", "desc": "pool acquisition slowing before failure" },
+    { "needle": "operationalerror", "role": "root_cause", "desc": "psycopg2 connection to db_users failed" },
+    { "needle": "upstream timeout", "role": "consequence", "desc": "downstream request timed out" },
+    { "needle": "circuit breaker", "role": "consequence", "desc": "breaker tripped on db" },
+    { "needle": "pool exhausted", "role": "consequence", "desc": "no connections left" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 1.0 }
+}

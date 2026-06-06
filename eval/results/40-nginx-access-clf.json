@@ -1,0 +1,120 @@
+{
+  "meta": {
+    "id": "40-nginx-access-clf",
+    "provider": "nginx access log (Combined Log Format)",
+    "format": "text",
+    "envelope": "none",
+    "incident": "5xx surge: upstream app servers start returning 502/503 in bulk at 14:08 (trigger: upstream connect timeout spike) -> root cause: all upstream workers exhausted -> consequence: flood of 502s visible to clients; unrelated distractor: recurring 404s on /favicon.ico",
+    "ground_truth": [
+      {
+        "needle": "connect() failed (111: connection refused)",
+        "role": "root_cause",
+        "desc": "upstream worker refusing connections"
+      },
+      {
+        "needle": "no live upstreams while connecting to upstream",
+        "role": "root_cause",
+        "desc": "all upstream workers exhausted / down"
+      },
+      {
+        "needle": "upstream timed out (110: connection timed out)",
+        "role": "trigger",
+        "desc": "upstream latency spike preceding full failure"
+      },
+      {
+        "needle": "502",
+        "role": "consequence",
+        "desc": "bad gateway errors returned to clients"
+      },
+      {
+        "needle": "503",
+        "role": "consequence",
+        "desc": "service unavailable returned to clients"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": false,
+      "min_recall": 0.8
+    }
+  },
+  "metrics": {
+    "id": "40-nginx-access-clf",
+    "provider": "nginx access log (Combined Log Format)",
+    "format": "text",
+    "envelope": "none",
+    "lines_in": 5045,
+    "tokens_in": 406034,
+    "tokens_out": 379,
+    "compression": 1071,
+    "template_count": 5,
+    "pct_ts": 100,
+    "pct_level": 0,
+    "evidence_count": 0,
+    "roles": [],
+    "has_root_cause": false,
+    "recall": 0,
+    "facts_found": 0,
+    "facts_total": 5,
+    "role_accuracy": null,
+    "citation_integrity": 1,
+    "context_loss": [
+      "connect() failed (111: connection refused)",
+      "no live upstreams while connecting to upstream",
+      "upstream timed out (110: connection timed out)",
+      "502",
+      "503"
+    ],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": false,
+    "min_recall": 0.8,
+    "pass": false
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "40-nginx-access-clf",
+    "window": "14:00:00 to 14:19:59",
+    "evidence": [],
+    "routine_summary": {
+      "total_lines": 5045,
+      "template_count": 5,
+      "top_templates": [
+        {
+          "id": "T1",
+          "pattern": "<ip> - - <*> +0000] <*> <*> HTTP/1.1\" <*> <*> <*> \"okhttp/4.12.0\"",
+          "count": 1068
+        },
+        {
+          "id": "T3",
+          "pattern": "<ip> - - <*> +0000] <*> <*> HTTP/1.1\" <*> <*> <*> \"axios/1.6.8 Node.js/20.12.2\"",
+          "count": 1020
+        },
+        {
+          "id": "T4",
+          "pattern": "<ip> - - <*> +0000] <*> <*> HTTP/1.1\" <*> <*> <*> \"Mozilla/5.0 (X11; Linux x86_64; rv:125.0) Gecko/20100101 Firefox/125.0\"",
+          "count": 1011
+        },
+        {
+          "id": "T0",
+          "pattern": "<ip> - - <*> +0000] <*> <*> HTTP/1.1\" <*> <*> <*> \"Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.4 Safari/605.1.15\"",
+          "count": 980
+        },
+        {
+          "id": "T2",
+          "pattern": "<ip> - - <*> +0000] <*> <*> HTTP/1.1\" <*> <*> <*> \"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/<ip> Safari/537.36\"",
+          "count": 966
+        }
+      ]
+    },
+    "compression": 1071,
+    "stats": {
+      "lines_in": 5045,
+      "tokens_in_est": 406034,
+      "tokens_out_est": 379
+    }
+  },
+  "log_lines": 5045
+}

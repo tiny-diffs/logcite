@@ -1,0 +1,15 @@
+{
+  "id": "21-k8s-plain-text",
+  "provider": "Kubernetes kubectl logs (no envelope) — Go text logger",
+  "format": "text",
+  "envelope": "none",
+  "incident": "gRPC upstream certificate expiry: TLS handshake errors escalate -> all RPCs to inventory-svc fail -> order fulfillment stalls; recurring distractor: slow S3 presign requests on a separate code path",
+  "ground_truth": [
+    { "needle": "tls handshake timeout", "role": "trigger", "desc": "TLS handshakes to inventory-svc start timing out" },
+    { "needle": "certificate has expired", "role": "root_cause", "desc": "Peer TLS certificate on inventory-svc is expired" },
+    { "needle": "rpc error: code = unavailable", "role": "consequence", "desc": "All gRPC calls to inventory-svc return UNAVAILABLE" },
+    { "needle": "fulfillment stalled order", "role": "consequence", "desc": "Order fulfillment goroutines blocked waiting on inventory" },
+    { "needle": "circuit open for inventory-svc", "role": "consequence", "desc": "Circuit breaker opens, fast-failing all inventory calls" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 1.0 }
+}

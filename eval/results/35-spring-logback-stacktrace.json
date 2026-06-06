@@ -1,0 +1,197 @@
+{
+  "meta": {
+    "id": "35-spring-logback-stacktrace",
+    "provider": "Spring Boot / Logback (text with stack traces)",
+    "format": "text",
+    "envelope": "none",
+    "incident": "HikariCP connection pool exhausted: pool-timeout warnings -> JDBCConnectionException stack traces -> all DB-backed inventory endpoints fail and reconcile job skips, amid recurring slow audit-log distractor",
+    "ground_truth": [
+      {
+        "needle": "connection is not available, request timed out",
+        "role": "trigger",
+        "desc": "HikariCP pool timeout before connection exhaustion"
+      },
+      {
+        "needle": "timeout waiting for connection from pool",
+        "role": "root_cause",
+        "desc": "Root jdbc exception: pool fully exhausted"
+      },
+      {
+        "needle": "inventoryrepo.java:88",
+        "role": "root_cause",
+        "desc": "Stack frame identifying exact repository call site"
+      },
+      {
+        "needle": "jdbcconnectionexception",
+        "role": "root_cause",
+        "desc": "Hibernate wrapping the JDBC pool exhaustion"
+      },
+      {
+        "needle": "reserve failed",
+        "role": "consequence",
+        "desc": "Item reservation endpoint returning errors"
+      },
+      {
+        "needle": "inventory reconcile job failed",
+        "role": "consequence",
+        "desc": "Scheduled reconciliation skipped due to DB unavailability"
+      }
+    ],
+    "expect": {
+      "ts": true,
+      "level": true,
+      "min_recall": 0.8
+    }
+  },
+  "metrics": {
+    "id": "35-spring-logback-stacktrace",
+    "provider": "Spring Boot / Logback (text with stack traces)",
+    "format": "text",
+    "envelope": "none",
+    "lines_in": 67,
+    "tokens_in": 2041,
+    "tokens_out": 936,
+    "compression": 2,
+    "template_count": 15,
+    "pct_ts": 40.3,
+    "pct_level": 40.3,
+    "evidence_count": 10,
+    "roles": [
+      "trigger",
+      "root_cause",
+      "consequence"
+    ],
+    "has_root_cause": true,
+    "recall": 0.67,
+    "facts_found": 4,
+    "facts_total": 6,
+    "role_accuracy": 0.5,
+    "citation_integrity": 1,
+    "context_loss": [
+      "timeout waiting for connection from pool",
+      "inventoryrepo.java:88"
+    ],
+    "schema_valid": true,
+    "schema_errors": [],
+    "error": null,
+    "expect_ts": true,
+    "expect_level": true,
+    "min_recall": 0.8,
+    "pass": false
+  },
+  "capsule": {
+    "schema": "logpod.incident_capsule/v1",
+    "service": "35-spring-logback-stacktrace",
+    "window": "17:00:00 to 17:00:27",
+    "evidence": [
+      {
+        "role": "trigger",
+        "line": 6,
+        "text": "2026-05-08 14:00:05.556  WARN 5501 --- [http-nio-1] c.example.inventory.web.AuditFilter      : audit log write slow 380ms (threshold=200ms)",
+        "template": "T4",
+        "score": 0.46
+      },
+      {
+        "role": "trigger",
+        "line": 9,
+        "text": "2026-05-08 14:00:08.889  WARN 5501 --- [http-nio-1] c.example.inventory.web.AuditFilter      : audit log write slow 410ms (threshold=200ms)",
+        "template": "T4",
+        "score": 0.46
+      },
+      {
+        "role": "trigger",
+        "line": 14,
+        "text": "2026-05-08 14:00:14.445  WARN 5501 --- [hikari-pool-1] c.z.h.pool.HikariPool                    : HikariPool-1 - Connection is not available, request timed out after 5000ms",
+        "template": "T5",
+        "score": 0.51
+      },
+      {
+        "role": "trigger",
+        "line": 15,
+        "text": "2026-05-08 14:00:15.556  ERROR 5501 --- [http-nio-4] c.example.inventory.db.InventoryRepo     : could not execute query; SQL [SELECT * FROM inventory WHERE item_id=?]",
+        "template": "T6",
+        "score": 0.8
+      },
+      {
+        "role": "trigger",
+        "line": 44,
+        "text": "2026-05-08 14:00:16.667  WARN 5501 --- [hikari-pool-1] c.z.h.pool.HikariPool                    : HikariPool-1 - Connection is not available, request timed out after 5000ms",
+        "template": "T5",
+        "score": 0.51
+      },
+      {
+        "role": "trigger",
+        "line": 45,
+        "text": "2026-05-08 14:00:17.778  ERROR 5501 --- [http-nio-5] c.example.inventory.db.InventoryRepo     : could not execute query; SQL [SELECT * FROM inventory WHERE item_id=?]",
+        "template": "T6",
+        "score": 0.8
+      },
+      {
+        "role": "trigger",
+        "line": 60,
+        "text": "2026-05-08 14:00:20.112  ERROR 5501 --- [http-nio-6] c.example.inventory.svc.StockService     : jdbcconnectionexception: could not acquire connection from pool after 3 retries, giving up",
+        "template": "T13",
+        "score": 0.85
+      },
+      {
+        "role": "trigger",
+        "line": 61,
+        "text": "2026-05-08 14:00:21.223  ERROR 5501 --- [http-nio-7] c.example.inventory.web.ItemController   : reserve failed itemId=4421 requestId=req-7743 err=DataAccessResourceFailureException",
+        "template": "T2",
+        "score": 0.69
+      },
+      {
+        "role": "root_cause",
+        "line": 63,
+        "text": "2026-05-08 14:00:23.445  ERROR 5501 --- [http-nio-8] c.example.inventory.web.ItemController   : reserve failed itemId=8833 requestId=req-7744 err=DataAccessResourceFailureException",
+        "template": "T2",
+        "score": 0.89
+      },
+      {
+        "role": "consequence",
+        "line": 64,
+        "text": "2026-05-08 14:00:24.556  ERROR 5501 --- [scheduler-1] c.example.inventory.svc.StockService     : inventory reconcile job failed: database unavailable, skipping cycle",
+        "template": "T14",
+        "score": 0.85
+      }
+    ],
+    "routine_summary": {
+      "total_lines": 67,
+      "template_count": 15,
+      "top_templates": [
+        {
+          "id": "T8",
+          "pattern": "at <*>",
+          "count": 31
+        },
+        {
+          "id": "T2",
+          "pattern": "5501 --- <*> <*> : <*> <*> <*> <*> <*>",
+          "count": 10
+        },
+        {
+          "id": "T4",
+          "pattern": "5501 --- <*> c.example.inventory.web.AuditFilter : audit log write slow <*> (threshold=200ms)",
+          "count": 6
+        },
+        {
+          "id": "T5",
+          "pattern": "5501 --- [hikari-pool-1] c.z.h.pool.HikariPool : HikariPool-1 - Connection is not available, request timed out after 5000ms",
+          "count": 3
+        },
+        {
+          "id": "T11",
+          "pattern": "... <*> more",
+          "count": 3
+        }
+      ]
+    },
+    "compression": 2,
+    "stats": {
+      "lines_in": 67,
+      "tokens_in_est": 2041,
+      "tokens_out_est": 936
+    }
+  },
+  "log_lines": 67
+}

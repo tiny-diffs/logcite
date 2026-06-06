@@ -1,0 +1,15 @@
+{
+  "id": "52-logfmt",
+  "provider": "Heroku/Go logfmt",
+  "format": "logfmt",
+  "envelope": "heroku",
+  "incident": "Recommendations service memory pressure -> OOM killed (process exceeded memory quota) -> 502s upstream -> stale cache then 503s on feeds endpoint, amid recurring deprecated-endpoint-called distractors",
+  "ground_truth": [
+    { "needle": "upstream memory pressure", "role": "trigger", "desc": "Memory climbing above threshold on recommendations service" },
+    { "needle": "recommendations service oom killed: process exceeded memory quota", "role": "root_cause", "desc": "OOM kill of recommendations process" },
+    { "needle": "upstream 502 bad gateway", "role": "consequence", "desc": "502s returned by recommendations upstream" },
+    { "needle": "fallback cache expired, no recommendations available", "role": "consequence", "desc": "Fallback cache exhausted" },
+    { "needle": "request failed: recommendations unavailable", "role": "consequence", "desc": "Feed endpoint returning 503" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 0.8 }
+}

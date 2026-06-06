@@ -1,0 +1,16 @@
+{
+  "id": "34-go-logrus-text",
+  "provider": "Go logrus (text/logfmt)",
+  "format": "logfmt",
+  "envelope": "none",
+  "incident": "RabbitMQ broker rabbit-01 goes down: publish confirm timeouts -> connection EOF -> reconnect fails (connection refused) -> all job queues halt and in-flight messages are lost, amid recurring deprecated-endpoint distractor",
+  "ground_truth": [
+    { "needle": "rabbitmq publish confirm timeout", "role": "trigger", "desc": "Publish confirms stalling before connection drops" },
+    { "needle": "rabbitmq connection dropped", "role": "root_cause", "desc": "Broker TCP connection closed with EOF" },
+    { "needle": "connection refused", "role": "root_cause", "desc": "Reconnect attempts rejected by broker host" },
+    { "needle": "rabbitmq reconnect failed all attempts exhausted", "role": "consequence", "desc": "All reconnection retries consumed" },
+    { "needle": "job processing halted", "role": "consequence", "desc": "Worker queues stopped processing jobs" },
+    { "needle": "in-flight job lost", "role": "consequence", "desc": "Unacked messages dropped on worker shutdown" }
+  ],
+  "expect": { "ts": true, "level": true, "min_recall": 1.0 }
+}
