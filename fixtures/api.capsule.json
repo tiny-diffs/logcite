@@ -1,0 +1,128 @@
+{
+  "schema": "mesh.incident_capsule/v1",
+  "service": "api",
+  "window": "00:00:00 to 05:03:19",
+  "evidence": [
+    {
+      "role": "root_cause",
+      "line": 129,
+      "text": "{\"ts\":\"2026-06-03T00:00:11.169Z\",\"level\":\"ERROR\",\"service\":\"notification-worker\",\"env\":\"mesh-prod\",\"region\":\"sfo1\",\"az\":\"c\",\"pod\":\"pod/notification-worker-5f9d96cb6d-bv05i\",\"trace_id\":\"4b2d78558dac873ba71453d214e2579b\",\"span_id\":\"a4c177d2c05ef474\",\"request_id\":\"req_01525b0ce8a45d25b8bb\",\"tenant\":\"bluth\",\"remote_ip\":\"<ip>\",\"method\":\"GET\",\"route\":\"/v1/orders/{id}/cancel\",\"path\":\"/v1/orders/sess_0a033fe51a/cancel\",\"status\":500,\"latency_ms\":4970,\"bytes\":93215,\"user_agent\":\"ELB-HealthChecker/2.0\",\"message\":\"card declined by issuer\",\"error_code\":\"PAYMENT_DECLINED\",\"exception\":\"PaymentProviderError\",\"operation\":\"POST /charges\",\"retryable\":false,\"attempt\":4,\"fingerprint\":\"99e8488b9689\",\"stack\":\"PaymentProviderError: card declined by issuer | at notification-worker.handler (/app/src/notification_worker/handler.ts:35:15) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\",\"provider\":\"stripe\",\"provider_request_id\":\"pi_fd5badddf7c256ce3c15c28a\",\"card_country\":\"BR\"}",
+      "template": "T90",
+      "score": 1
+    },
+    {
+      "role": "consequence",
+      "line": 321,
+      "text": "{\"ts\":\"2026-06-03T00:00:27.856Z\",\"level\":\"ERROR\",\"service\":\"auth-service\",\"env\":\"mesh-prod\",\"region\":\"fra1\",\"az\":\"c\",\"pod\":\"pod/auth-service-6c9b877fbc-00wns\",\"trace_id\":\"cc1925938b4d392c1ce4316f83595ae1\",\"span_id\":\"3557dac99d2af72d\",\"request_id\":\"req_3b0adccc1945a260d3ec\",\"tenant\":\"stark\",\"remote_ip\":\"<ip>\",\"method\":\"DELETE\",\"route\":\"/v1/organizations/{orgId}/invitations\",\"path\":\"/v1/organizations/org_hooli_0dd831/invitations\",\"status\":403,\"latency_ms\":5122,\"bytes\":26150,\"user_agent\":\"Datadog Agent/7.53.0\",\"message\":\"access token expired\",\"error_code\":\"JWT_EXPIRED\",\"exception\":\"AuthError\",\"operation\":\"verifyJwt\",\"retryable\":false,\"attempt\":1,\"fingerprint\":\"fbc755d2fe45\",\"stack\":\"AuthError: access token expired | at auth-service.handler (/app/src/auth_service/handler.ts:50:16) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\"}",
+      "template": "T137",
+      "score": 1
+    },
+    {
+      "role": "consequence",
+      "line": 1821,
+      "text": "{\"ts\":\"2026-06-03T00:02:38.397Z\",\"level\":\"ERROR\",\"service\":\"user-service\",\"env\":\"mesh-prod\",\"region\":\"sfo1\",\"az\":\"b\",\"pod\":\"pod/user-service-55f6db7467-itj62\",\"trace_id\":\"0efa9594caa9e2c461f8b790bf46d7d5\",\"span_id\":\"abb1cef4553ffe1d\",\"request_id\":\"req_1bc1538b359ab6373b28\",\"tenant\":\"wayne\",\"remote_ip\":\"<ip>\",\"method\":\"DELETE\",\"route\":\"/v1/search\",\"path\":\"/v1/search?q=monitor&page=4\",\"status\":422,\"latency_ms\":4390,\"bytes\":15941,\"user_agent\":\"axios/1.7.2\",\"message\":\"card declined by issuer\",\"error_code\":\"PAYMENT_DECLINED\",\"exception\":\"PaymentProviderError\",\"operation\":\"POST /charges\",\"retryable\":false,\"attempt\":4,\"fingerprint\":\"1b8ed549e984\",\"stack\":\"PaymentProviderError: card declined by issuer | at user-service.handler (/app/src/user_service/handler.ts:110:13) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\",\"provider\":\"stripe\",\"provider_request_id\":\"pi_8eb0a7f6afd10061a050f396\",\"card_country\":\"MX\"}",
+      "template": "T349",
+      "score": 1
+    },
+    {
+      "role": "consequence",
+      "line": 1993,
+      "text": "{\"ts\":\"2026-06-03T00:02:53.335Z\",\"level\":\"ERROR\",\"service\":\"inventory-service\",\"env\":\"mesh-prod\",\"region\":\"gru1\",\"az\":\"c\",\"pod\":\"pod/inventory-service-f8d94bc9d-wd92d\",\"trace_id\":\"5aea7d10ee00086752e14851bad7ae60\",\"span_id\":\"7cab9033b272a57e\",\"request_id\":\"req_ea5f16f033845632ac3c\",\"tenant\":\"vehement\",\"remote_ip\":\"<ip>\",\"method\":\"POST\",\"route\":\"/v1/organizations\",\"path\":\"/v1/organizations\",\"status\":504,\"latency_ms\":5337,\"bytes\":42790,\"user_agent\":\"Slackbot-LinkExpanding 1.0\",\"message\":\"card declined by issuer\",\"error_code\":\"PAYMENT_DECLINED\",\"exception\":\"PaymentProviderError\",\"operation\":\"POST /charges\",\"retryable\":false,\"attempt\":4,\"fingerprint\":\"2425e53b016c\",\"stack\":\"PaymentProviderError: card declined by issuer | at inventory-service.handler (/app/src/inventory_service/handler.ts:247:23) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\",\"provider\":\"stripe\",\"provider_request_id\":\"pi_5faacb7755633680a48c8138\",\"card_country\":\"BR\"}",
+      "template": "T361",
+      "score": 1
+    },
+    {
+      "role": "consequence",
+      "line": 2221,
+      "text": "{\"ts\":\"2026-06-03T00:03:13.209Z\",\"level\":\"ERROR\",\"service\":\"user-service\",\"env\":\"mesh-prod\",\"region\":\"iad1\",\"az\":\"b\",\"pod\":\"pod/user-service-55f6db7467-19dfe\",\"trace_id\":\"1b3e748fb05a219ed8fe7e15f2e1632e\",\"span_id\":\"4d95bababdc3406e\",\"request_id\":\"req_9ebf8315a4eceaf7e089\",\"tenant\":\"massive-dynamic\",\"remote_ip\":\"<ip>\",\"method\":\"POST\",\"route\":\"/v1/cart\",\"path\":\"/v1/cart\",\"status\":422,\"latency_ms\":5272,\"bytes\":207301,\"user_agent\":\"Datadog Agent/7.53.0\",\"message\":\"request body validation failed\",\"error_code\":\"VALIDATION_FAILED\",\"exception\":\"ZodError\",\"operation\":\"schema.parse\",\"retryable\":false,\"attempt\":2,\"fingerprint\":\"8f9f139d596f\",\"stack\":\"ZodError: request body validation failed | at user-service.handler (/app/src/user_service/handler.ts:221:21) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\",\"invalid_fields\":[\"quantity\"]}",
+      "template": "T380",
+      "score": 1
+    },
+    {
+      "role": "consequence",
+      "line": 2443,
+      "text": "{\"ts\":\"2026-06-03T00:03:32.529Z\",\"level\":\"ERROR\",\"service\":\"auth-service\",\"env\":\"mesh-prod\",\"region\":\"gru1\",\"az\":\"a\",\"pod\":\"pod/auth-service-6c9b877fbc-dg3my\",\"trace_id\":\"13ccbf109b46eccf9656e991df3792a6\",\"span_id\":\"09cdad28881b09f9\",\"request_id\":\"req_096d4e5aa5651b41c09a\",\"tenant\":\"acme\",\"remote_ip\":\"<ip>\",\"method\":\"POST\",\"route\":\"/v1/auth/sign-in\",\"path\":\"/v1/auth/sign-in\",\"status\":500,\"latency_ms\":5360,\"bytes\":55941,\"user_agent\":\"kube-probe/1.29\",\"message\":\"Please reduce your request rate\",\"error_code\":\"S3_SLOW_DOWN\",\"exception\":\"S3ServiceException\",\"operation\":\"PutObject\",\"retryable\":true,\"attempt\":3,\"fingerprint\":\"3f54d3128a41\",\"stack\":\"S3ServiceException: Please reduce your request rate | at auth-service.handler (/app/src/auth_service/handler.ts:97:34) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\"}",
+      "template": "T400",
+      "score": 1
+    },
+    {
+      "role": "consequence",
+      "line": 2462,
+      "text": "{\"ts\":\"2026-06-03T00:03:34.126Z\",\"level\":\"ERROR\",\"service\":\"reports-service\",\"env\":\"mesh-prod\",\"region\":\"gru1\",\"az\":\"b\",\"pod\":\"pod/reports-service-78b956dd9c-87pmu\",\"trace_id\":\"e1d6e353eb2a29c07e7ba972218a60d3\",\"span_id\":\"76069f54f10a3af4\",\"request_id\":\"req_3d87ae5b8575c048eb50\",\"tenant\":\"initech\",\"remote_ip\":\"<ip>\",\"method\":\"PUT\",\"route\":\"/v1/auth/sign-up\",\"path\":\"/v1/auth/sign-up\",\"status\":429,\"latency_ms\":4488,\"bytes\":154686,\"user_agent\":\"curl/8.4.0\",\"message\":\"card declined by issuer\",\"error_code\":\"PAYMENT_DECLINED\",\"exception\":\"PaymentProviderError\",\"operation\":\"POST /charges\",\"retryable\":false,\"attempt\":4,\"fingerprint\":\"4051bf6bd24a\",\"stack\":\"PaymentProviderError: card declined by issuer | at reports-service.handler (/app/src/reports_service/handler.ts:189:33) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\",\"provider\":\"stripe\",\"provider_request_id\":\"pi_5c3631a2fb1e5839d330acc8\",\"card_country\":\"MX\"}",
+      "template": "T403",
+      "score": 1
+    },
+    {
+      "role": "consequence",
+      "line": 2959,
+      "text": "{\"ts\":\"2026-06-03T00:04:17.397Z\",\"level\":\"ERROR\",\"service\":\"payments-service\",\"env\":\"mesh-prod\",\"region\":\"sfo1\",\"az\":\"a\",\"pod\":\"pod/payments-service-6fbf7d79d5-pzv89\",\"trace_id\":\"6330ea213b3eb729b4a9ee9d7fba508c\",\"span_id\":\"31a77bdb6502463e\",\"request_id\":\"req_2a8de751e0cdd29dfea6\",\"tenant\":\"stark\",\"remote_ip\":\"<ip>\",\"method\":\"PATCH\",\"route\":\"/v1/orders/{id}/cancel\",\"path\":\"/v1/orders/pay_2f6cd12a2a/cancel\",\"status\":429,\"latency_ms\":4513,\"bytes\":74902,\"user_agent\":\"Go-http-client/2.0\",\"message\":\"card declined by issuer\",\"error_code\":\"PAYMENT_DECLINED\",\"exception\":\"PaymentProviderError\",\"operation\":\"POST /charges\",\"retryable\":false,\"attempt\":1,\"fingerprint\":\"231632b76755\",\"stack\":\"PaymentProviderError: card declined by issuer | at payments-service.handler (/app/src/payments_service/handler.ts:69:20) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\",\"provider\":\"stripe\",\"provider_request_id\":\"pi_73c30d60ad3421e794198d2f\",\"card_country\":\"US\"}",
+      "template": "T360",
+      "score": 1
+    },
+    {
+      "role": "consequence",
+      "line": 3108,
+      "text": "{\"ts\":\"2026-06-03T00:04:30.391Z\",\"level\":\"ERROR\",\"service\":\"auth-service\",\"env\":\"mesh-prod\",\"region\":\"gru1\",\"az\":\"a\",\"pod\":\"pod/auth-service-6c9b877fbc-gkw12\",\"trace_id\":\"e748c50e9fd3ff1a4e619957b438dd1a\",\"span_id\":\"538e91e67c77c0cb\",\"request_id\":\"req_901d105ab88f1e5c8a33\",\"tenant\":\"umbrella\",\"remote_ip\":\"<ip>\",\"method\":\"PATCH\",\"route\":\"/v1/organizations\",\"path\":\"/v1/organizations\",\"status\":401,\"latency_ms\":5289,\"bytes\":176480,\"user_agent\":\"Datadog Agent/7.53.0\",\"message\":\"request body validation failed\",\"error_code\":\"VALIDATION_FAILED\",\"exception\":\"ZodError\",\"operation\":\"schema.parse\",\"retryable\":false,\"attempt\":2,\"fingerprint\":\"7e3e0ed091dd\",\"stack\":\"ZodError: request body validation failed | at auth-service.handler (/app/src/auth_service/handler.ts:211:18) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\",\"invalid_fields\":[\"quantity\",\"email\"]}",
+      "template": "T445",
+      "score": 1
+    },
+    {
+      "role": "consequence",
+      "line": 3288,
+      "text": "{\"ts\":\"2026-06-03T00:04:46.019Z\",\"level\":\"ERROR\",\"service\":\"notification-worker\",\"env\":\"mesh-prod\",\"region\":\"gru1\",\"az\":\"a\",\"pod\":\"pod/notification-worker-5f9d96cb6d-o83nq\",\"trace_id\":\"390d680fc1c7302e105a5913608395f3\",\"span_id\":\"734dbd626635a027\",\"request_id\":\"req_da9300c2c2bbab4ba7aa\",\"tenant\":\"wayne\",\"remote_ip\":\"<ip>\",\"method\":\"DELETE\",\"route\":\"/v1/auth/refresh\",\"path\":\"/v1/auth/refresh\",\"status\":504,\"latency_ms\":5387,\"bytes\":55013,\"user_agent\":\"PostmanRuntime/7.39.0\",\"message\":\"Please reduce your request rate\",\"error_code\":\"S3_SLOW_DOWN\",\"exception\":\"S3ServiceException\",\"operation\":\"PutObject\",\"retryable\":true,\"attempt\":1,\"fingerprint\":\"133b62183b62\",\"stack\":\"S3ServiceException: Please reduce your request rate | at notification-worker.handler (/app/src/notification_worker/handler.ts:248:13) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\"}",
+      "template": "T453",
+      "score": 1
+    },
+    {
+      "role": "consequence",
+      "line": 3831,
+      "text": "{\"ts\":\"2026-06-03T00:05:33.274Z\",\"level\":\"ERROR\",\"service\":\"reports-service\",\"env\":\"mesh-prod\",\"region\":\"iad1\",\"az\":\"b\",\"pod\":\"pod/reports-service-78b956dd9c-q3uoz\",\"trace_id\":\"3fc7f521513bd296dae4283f0fb2262e\",\"span_id\":\"2a760a7cea62813a\",\"request_id\":\"req_dec92303bf839453fd00\",\"tenant\":\"massive-dynamic\",\"remote_ip\":\"<ip>\",\"method\":\"DELETE\",\"route\":\"/v1/webhooks/stripe\",\"path\":\"/v1/webhooks/stripe\",\"status\":503,\"latency_ms\":4836,\"bytes\":154863,\"user_agent\":\"Mozilla/5.0 (Macintosh; Intel Mac OS X 14_5) AppleWebKit/537.36 Chrome/126 Safari/537.36\",\"message\":\"request body validation failed\",\"error_code\":\"VALIDATION_FAILED\",\"exception\":\"ZodError\",\"operation\":\"schema.parse\",\"retryable\":false,\"attempt\":4,\"fingerprint\":\"0ae58c1b6451\",\"stack\":\"ZodError: request body validation failed | at reports-service.handler (/app/src/reports_service/handler.ts:221:16) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\",\"invalid_fields\":[\"organizationId\"]}",
+      "template": "T490",
+      "score": 1
+    },
+    {
+      "role": "consequence",
+      "line": 4915,
+      "text": "{\"ts\":\"2026-06-03T00:07:07.521Z\",\"level\":\"ERROR\",\"service\":\"user-service\",\"env\":\"mesh-prod\",\"region\":\"iad1\",\"az\":\"a\",\"pod\":\"pod/user-service-55f6db7467-7qqz4\",\"trace_id\":\"e567fa420eec9951ea66500932b4a31d\",\"span_id\":\"06e5952f878efa0a\",\"request_id\":\"req_f316a0f4002d4c2d4ec4\",\"tenant\":\"wonka\",\"remote_ip\":\"<ip>\",\"method\":\"PATCH\",\"route\":\"/v1/auth/logout\",\"path\":\"/v1/auth/logout\",\"status\":503,\"latency_ms\":4754,\"bytes\":174667,\"user_agent\":\"Go-http-client/2.0\",\"message\":\"request body validation failed\",\"error_code\":\"VALIDATION_FAILED\",\"exception\":\"ZodError\",\"operation\":\"schema.parse\",\"retryable\":false,\"attempt\":3,\"fingerprint\":\"4bb7547ba24a\",\"stack\":\"ZodError: request body validation failed | at user-service.handler (/app/src/user_service/handler.ts:192:13) | at async withTracing (/app/src/lib/tracing.ts:42:11) | at async route.dispatch (/app/node_modules/fastify/lib/route.js:359:7)\",\"invalid_fields\":[\"organizationId\",\"items[0].sku\"]}",
+      "template": "T543",
+      "score": 1
+    }
+  ],
+  "routine_summary": {
+    "total_lines": 1200000,
+    "template_count": 983,
+    "top_templates": [
+      {
+        "id": "T21",
+        "pattern": "service=api-gateway method=GET <*> <*> <*> <*> <*>",
+        "count": 27782
+      },
+      {
+        "id": "T14",
+        "pattern": "service=payments-service method=GET <*> <*> <*> <*> <*>",
+        "count": 27751
+      },
+      {
+        "id": "T13",
+        "pattern": "service=inventory-service method=GET <*> <*> <*> <*> <*>",
+        "count": 27704
+      },
+      {
+        "id": "T52",
+        "pattern": "service=auth-service method=GET <*> <*> <*> <*> <*>",
+        "count": 27650
+      },
+      {
+        "id": "T11",
+        "pattern": "service=search-service method=GET <*> <*> <*> <*> <*>",
+        "count": 27614
+      }
+    ]
+  },
+  "compression": 56171,
+  "stats": {
+    "lines_in": 1200000,
+    "tokens_in_est": 236706430,
+    "tokens_out_est": 4214
+  }
+}
