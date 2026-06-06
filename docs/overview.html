@@ -188,8 +188,8 @@ score = min(1, 0.65·severity + 0.30·rarity + spike)
 </div>
 
 <!-- 5 -->
-<h2 id="redaction"><span class="n">5.</span>Redaction &amp; timestamp formats</h2>
-<p>PII is masked <b>before</b> templating (default on; disable with <code>--no-redact</code>):</p>
+<h2 id="redaction"><span class="n">5.</span>Redaction, levels &amp; timestamps</h2>
+<p>ANSI color/escape codes are stripped first (so <code>pino-pretty</code> and colored stdout parse cleanly). Then PII is masked <b>before</b> templating (default on; disable with <code>--no-redact</code>):</p>
 <table>
   <thead><tr><th>pattern</th><th>replaced with</th></tr></thead>
   <tbody>
@@ -209,9 +209,21 @@ score = min(1, 0.65·severity + 0.30·rarity + spike)
     <tr><td>epoch seconds / millis</td><td class="d">1717689600 · 1717689600123</td></tr>
     <tr><td>RFC3164 syslog (year assumed)</td><td class="d">May  4 14:22:11</td></tr>
     <tr><td>CLF access log (inline)</td><td class="d">[10/Oct/2000:13:55:36 -0700]</td></tr>
-    <tr><td>JSONL fields</td><td class="d">ts / timestamp / time / date · level / severity</td></tr>
+    <tr><td>time-only bracketed (pino-pretty)</td><td class="d">[12:34:56.789] &nbsp;(date = today)</td></tr>
+    <tr><td>JSONL ts fields</td><td class="d">ts / timestamp / time / date (epoch s or ms, or string)</td></tr>
   </tbody>
 </table>
+<p>Severity level is read from the text (TRACE…FATAL, case-insensitive) or, for JSON, from these fields — including numeric scales:</p>
+<table>
+  <thead><tr><th>source</th><th>accepted</th></tr></thead>
+  <tbody>
+    <tr><td>JSON fields</td><td class="d">level · severity · status · lvl · PRIORITY</td></tr>
+    <tr><td>numeric — pino/bunyan</td><td class="d">10 trace · 20 debug · 30 info · 40 warn · 50 error · 60 fatal</td></tr>
+    <tr><td>numeric — syslog PRIORITY</td><td class="d">0–2 fatal · 3 error · 4 warn · 5–6 info · 7 debug</td></tr>
+    <tr><td>fallback</td><td class="d">if no level field, the message text is scanned (e.g. CloudWatch events)</td></tr>
+  </tbody>
+</table>
+<p class="small">Out-of-range numbers (e.g. an HTTP <code>status</code> of 200/500) are <b>not</b> treated as a level.</p>
 
 <!-- 6 -->
 <h2 id="schema"><span class="n">6.</span>Capsule schema <span class="tag">logpod.incident_capsule/v1</span></h2>

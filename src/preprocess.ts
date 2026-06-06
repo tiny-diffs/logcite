@@ -47,9 +47,19 @@ const SYSLOG_RE = /^\s*([A-Z][a-z]{2})\s+(\d{1,2})\s+(\d{2}):(\d{2}):(\d{2})/;
 const EPOCH_RE = /^\s*(\d{13}|\d{10})(?:\.(\d+))?(?=\s|$)/;
 // Apache/nginx access (CLF) — sits mid-line after the client IP, so ts only.
 const CLF_RE = /\[(\d{2})\/([A-Z][a-z]{2})\/(\d{4}):(\d{2}):(\d{2}):(\d{2}) ([+-]\d{4})\]/;
+// pino-pretty: time-only bracketed stamp with no date, e.g. [12:34:56.789].
+const BRACKET_TIME_RE = /^\s*\[(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?\]/;
+
+// ANSI/SGR escape codes (colored terminal output, e.g. pino-pretty).
+const ANSI_RE = /\x1b\[[0-9;]*[A-Za-z]/g;
 
 // Bracketed level: [ERROR], (WARN)
 const LEVEL_RE = /\b(TRACE|DEBUG|INFO(?:RMATION)?|NOTICE|WARN(?:ING)?|ERR(?:OR)?|CRIT(?:ICAL)?|FATAL|PANIC)\b/i;
+
+/** Strip ANSI color/escape codes so they don't pollute parsing or templates. */
+export function stripAnsi(s: string): string {
+  return s.indexOf("\x1b") === -1 ? s : s.replace(ANSI_RE, "");
+}
 
 /** PII / high-cardinality patterns redacted before templating. */
 const REDACTIONS: [RegExp, string][] = [
@@ -112,6 +122,14 @@ function detectTimestamp(s: string): TimestampHit | null {
       return { ts: t, strip: m[0].length };
     }
   }
+  m = BRACKET_TIME_RE.exec(s);
+  if (m) {
+    // No date in the line; anchor to today (UTC) — only relative order matters.
+    const now = new Date();
+    const frac = m[4] ? Math.round(Number("0." + m[4]) * 1000) : 0;
+    const t = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate(), +m[1]!, +m[2]!, +m[3]!, frac);
+    return { ts: t, strip: m[0].length };
+  }
   // CLF sits after the client IP, so we extract the timestamp but strip nothing.
   m = CLF_RE.exec(s);
   if (m) {
@@ -121,9 +139,40 @@ function detectTimestamp(s: string): TimestampHit | null {
   return null;
 }
 
+/**
+ * Map a numeric level to a LogLevel. Handles two conventions:
+ *  - syslog severities 0..7 (0 emerg … 7 debug)
+ *  - pino/bunyan levels 10/20/30/40/50/60, rounded down to the nearest 10
+ * Returns null for out-of-range values (e.g. an HTTP `status` of 200/500), so
+ * a numeric field that isn't really a severity won't be mislabeled.
+ */
+function numericLevel(n: number): LogLevel | null {
+  if (!Number.isInteger(n) || n < 0) return null;
+  if (n <= 7) {
+    if (n <= 2) return "FATAL"; // emerg / alert / crit
+    if (n === 3) return "ERROR";
+    if (n === 4) return "WARN";
+    if (n === 7) return "DEBUG";
+    return "INFO"; // 5 notice, 6 info
+  }
+  const PINO: Record<number, LogLevel> = {
+    10: "TRACE", 20: "DEBUG", 30: "INFO", 40: "WARN", 50: "ERROR", 60: "FATAL",
+  };
+  return PINO[Math.floor(n / 10) * 10] ?? null;
+}
+
 function normalizeLevel(value: unknown): LogLevel | null {
+  if (typeof value === "number") return numericLevel(value);
   if (typeof value !== "string") return null;
-  return LEVELS[value.toUpperCase()] ?? null;
+  const s = value.trim();
+  if (/^\d+$/.test(s)) return numericLevel(Number(s)); // e.g. journalctl PRIORITY "3"
+  return LEVELS[s.toUpperCase()] ?? null;
+}
+
+/** Find a textual level word anywhere in a string (no prefix stripping). */
+function levelInText(s: string): LogLevel | null {
+  const m = LEVEL_RE.exec(s);
+  return m ? (LEVELS[m[1]!.toUpperCase()] ?? null) : null;
 }
 
 function parseTimestampValue(value: unknown): number | null {
@@ -149,6 +198,9 @@ function structuredMessage(obj: Record<string, unknown>): string {
     "exception",
     "warning_code",
     "message",
+    "msg", // pino / bunyan
+    "log", // docker / fluentd
+    "MESSAGE", // journalctl -o json
   ];
   const parts: string[] = [];
   for (const key of keys) {
@@ -164,10 +216,16 @@ function parseJsonLine(clean: string): Pick<ParsedLine, "ts" | "level" | "messag
   if (!clean.startsWith("{")) return null;
   try {
     const obj = JSON.parse(clean) as Record<string, unknown>;
+    const message = structuredMessage(obj) || clean;
+    // Level fields vary by platform; fall back to scanning the message text
+    // (e.g. CloudWatch events carry only {timestamp, message:"ERROR …"}).
+    const level =
+      normalizeLevel(obj.level ?? obj.severity ?? obj.status ?? obj.lvl ?? obj.PRIORITY) ??
+      levelInText(message);
     return {
       ts: parseTimestampValue(obj.ts ?? obj.timestamp ?? obj.time ?? obj.date),
-      level: normalizeLevel(obj.level ?? obj.severity),
-      message: structuredMessage(obj) || clean,
+      level,
+      message,
     };
   } catch {
     return null;
@@ -179,7 +237,8 @@ export function parseLine(
   line: number,
   redact = true,
 ): ParsedLine {
-  const clean = redact ? redactLine(raw) : raw;
+  const bare = stripAnsi(raw);
+  const clean = redact ? redactLine(bare) : bare;
   const json = parseJsonLine(clean);
   if (json) return { line, raw: clean, ...json };
 

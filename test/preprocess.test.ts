@@ -85,3 +85,59 @@ describe("JSON timestamp values", () => {
     expect(p.level).toBe("WARN");
   });
 });
+
+describe("real platform formats", () => {
+  test("Pino JSON (NestJS default): numeric level + msg field", () => {
+    const p = parseLine('{"level":50,"time":1718000000000,"pid":1,"msg":"db connection failed"}', 1);
+    expect(p.ts).toBe(1718000000000);
+    expect(p.level).toBe("ERROR");
+    expect(p.message).toContain("db connection failed");
+    expect(p.message).not.toContain("{"); // not the raw JSON dumped
+  });
+
+  test("Pino numeric levels map (10..60)", () => {
+    const lvl = (n: number) => parseLine(`{"level":${n},"time":1718000000000,"msg":"x"}`, 1).level;
+    expect(lvl(10)).toBe("TRACE");
+    expect(lvl(20)).toBe("DEBUG");
+    expect(lvl(30)).toBe("INFO");
+    expect(lvl(40)).toBe("WARN");
+    expect(lvl(50)).toBe("ERROR");
+    expect(lvl(60)).toBe("FATAL");
+  });
+
+  test("Datadog JSON: status field is used as the level", () => {
+    const p = parseLine('{"date":1718000000000,"status":"error","message":"boom"}', 1);
+    expect(p.ts).toBe(1718000000000);
+    expect(p.level).toBe("ERROR");
+  });
+
+  test("an HTTP status number is NOT mistaken for a level", () => {
+    const p = parseLine('{"timestamp":"2026-05-04T14:22:16Z","status":200,"message":"GET /ok"}', 1);
+    expect(p.level).toBeNull();
+  });
+
+  test("CloudWatch raw event: level embedded in the message string", () => {
+    const p = parseLine('{"timestamp":1718000000000,"message":"ERROR db failed"}', 1);
+    expect(p.ts).toBe(1718000000000);
+    expect(p.level).toBe("ERROR");
+  });
+
+  test("journalctl PRIORITY (numeric syslog severity, as string)", () => {
+    expect(parseLine('{"PRIORITY":"3","message":"x"}', 1).level).toBe("ERROR");
+    expect(parseLine('{"PRIORITY":"4","message":"x"}', 1).level).toBe("WARN");
+    expect(parseLine('{"PRIORITY":"6","message":"x"}', 1).level).toBe("INFO");
+  });
+
+  test("pino-pretty (no color): time-only bracketed timestamp", () => {
+    const p = parseLine("[12:34:56.789] ERROR (1234): db connection failed", 1);
+    expect(p.ts).not.toBeNull();
+    expect(new Date(p.ts!).getUTCHours()).toBe(12);
+    expect(p.level).toBe("ERROR");
+  });
+
+  test("pino-pretty (ANSI color): codes stripped, level still found", () => {
+    const p = parseLine("[12:34:56.789] \x1b[31mERROR\x1b[0m (1234): db failed", 1);
+    expect(p.level).toBe("ERROR");
+    expect(p.message).not.toContain("\x1b");
+  });
+});
