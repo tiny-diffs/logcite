@@ -52,6 +52,10 @@ const BRACKET_TIME_RE = /^\s*\[(\d{2}):(\d{2}):(\d{2})(?:\.(\d+))?\]/;
 
 // ANSI/SGR escape codes (colored terminal output, e.g. pino-pretty).
 const ANSI_RE = /\x1b\[[0-9;]*[A-Za-z]/g;
+// Leading syslog priority: <134>1 (RFC5424, with version) or <30> (RFC3164).
+const SYSLOG_PRI_RE = /^<(\d{1,3})>(?:\d{1,2} )?/;
+// logfmt / key=value timestamp field when there is no leading timestamp.
+const LOGFMT_TS_RE = /(?:^|\s)(?:ts|time|timestamp)=("?)([^"\s]+)\1/i;
 
 // Bracketed level: [ERROR], (WARN)
 const LEVEL_RE = /\b(TRACE|DEBUG|INFO(?:RMATION)?|NOTICE|WARN(?:ING)?|ERR(?:OR)?|CRIT(?:ICAL)?|FATAL|PANIC)\b/i;
@@ -136,6 +140,12 @@ function detectTimestamp(s: string): TimestampHit | null {
     const t = Date.parse(`${m[1]} ${m[2]} ${m[3]} ${m[4]}:${m[5]}:${m[6]} ${m[7]}`);
     if (!Number.isNaN(t)) return { ts: t, strip: 0 };
   }
+  // logfmt: a time=/ts=/timestamp= field (logrus, Heroku) — mid-line, strip nothing.
+  m = LOGFMT_TS_RE.exec(s);
+  if (m) {
+    const t = parseTimestampValue(m[2]);
+    if (t !== null) return { ts: t, strip: 0 };
+  }
   return null;
 }
 
@@ -173,6 +183,19 @@ function normalizeLevel(value: unknown): LogLevel | null {
 function levelInText(s: string): LogLevel | null {
   const m = LEVEL_RE.exec(s);
   return m ? (LEVELS[m[1]!.toUpperCase()] ?? null) : null;
+}
+
+/**
+ * Strip a leading syslog priority `<PRI>` (RFC3164) or `<PRI>VERSION ` (RFC5424).
+ * PRI = facility*8 + severity (0..191); the severity maps to a level. Returns the
+ * remaining line (for normal timestamp/message parsing) plus that level.
+ */
+function stripSyslogPri(s: string): { rest: string; level: LogLevel | null } | null {
+  const m = SYSLOG_PRI_RE.exec(s);
+  if (!m) return null;
+  const pri = Number(m[1]);
+  if (pri > 191) return null; // not a valid syslog priority
+  return { rest: s.slice(m[0].length), level: numericLevel(pri % 8) };
 }
 
 function parseTimestampValue(value: unknown): number | null {
@@ -239,15 +262,34 @@ export function parseLine(
 ): ParsedLine {
   const bare = stripAnsi(raw);
   const clean = redact ? redactLine(bare) : bare;
+
   const json = parseJsonLine(clean);
   if (json) return { line, raw: clean, ...json };
 
-  const hit = detectTimestamp(clean);
+  // Strip a leading syslog priority (<134>1 …, <30>…); it also encodes severity.
+  const pri = stripSyslogPri(clean);
+  const subject = pri ? pri.rest : clean;
+
+  const hit = detectTimestamp(subject);
   const ts = hit?.ts ?? null;
 
   // Message = everything after the timestamp prefix, if any was stripped.
-  let message = clean;
-  if (hit && hit.strip > 0) message = clean.slice(hit.strip).trimStart();
+  let message = subject;
+  if (hit && hit.strip > 0) message = subject.slice(hit.strip).trimStart();
+
+  // Envelope: a timestamp prefixing an inner JSON line (k8s --timestamps, docker).
+  if (message.startsWith("{")) {
+    const inner = parseJsonLine(message);
+    if (inner) {
+      return {
+        line,
+        raw: clean,
+        ts: ts ?? inner.ts,
+        level: inner.level ?? pri?.level ?? null,
+        message: inner.message,
+      };
+    }
+  }
 
   let level: LogLevel | null = null;
   const lvl = LEVEL_RE.exec(message);
@@ -258,6 +300,7 @@ export function parseLine(
       message = (message.slice(0, lvl.index) + message.slice(lvl.index + lvl[1]!.length)).trim();
     }
   }
+  if (!level && pri) level = pri.level; // fall back to the syslog PRI severity
 
   return { line, raw: clean, ts, level, message };
 }

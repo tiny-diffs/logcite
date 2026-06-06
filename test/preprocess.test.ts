@@ -141,3 +141,57 @@ describe("real platform formats", () => {
     expect(p.message).not.toContain("\x1b");
   });
 });
+
+describe("syslog PRI prefix (G1)", () => {
+  test("RFC5424 <PRI>1 prefix: timestamp parses, severity from PRI", () => {
+    const p = parseLine("<131>1 2026-05-04T14:22:11.000Z host nginx 8801 REQ - upstream connect error", 1);
+    expect(p.ts).toBe(Date.parse("2026-05-04T14:22:11.000Z"));
+    expect(p.level).toBe("ERROR"); // 131 % 8 = 3 (err)
+    expect(p.message).toContain("upstream connect error");
+    expect(p.message).not.toContain("<131>");
+  });
+
+  test("RFC3164 <PRI> prefix: syslog timestamp + severity from PRI", () => {
+    const p = parseLine("<11>May 04 14:00:00 host app[1]: connection refused", 1);
+    expect(p.ts).not.toBeNull();
+    expect(p.level).toBe("ERROR"); // 11 % 8 = 3
+    expect(p.message).toContain("connection refused");
+  });
+
+  test("a textual level still wins over the PRI severity", () => {
+    const p = parseLine("<134>1 2026-05-04T14:22:11Z host app 1 - - WARN slow query", 1);
+    expect(p.level).toBe("WARN"); // text WARN, not PRI info(6)
+  });
+
+  test("a non-syslog <...> token is not stripped", () => {
+    const p = parseLine("<root> not a syslog line", 1);
+    expect(p.message).toContain("<root>");
+  });
+});
+
+describe("envelope unwrap (G2)", () => {
+  test("k8s --timestamps wrapping an inner Pino JSON line", () => {
+    const p = parseLine(
+      '2024-03-14T08:00:01.000000001Z {"level":50,"time":1710403201000,"msg":"OperationalError: db down"}',
+      1,
+    );
+    expect(p.ts).toBe(Date.parse("2024-03-14T08:00:01.000000001Z"));
+    expect(p.level).toBe("ERROR");
+    expect(p.message).toContain("OperationalError");
+    expect(p.message).not.toContain("{");
+  });
+});
+
+describe("logfmt timestamp field (G3)", () => {
+  test("logrus time= field is parsed when not leading", () => {
+    const p = parseLine('time="2026-05-07T09:00:00.000Z" level=error msg="db connection failed"', 1);
+    expect(p.ts).toBe(Date.parse("2026-05-07T09:00:00.000Z"));
+    expect(p.level).toBe("ERROR");
+  });
+
+  test("logfmt ts= epoch seconds", () => {
+    const p = parseLine('level=warn msg="slow" ts=1717689600 dyno=web.1', 1);
+    expect(p.ts).toBe(1717689600 * 1000);
+    expect(p.level).toBe("WARN");
+  });
+});
