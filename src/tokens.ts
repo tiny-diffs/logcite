@@ -18,9 +18,3 @@ export function countTokens(text: string): number {
   if (text.length === 0) return 0;
   return bpeCount(text);
 }
-
-/**
- * @deprecated Use {@link countTokens}. Kept as an alias so existing call sites
- * and the public API keep working after the switch from heuristic to exact.
- */
-export const estimateTokens = countTokens;

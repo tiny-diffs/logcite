@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import { encode } from "gpt-tokenizer/encoding/o200k_base";
-import { countTokens, estimateTokens, TOKENIZER } from "../src/tokens.ts";
+import { countTokens, TOKENIZER } from "../src/tokens.ts";
 import { compress } from "../src/index.ts";
 
 describe("countTokens", () => {
@@ -43,11 +43,6 @@ describe("countTokens", () => {
     const one = countTokens("pool exhausted");
     const many = countTokens("pool exhausted, queue=18, retrying upstream now");
     expect(many).toBeGreaterThan(one);
-  });
-
-  test("estimateTokens is an alias for countTokens", () => {
-    expect(estimateTokens).toBe(countTokens);
-    expect(estimateTokens("retry 1/3 db_users")).toBe(countTokens("retry 1/3 db_users"));
   });
 });
 

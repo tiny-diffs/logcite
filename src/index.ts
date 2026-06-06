@@ -21,12 +21,7 @@ export { LineIndex, DEFAULT_STRIDE } from "./lineindex.ts";
 export type { Checkpoint } from "./lineindex.ts";
 export { expandFile, expandText } from "./expand.ts";
 export type { ExpandResult, ContextLine } from "./expand.ts";
-export { parseLine, redactLine } from "./preprocess.ts";
-export { Drain } from "./drain.ts";
-export { scoreOne } from "./anomaly.ts";
-export { extractEvidence } from "./causal.ts";
-export { assembleCapsule } from "./capsule.ts";
-export { countTokens, estimateTokens, TOKENIZER } from "./tokens.ts";
+export { countTokens, TOKENIZER } from "./tokens.ts";
 export { validateCapsule } from "./validate.ts";
 export type { ValidationResult } from "./validate.ts";
 export type {

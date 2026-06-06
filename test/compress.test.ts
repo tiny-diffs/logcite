@@ -1,5 +1,7 @@
 import { describe, expect, test } from "bun:test";
-import { compress, parseLine, redactLine, Drain } from "../src/index.ts";
+import { compress } from "../src/index.ts";
+import { parseLine, redactLine } from "../src/preprocess.ts";
+import { Drain } from "../src/drain.ts";
 
 const INCIDENT = `2026-05-04T14:22:11Z INFO health probe ok 200
 2026-05-04T14:22:12Z INFO request id=abc123 path=/v1/users

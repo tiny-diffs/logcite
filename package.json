@@ -12,7 +12,6 @@
   },
   "scripts": {
     "test": "bun test",
-    "demo": "bun run scripts/demo.ts",
     "gen-fixture": "bun run scripts/gen-fixture.ts",
     "ab": "bun run scripts/gen-incident.ts > fixtures/incident.log && bun run scripts/ab-grep.ts fixtures/incident.log"
   },
