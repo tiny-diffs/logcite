@@ -32,26 +32,24 @@ describe("cli", () => {
     expect(stdout.split("\n").length).toBeGreaterThan(5);
   });
 
-  test("templates lists routine patterns", async () => {
-    const { stdout, code } = await run(["templates", "-"], LOG);
+  test("--templates lists routine patterns", async () => {
+    const { stdout, code } = await run(["compress", "-", "--templates"], LOG);
     expect(code).toBe(0);
     const out = JSON.parse(stdout);
     expect(out.template_count).toBeGreaterThan(0);
     expect(out.templates[0]).toHaveProperty("pattern");
   });
 
-  test("stats returns only the numbers", async () => {
-    const { stdout } = await run(["stats", "-"], LOG);
+  test("--stats returns only the numbers", async () => {
+    const { stdout } = await run(["compress", "-", "--stats"], LOG);
     const s = JSON.parse(stdout);
     expect(s.lines_in).toBe(4);
     expect(s).toHaveProperty("compression");
     expect(s).not.toHaveProperty("evidence");
   });
 
-  test("wrap captures a command's output and forwards exit code", async () => {
-    const { stdout, code } = await run(["wrap", "--", "printf", "ERROR boom\\n"]);
-    const capsule = JSON.parse(stdout);
-    expect(capsule.stats.lines_in).toBe(1);
-    expect(code).toBe(0);
+  test("--stats and --templates together is a usage error", async () => {
+    const { code } = await run(["compress", "-", "--stats", "--templates"], LOG);
+    expect(code).toBe(2);
   });
 });

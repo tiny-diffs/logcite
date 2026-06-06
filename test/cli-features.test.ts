@@ -32,24 +32,24 @@ describe("--output (#1)", () => {
 
 describe("--level (#12)", () => {
   test("keeps only the requested severities before compression", async () => {
-    const { stdout } = await run(["stats", "-", "--level", "ERROR"], LOG);
+    const { stdout } = await run(["compress", "-", "--stats", "--level", "ERROR"], LOG);
     expect(JSON.parse(stdout).lines_in).toBe(2); // two ERROR lines
   });
 
   test("accepts a comma list", async () => {
-    const { stdout } = await run(["stats", "-", "--level", "ERROR,WARN"], LOG);
+    const { stdout } = await run(["compress", "-", "--stats", "--level", "ERROR,WARN"], LOG);
     expect(JSON.parse(stdout).lines_in).toBe(3);
   });
 
   test("rejects an unknown level with usage exit code", async () => {
-    const { code } = await run(["stats", "-", "--level", "NOPE"], LOG);
+    const { code } = await run(["compress", "-", "--stats", "--level", "NOPE"], LOG);
     expect(code).toBe(2);
   });
 });
 
 describe("stats performance (#9)", () => {
   test("reports timing and throughput", async () => {
-    const { stdout } = await run(["stats", "-"], LOG);
+    const { stdout } = await run(["compress", "-", "--stats"], LOG);
     const s = JSON.parse(stdout);
     expect(s.performance).toBeDefined();
     expect(s.performance.elapsed_ms).toBeGreaterThanOrEqual(0);
@@ -60,13 +60,13 @@ describe("stats performance (#9)", () => {
 
 describe("--max-lines / --max-bytes (#10)", () => {
   test("--max-lines caps the processed lines", async () => {
-    const { stdout } = await run(["stats", "-", "--max-lines", "2"], LOG);
+    const { stdout } = await run(["compress", "-", "--stats", "--max-lines", "2"], LOG);
     expect(JSON.parse(stdout).lines_in).toBe(2);
   });
 
   test("--max-bytes drops the truncated final line", async () => {
     // 60 bytes lands mid-stream; only whole lines should survive.
-    const { stdout } = await run(["stats", "-", "--max-bytes", "60"], LOG);
+    const { stdout } = await run(["compress", "-", "--stats", "--max-bytes", "60"], LOG);
     const s = JSON.parse(stdout);
     expect(s.lines_in).toBeGreaterThan(0);
     expect(s.lines_in).toBeLessThan(5);

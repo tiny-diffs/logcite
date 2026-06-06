@@ -73,7 +73,7 @@ bun src/cli.ts compress fixtures/api.log
 ```bash
 # kick the tires on a synthetic log with a planted incident
 bun run scripts/gen-fixture.ts 200000 > fixtures/api.log
-logpod stats fixtures/api.log
+logpod compress fixtures/api.log --stats
 logpod compress fixtures/api.log --pretty
 bun test
 ```
@@ -84,26 +84,29 @@ bun test
 
 ```bash
 logpod compress <file|->        # logs → IncidentCapsule (compact JSON by default)
-logpod wrap -- <cmd...>         # run a command, compress its stdout+stderr
 logpod expand <file>           # raw lines around a cited line (seek, not re-scan)
-logpod templates <file|->       # the template breakdown (what the routine noise is)
-logpod stats <file|->           # just the numbers: lines, tokens, compression, timing
 logpod validate <file|->        # check a capsule against the v1 schema
 ```
+
+`compress` is the one log-reading command; `--stats` and `--templates` are just
+alternate views of the same pass. To compress a live source, pipe into it:
 
 ```bash
 logpod compress fixtures/api.log --pretty
 cat app.log | logpod compress - --level ERROR,WARN
-logpod wrap -- kubectl logs -n prod api
+kubectl logs -n prod api 2>&1 | logpod compress -          # no wrapper needed
+logpod compress fixtures/api.log --stats                   # numbers only, with timing
+logpod compress fixtures/api.log --templates --limit 10    # the routine-noise breakdown
 logpod compress huge.log --max-bytes 50000000 -o capsule.json --index huge.idx
 logpod expand huge.log --line 30006 --context 5 --index huge.idx
-logpod templates fixtures/api.log --limit 10
 ```
 
 | flag | does |
 |------|------|
 | `-s, --service <name>` | name recorded in the capsule (default `unknown`) |
 | `-n, --max-evidence <n>` | cap evidence lines (default 12) |
+| `--stats` | (compress) print numbers only — lines, tokens, compression, timing |
+| `--templates` | (compress) print the template breakdown; `--limit <n>` caps rows (default 20) |
 | `--level ERROR,WARN` | keep only these severities before compressing |
 | `--max-lines <n>` / `--max-bytes <n>` | process only a prefix — test on a subset without `head` |
 | `--sim <0..1>` / `--depth <n>` | Drain similarity threshold / tree depth |
@@ -115,7 +118,6 @@ logpod templates fixtures/api.log --limit 10
 
 JSON always goes to **stdout** (or `--output`); diagnostics go to **stderr**.
 Exit codes: `0` ok · `1` input/parse · `2` CLI usage · `3` schema invalid.
-`wrap` forwards the wrapped command's exit code, so it stays transparent.
 
 ---
 
@@ -183,8 +185,8 @@ the numeric p95. Nothing scales with input size.
 | `logpod compress <file>` (streaming) | **~340 MB** — bounded, ~constant as the file grows |
 | `compress(text)` (holds the string in memory) | ~940 MB |
 
-The CLI (`compress`, `templates`, `stats`, `wrap`) and `compressLines` /
-`compressStream` all stream from bytes, so memory stays bounded on a 100 MB+
+The CLI (`compress`, including its `--stats` / `--templates` views) and
+`compressLines` / `compressStream` all stream from bytes, so memory stays bounded on a 100 MB+
 file. The sync `compress(text)` helper feeds the same engine but holds the whole
 input string in memory — use it for small inputs and tests only. Throughput runs
 from ~20k lines/s on rich JSONL (per-line `JSON.parse`) to ~300k lines/s on plain
@@ -261,7 +263,7 @@ Codified as a regression test in [`test/ab.test.ts`](test/ab.test.ts).
 
 ## Roadmap
 
-- [x] CLI — `compress`, `wrap`, `templates`, `stats`, `validate`
+- [x] CLI — `compress` (with `--stats` / `--templates` views), `expand`, `validate`
 - [x] exact tokenizer — real BPE counts via `o200k_base`
 - [x] streaming ingestion — bounded-memory online pass
 - [x] A/B harness vs grep — `bun run ab`

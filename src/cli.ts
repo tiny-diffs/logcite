@@ -28,8 +28,6 @@ const EXIT = { OK: 0, INPUT: 1, USAGE: 2, SCHEMA: 3 } as const;
 interface Args {
   command: string;
   positionals: string[];
-  /** Tokens after `--` (the wrapped command). */
-  rest: string[];
   opts: CompressOptions & {
     pretty: boolean;
     limit?: number;
@@ -40,6 +38,8 @@ interface Args {
     index?: string;
     line?: number;
     context?: number;
+    stats?: boolean;
+    templates?: boolean;
   };
 }
 
@@ -47,10 +47,7 @@ const HELP = `logpod — systems log compression for AI agents (v${VERSION})
 
 Usage:
   logpod compress <file|->         Compress logs into an IncidentCapsule
-  logpod wrap [opts] -- <cmd...>   Run a command, compress its stdout+stderr
   logpod expand <file>             Show the raw lines around a cited line
-  logpod templates <file|->        Show the template breakdown
-  logpod stats <file|->            Show compression stats (with timing)
   logpod validate <file|->         Validate a capsule against the v1 schema
 
 Options:
@@ -62,10 +59,12 @@ Options:
       --max-lines <n>     Process at most the first N lines
       --max-bytes <n>     Process at most the first N bytes
       --no-redact         Do not redact PII before templating
+      --stats             (compress) print numbers only, with timing
+      --templates         (compress) print the template breakdown
+      --limit <n>         (compress --templates) show top N rows (default: 20)
       --index <file>      (compress) also write a line-offset index sidecar
       --line <n>          (expand) the cited line to expand
       --context <n>       (expand) lines of context each side (default: 20)
-      --limit <n>         (templates) show top N rows        (default: 20)
   -o, --output <file>     Write output to a file instead of stdout
       --pretty            Indent JSON output
   -h, --help              Show this help
@@ -74,9 +73,10 @@ Options:
 Examples:
   logpod compress fixtures/api.log -o capsule.json --index capsule.idx
   cat app.log | logpod compress - --level ERROR,WARN
-  logpod wrap -- kubectl logs -n prod api
+  kubectl logs -n prod api 2>&1 | logpod compress -
+  logpod compress fixtures/api.log --stats --max-lines 100000
+  logpod compress fixtures/api.log --templates --limit 10
   logpod expand fixtures/api.log --line 30006 --index capsule.idx
-  logpod stats fixtures/api.log --max-lines 100000
   logpod validate capsule.json
 `;
 
@@ -95,7 +95,6 @@ function parseLevels(list: string): Set<LogLevel> {
 function parseArgs(argv: string[]): Args {
   const opts: Args["opts"] = { pretty: false };
   const positionals: string[] = [];
-  let rest: string[] = [];
   let command = "";
 
   const needValue = (i: number, flag: string): string => {
@@ -111,10 +110,6 @@ function parseArgs(argv: string[]): Args {
 
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i]!;
-    if (a === "--") {
-      rest = argv.slice(i + 1);
-      break;
-    }
     switch (a) {
       case "-h":
       case "--help":
@@ -166,6 +161,12 @@ function parseArgs(argv: string[]): Args {
       case "--no-redact":
         opts.redact = false;
         break;
+      case "--stats":
+        opts.stats = true;
+        break;
+      case "--templates":
+        opts.templates = true;
+        break;
       case "--pretty":
         opts.pretty = true;
         break;
@@ -176,7 +177,7 @@ function parseArgs(argv: string[]): Args {
         else positionals.push(a);
     }
   }
-  return { command, positionals, rest, opts };
+  return { command, positionals, opts };
 }
 
 function die(msg: string, code: number = EXIT.USAGE): never {
@@ -198,9 +199,9 @@ async function emit(value: unknown, opts: Args["opts"]): Promise<number> {
 }
 
 /** Build the streaming options/limits from parsed CLI flags. */
-function streamOptions(opts: Args["opts"], fallbackService?: string): StreamOptions {
+function streamOptions(opts: Args["opts"]): StreamOptions {
   return {
-    service: opts.service ?? fallbackService,
+    service: opts.service,
     maxEvidence: opts.maxEvidence,
     simThreshold: opts.simThreshold,
     depth: opts.depth,
@@ -245,10 +246,41 @@ async function main(): Promise<void> {
 
   switch (args.command) {
     case "compress": {
+      if (args.opts.stats && args.opts.templates) die("use only one of --stats / --templates");
+      const started = performance.now();
       const { stream } = await openStream(args.positionals);
       const index = args.opts.index ? new LineIndex() : undefined;
       const acc = await compressStream(stream, readLimits(args.opts), streamOptions(args.opts), index);
-      await emit(acc.capsule(), args.opts);
+
+      if (args.opts.templates) {
+        // template breakdown view (same input, different lens)
+        const templates = acc.templates();
+        const rows = templateReport(templates, acc.lines).slice(0, args.opts.limit ?? 20);
+        await emit({ template_count: templates.length, lines_in: acc.lines, templates: rows }, args.opts);
+      } else if (args.opts.stats) {
+        // numbers-only view, with timing
+        const capsule = acc.capsule();
+        const elapsedMs = Math.round((performance.now() - started) * 10) / 10;
+        await emit(
+          {
+            lines_in: acc.lines,
+            tokens_in_est: capsule.stats.tokens_in_est,
+            tokens_out_est: capsule.stats.tokens_out_est,
+            compression: capsule.compression,
+            template_count: capsule.routine_summary.template_count,
+            rare_lines: countRareLines(acc.templates(), acc.lines),
+            performance: {
+              elapsed_ms: elapsedMs,
+              lines_per_sec: elapsedMs > 0 ? Math.round((acc.lines / elapsedMs) * 1000) : 0,
+              input_bytes: acc.bytes,
+            },
+          },
+          args.opts,
+        );
+      } else {
+        await emit(acc.capsule(), args.opts);
+      }
+
       if (index && args.opts.index) await Bun.write(args.opts.index, index.serialize());
       break;
     }
@@ -269,54 +301,6 @@ async function main(): Promise<void> {
       } catch (e) {
         die((e as Error).message, EXIT.INPUT);
       }
-      break;
-    }
-
-    case "wrap": {
-      if (args.rest.length === 0) die("wrap needs a command after `--`");
-      const proc = Bun.spawn(args.rest, { stdout: "pipe", stderr: "pipe" });
-      // Logs may land on either stream; compress both, then forward exit code.
-      const [out, err, code] = await Promise.all([
-        new Response(proc.stdout).text(),
-        new Response(proc.stderr).text(),
-        proc.exited,
-      ]);
-      const text = out + (err && !out.endsWith("\n") ? "\n" : "") + err;
-      const stream = new Response(text).body!;
-      const acc = await compressStream(stream, readLimits(args.opts), streamOptions(args.opts, args.rest[0]));
-      await emit(acc.capsule(), args.opts);
-      process.exit(code);
-    }
-
-    case "templates": {
-      const { stream } = await openStream(args.positionals);
-      const acc = await compressStream(stream, readLimits(args.opts), streamOptions(args.opts));
-      const templates = acc.templates();
-      const rows = templateReport(templates, acc.lines).slice(0, args.opts.limit ?? 20);
-      await emit({ template_count: templates.length, lines_in: acc.lines, templates: rows }, args.opts);
-      break;
-    }
-
-    case "stats": {
-      const started = performance.now();
-      const { stream } = await openStream(args.positionals);
-      const acc = await compressStream(stream, readLimits(args.opts), streamOptions(args.opts));
-      const capsule = acc.capsule();
-      const elapsedMs = Math.round((performance.now() - started) * 10) / 10;
-      const output = {
-        lines_in: acc.lines,
-        tokens_in_est: capsule.stats.tokens_in_est,
-        tokens_out_est: capsule.stats.tokens_out_est,
-        compression: capsule.compression,
-        template_count: capsule.routine_summary.template_count,
-        rare_lines: countRareLines(acc.templates(), acc.lines),
-        performance: {
-          elapsed_ms: elapsedMs,
-          lines_per_sec: elapsedMs > 0 ? Math.round((acc.lines / elapsedMs) * 1000) : 0,
-          input_bytes: acc.bytes,
-        },
-      };
-      await emit(output, args.opts);
       break;
     }
 
