@@ -216,18 +216,13 @@ function readLimits(opts: Args["opts"]): ReadLimits {
   return { maxBytes: opts.maxBytes, maxLines: opts.maxLines };
 }
 
-/**
- * Open a positional source as a byte stream (never loading it whole).
- * Returns the stream plus the input size in bytes when known (files).
- */
-async function openStream(
-  positionals: string[],
-): Promise<{ stream: ReadableStream<Uint8Array>; bytes?: number }> {
+/** Open a positional source as a byte stream (never loading it whole). */
+async function openStream(positionals: string[]): Promise<ReadableStream<Uint8Array>> {
   const src = positionals[0];
-  if (!src || src === "-") return { stream: Bun.stdin.stream() };
+  if (!src || src === "-") return Bun.stdin.stream();
   const file = Bun.file(src);
   if (!(await file.exists())) die(`no such file: ${src}`, EXIT.INPUT);
-  return { stream: file.stream(), bytes: file.size };
+  return file.stream();
 }
 
 /** Read a whole positional source as text (for small inputs like a capsule). */
@@ -250,7 +245,7 @@ async function main(): Promise<void> {
     case "compress": {
       if (args.opts.stats && args.opts.templates) die("use only one of --stats / --templates");
       const started = performance.now();
-      const { stream } = await openStream(args.positionals);
+      const stream = await openStream(args.positionals);
       const index = args.opts.index ? new LineIndex() : undefined;
       const acc = await compressStream(stream, readLimits(args.opts), streamOptions(args.opts), index);
 
@@ -305,7 +300,6 @@ async function main(): Promise<void> {
       }
       break;
     }
-
 
     case "validate": {
       const text = await readText(args.positionals);
