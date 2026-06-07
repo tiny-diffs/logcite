@@ -45,7 +45,7 @@
     "envelope": "heroku",
     "lines_in": 3167,
     "tokens_in": 163953,
-    "tokens_out": 1122,
+    "tokens_out": 1126,
     "compression": 146,
     "template_count": 9,
     "pct_ts": 100,
@@ -60,7 +60,7 @@
     "recall": 1,
     "facts_found": 5,
     "facts_total": 5,
-    "role_accuracy": 0.4,
+    "role_accuracy": 0.6,
     "citation_integrity": 1,
     "context_loss": [],
     "schema_valid": true,
@@ -91,35 +91,35 @@
         "score": 0.53
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 236,
         "text": "level=error msg=\"upstream 502 bad gateway\" ts=2025-05-05T14:23:30Z request_id=req_1210 dyno=web.3 service=recommendations status=502",
         "template": "T4",
         "score": 0.74
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 237,
         "text": "level=error msg=\"recommendations service oom killed: process exceeded memory quota\" ts=2025-05-05T14:23:30Z request_id=req_1210 dyno=web.3 service=recommendations mem_mb=1024 quota_mb=512",
         "template": "T5",
         "score": 0.8
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 238,
         "text": "level=error msg=\"upstream 502 bad gateway\" ts=2025-05-05T14:23:31Z request_id=req_1211 dyno=web.4 service=recommendations status=502",
         "template": "T4",
         "score": 0.74
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 243,
         "text": "level=error msg=\"recommendations service oom killed: process exceeded memory quota\" ts=2025-05-05T14:23:35Z request_id=req_1215 dyno=web.4 service=recommendations mem_mb=1024 quota_mb=512",
         "template": "T5",
         "score": 0.8
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 260,
         "text": "level=error msg=\"request failed: recommendations unavailable\" ts=2025-05-05T14:23:50Z request_id=req_1230 dyno=web.3 method=GET path=/api/v2/feeds status=503 duration_ms=5001",
         "template": "T6",
@@ -196,7 +196,7 @@
     "stats": {
       "lines_in": 3167,
       "tokens_in_est": 163953,
-      "tokens_out_est": 1122
+      "tokens_out_est": 1126
     }
   },
   "log_lines": 3167

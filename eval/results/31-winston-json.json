@@ -45,7 +45,7 @@
     "envelope": "none",
     "lines_in": 153,
     "tokens_in": 9497,
-    "tokens_out": 1259,
+    "tokens_out": 1252,
     "compression": 8,
     "template_count": 13,
     "pct_ts": 100,
@@ -57,21 +57,19 @@
       "consequence"
     ],
     "has_root_cause": true,
-    "recall": 0.8,
-    "facts_found": 4,
+    "recall": 1,
+    "facts_found": 5,
     "facts_total": 5,
-    "role_accuracy": 0.5,
+    "role_accuracy": 0.8,
     "citation_integrity": 1,
-    "context_loss": [
-      "payment success rate below"
-    ],
+    "context_loss": [],
     "schema_valid": true,
     "schema_errors": [],
     "error": null,
     "expect_ts": true,
     "expect_level": true,
     "min_recall": 1,
-    "pass": false
+    "pass": true
   },
   "capsule": {
     "schema": "logpod.incident_capsule/v1",
@@ -93,63 +91,49 @@
         "score": 0.55
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 133,
         "text": "{\"level\": \"error\", \"message\": \"stripe api error: Request failed with status code 429\", \"timestamp\": \"2026-05-04T09:00:12.334Z\", \"service\": \"payment-svc\", \"pid\": 7711, \"statusCode\": 429}",
         "template": "T5",
         "score": 0.76
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 134,
         "text": "{\"level\": \"error\", \"message\": \"payment processing failed orderId=ord-0205 err=\\\"stripe rate limit exceeded\\\"\", \"timestamp\": \"2026-05-04T09:00:13.445Z\", \"service\": \"payment-svc\", \"pid\": 7711, \"orderId\": \"ord-0205\"}",
         "template": "T6",
         "score": 0.77
       },
       {
-        "role": "trigger",
-        "line": 135,
-        "text": "{\"level\": \"warn\", \"message\": \"retrying payment orderId=ord-0205 attempt=1/3 backoff=500ms\", \"timestamp\": \"2026-05-04T09:00:13.956Z\", \"service\": \"payment-svc\", \"pid\": 7711}",
-        "template": "T7",
-        "score": 0.55
-      },
-      {
-        "role": "trigger",
+        "role": "consequence",
         "line": 136,
         "text": "{\"level\": \"error\", \"message\": \"stripe api error: Request failed with status code 429\", \"timestamp\": \"2026-05-04T09:00:14.667Z\", \"service\": \"payment-svc\", \"pid\": 7711, \"statusCode\": 429}",
         "template": "T5",
         "score": 0.76
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 137,
         "text": "{\"level\": \"error\", \"message\": \"payment processing failed orderId=ord-0206 err=\\\"stripe rate limit exceeded\\\"\", \"timestamp\": \"2026-05-04T09:00:15.778Z\", \"service\": \"payment-svc\", \"pid\": 7711, \"orderId\": \"ord-0206\"}",
         "template": "T6",
         "score": 0.77
       },
       {
-        "role": "trigger",
-        "line": 138,
-        "text": "{\"level\": \"warn\", \"message\": \"retrying payment orderId=ord-0206 attempt=1/3 backoff=500ms\", \"timestamp\": \"2026-05-04T09:00:16.289Z\", \"service\": \"payment-svc\", \"pid\": 7711}",
-        "template": "T7",
-        "score": 0.55
-      },
-      {
-        "role": "trigger",
+        "role": "consequence",
         "line": 141,
         "text": "{\"level\": \"error\", \"message\": \"stripe rate limit exceeded all retries exhausted orderId=ord-0205\", \"timestamp\": \"2026-05-04T09:00:18.112Z\", \"service\": \"payment-svc\", \"pid\": 7711, \"orderId\": \"ord-0205\"}",
         "template": "T8",
         "score": 0.81
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 142,
         "text": "{\"level\": \"error\", \"message\": \"stripe rate limit exceeded all retries exhausted orderId=ord-0206\", \"timestamp\": \"2026-05-04T09:00:19.223Z\", \"service\": \"payment-svc\", \"pid\": 7711, \"orderId\": \"ord-0206\"}",
         "template": "T8",
         "score": 0.81
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 143,
         "text": "{\"level\": \"error\", \"message\": \"webhook dispatch failed event=payment.failed target=https://hooks.example.com/stripe err=\\\"connection refused\\\"\", \"timestamp\": \"2026-05-04T09:00:20.334Z\", \"service\": \"payment-svc\", \"pid\": 7711}",
         "template": "T9",
@@ -157,9 +141,23 @@
       },
       {
         "role": "consequence",
+        "line": 144,
+        "text": "{\"level\": \"warn\", \"message\": \"payment queue backlog depth=47 (threshold=10)\", \"timestamp\": \"2026-05-04T09:00:21.445Z\", \"service\": \"payment-svc\", \"pid\": 7711}",
+        "template": "T10",
+        "score": 0.59
+      },
+      {
+        "role": "consequence",
         "line": 148,
         "text": "{\"level\": \"error\", \"message\": \"dead letter queue overflow payment events dropped count=12\", \"timestamp\": \"2026-05-04T09:00:25.889Z\", \"service\": \"payment-svc\", \"pid\": 7711}",
         "template": "T11",
+        "score": 0.85
+      },
+      {
+        "role": "consequence",
+        "line": 153,
+        "text": "{\"level\": \"error\", \"message\": \"alert fired: payment success rate below 10% for 2 minutes\", \"timestamp\": \"2026-05-04T09:00:30.445Z\", \"service\": \"payment-svc\", \"pid\": 7711}",
+        "template": "T12",
         "score": 0.85
       }
     ],
@@ -198,7 +196,7 @@
     "stats": {
       "lines_in": 153,
       "tokens_in_est": 9497,
-      "tokens_out_est": 1259
+      "tokens_out_est": 1252
     }
   },
   "log_lines": 153

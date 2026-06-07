@@ -45,21 +45,23 @@
     "envelope": "none",
     "lines_in": 42,
     "tokens_in": 2303,
-    "tokens_out": 1253,
+    "tokens_out": 1261,
     "compression": 2,
     "template_count": 13,
     "pct_ts": 100,
     "pct_level": 100,
     "evidence_count": 12,
     "roles": [
+      "context",
       "trigger",
-      "root_cause"
+      "root_cause",
+      "consequence"
     ],
     "has_root_cause": true,
     "recall": 0.8,
     "facts_found": 4,
     "facts_total": 5,
-    "role_accuracy": 0.5,
+    "role_accuracy": 0.75,
     "citation_integrity": 1,
     "context_loss": [
       "econnrefused 10.0.1.45:6379"
@@ -78,7 +80,7 @@
     "window": "00:00:00 to 00:00:17",
     "evidence": [
       {
-        "role": "trigger",
+        "role": "context",
         "line": 17,
         "text": "{\"timestamp\":1748649609001,\"message\":\"[WARN] 2026-05-30T14:00:09.001Z [auth] jwt validation: token near expiry sub=user_99001 exp_in=95s\"}",
         "template": "T3",
@@ -99,63 +101,63 @@
         "score": 0.5
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 26,
         "text": "{\"timestamp\":1748649612901,\"message\":\"[ERROR] 2026-05-30T14:00:12.901Z [redis] ECONNRESET: read ECONNRESET socket hang up host=redis-cluster-01.internal port=6379 cmd=GET key=catalog:electronics\"}",
         "template": "T6",
         "score": 0.85
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 27,
         "text": "{\"timestamp\":1748649613201,\"message\":\"[ERROR] 2026-05-30T14:00:13.201Z [redis] ECONNRESET: read ECONNRESET socket hang up host=redis-cluster-01.internal port=6379 cmd=SET key=session:user_33109 ttl=3600\"}",
         "template": "T7",
         "score": 0.85
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 28,
         "text": "{\"timestamp\":1748649613501,\"message\":\"[ERROR] 2026-05-30T14:00:13.501Z [redis] connection refused: connect ECONNREFUSED <ip>:6379 host=redis-cluster-01.internal all nodes unreachable\"}",
         "template": "T8",
         "score": 0.74
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 29,
         "text": "{\"timestamp\":1748649613801,\"message\":\"[ERROR] 2026-05-30T14:00:13.801Z [app] unhandled exception in request handler: Error: Redis client is closed\\n    at RedisClient.sendCommand (/app/node_modules/redis/dist/client/index.js:274:23)\\n    at Object.get (/app/src/cache/redis.service.ts:44:32)\\n    at CartController.addItem (/app/src/cart/cart.controller.ts:89:18)\"}",
         "template": "T9",
         "score": 0.85
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 31,
         "text": "{\"timestamp\":1748649614401,\"message\":\"[ERROR] 2026-05-30T14:00:14.401Z [redis] connection refused: connect ECONNREFUSED <ip>:6379 host=redis-cluster-01.internal all nodes unreachable\"}",
         "template": "T8",
         "score": 0.74
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 32,
         "text": "{\"timestamp\":1748649614701,\"message\":\"[ERROR] 2026-05-30T14:00:14.701Z [session] session lookup failed for userId=user_44821: Error: Redis client is closed cannot retrieve session data\"}",
         "template": "T10",
         "score": 0.76
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 33,
         "text": "{\"timestamp\":1748649615001,\"message\":\"[ERROR] 2026-05-30T14:00:15.001Z [session] session lookup failed for userId=user_55123: Error: Redis client is closed cannot retrieve session data\"}",
         "template": "T10",
         "score": 0.76
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 35,
         "text": "{\"timestamp\":1748649615601,\"message\":\"[ERROR] 2026-05-30T14:00:15.601Z [http] GET /api/cart 500 4ms userId=user_33109 error=Redis client is closed\"}",
         "template": "T11",
         "score": 0.74
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 36,
         "text": "{\"timestamp\":1748649615901,\"message\":\"[ERROR] 2026-05-30T14:00:15.901Z [http] POST /api/orders 500 3ms userId=user_99001 error=Redis client is closed\"}",
         "template": "T11",
@@ -197,7 +199,7 @@
     "stats": {
       "lines_in": 42,
       "tokens_in_est": 2303,
-      "tokens_out_est": 1253
+      "tokens_out_est": 1261
     }
   },
   "log_lines": 42

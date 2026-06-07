@@ -50,14 +50,13 @@
     "envelope": "none",
     "lines_in": 2830,
     "tokens_in": 161256,
-    "tokens_out": 868,
-    "compression": 186,
+    "tokens_out": 900,
+    "compression": 179,
     "template_count": 18,
     "pct_ts": 0,
     "pct_level": 56.3,
     "evidence_count": 12,
     "roles": [
-      "context",
       "trigger",
       "root_cause",
       "consequence"
@@ -66,10 +65,10 @@
     "recall": 0.67,
     "facts_found": 4,
     "facts_total": 6,
-    "role_accuracy": 0,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [
-      "dynamodb.getitem slow",
+      "sqs queue depth alarm",
       "throttlingexception: rate exceeded"
     ],
     "schema_valid": true,
@@ -86,77 +85,77 @@
     "window": "unknown",
     "evidence": [
       {
-        "role": "context",
+        "role": "trigger",
+        "line": 1634,
+        "text": "[WARN] dynamodb.getItem slow table=user-profiles pk=USER#95933 duration=450ms threshold=150ms\tRequestId: <uuid>",
+        "template": "T9",
+        "score": 0.66
+      },
+      {
+        "role": "trigger",
+        "line": 1667,
+        "text": "[WARN] dynamodb.getItem slow table=user-profiles pk=USER#89908 duration=510ms threshold=150ms\tRequestId: <uuid>",
+        "template": "T9",
+        "score": 0.66
+      },
+      {
+        "role": "root_cause",
+        "line": 1728,
+        "text": "[ERROR] dynamodb.getItem error table=user-profiles pk=USER#82272 ProvisionedThroughputExceededException: The level of configured provisioned throughput for the table was exceeded. Consider increasing your provisioning level with the UpdateTable API\tRequestId: <uuid>",
+        "template": "T10",
+        "score": 0.71
+      },
+      {
+        "role": "consequence",
         "line": 1732,
         "text": "[ERROR] dynamodb.getItem failed after 3 retries table=user-profiles error=ProvisionedThroughputExceededException giving up\tRequestId: <uuid>",
         "template": "T13",
         "score": 0.71
       },
       {
-        "role": "context",
-        "line": 1741,
-        "text": "[ERROR] dynamodb.getItem failed after 3 retries table=user-profiles error=ProvisionedThroughputExceededException giving up\tRequestId: <uuid>",
-        "template": "T13",
-        "score": 0.71
-      },
-      {
-        "role": "context",
+        "role": "consequence",
         "line": 1927,
         "text": "[ERROR] dynamodb.getItem error table=user-profiles pk=USER#98846 ProvisionedThroughputExceededException: The level of configured provisioned throughput for the table was exceeded. Consider increasing your provisioning level with the UpdateTable API\tRequestId: <uuid>",
         "template": "T10",
         "score": 0.91
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 2022,
         "text": "[ERROR] dynamodb.getItem error table=user-profiles pk=USER#95782 ProvisionedThroughputExceededException: The level of configured provisioned throughput for the table was exceeded. Consider increasing your provisioning level with the UpdateTable API\tRequestId: <uuid>",
         "template": "T10",
         "score": 0.91
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 2110,
         "text": "[ERROR] task timed out after 3.00 seconds\tRequestId: <uuid>",
         "template": "T14",
         "score": 0.72
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 2117,
         "text": "[ERROR] task timed out after 3.00 seconds\tRequestId: <uuid>",
         "template": "T14",
         "score": 0.72
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 2319,
         "text": "[ERROR] batch item failure: messageId=832012 processing failed, returning to queue\tRequestId: <uuid>",
         "template": "T15",
         "score": 0.94
       },
       {
-        "role": "trigger",
-        "line": 2320,
-        "text": "[WARN] sqs queue depth alarm: queue=user-profile-updates approximateNumberOfMessagesNotVisible=200 threshold=500\tRequestId: <uuid>",
-        "template": "T16",
-        "score": 0.48
-      },
-      {
-        "role": "trigger",
+        "role": "consequence",
         "line": 2326,
         "text": "[ERROR] batch item failure: messageId=915031 processing failed, returning to queue\tRequestId: <uuid>",
         "template": "T15",
         "score": 0.94
       },
       {
-        "role": "trigger",
-        "line": 2327,
-        "text": "[WARN] sqs queue depth alarm: queue=user-profile-updates approximateNumberOfMessagesNotVisible=250 threshold=500\tRequestId: <uuid>",
-        "template": "T16",
-        "score": 0.48
-      },
-      {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 2457,
         "text": "[ERROR] message moved to dead letter queue: queue=user-profile-updates-dlq messageId=948666 receiveCount=4 reason=processing failed after max retries\tRequestId: <uuid>",
         "template": "T17",
@@ -201,11 +200,11 @@
         }
       ]
     },
-    "compression": 186,
+    "compression": 179,
     "stats": {
       "lines_in": 2830,
       "tokens_in_est": 161256,
-      "tokens_out_est": 868
+      "tokens_out_est": 900
     }
   },
   "log_lines": 2830

@@ -40,13 +40,14 @@
     "envelope": "none",
     "lines_in": 14,
     "tokens_in": 661,
-    "tokens_out": 855,
+    "tokens_out": 859,
     "compression": 1,
     "template_count": 9,
     "pct_ts": 100,
     "pct_level": 71.4,
     "evidence_count": 9,
     "roles": [
+      "context",
       "trigger",
       "root_cause",
       "consequence"
@@ -55,7 +56,7 @@
     "recall": 1,
     "facts_found": 4,
     "facts_total": 4,
-    "role_accuracy": 0.25,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [],
     "schema_valid": true,
@@ -72,7 +73,7 @@
     "window": "14:00:00 to 14:00:34",
     "evidence": [
       {
-        "role": "trigger",
+        "role": "context",
         "line": 5,
         "text": "2026-05-04T14:00:08.140000Z 41 [Warning] [MY-010055] [Server] IP address '<ip>' could not be resolved",
         "template": "T3",
@@ -86,42 +87,42 @@
         "score": 0.59
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 7,
         "text": "2026-05-04T14:00:14.665000Z 78 [ERROR] [MY-012345] [InnoDB] Lock wait timeout exceeded; try restarting transaction on table shop.orders",
         "template": "T5",
         "score": 0.77
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 8,
         "text": "2026-05-04T14:00:17.930000Z 79 [ERROR] [MY-012345] [InnoDB] Lock wait timeout exceeded; try restarting transaction on table shop.orders",
         "template": "T5",
         "score": 0.77
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 9,
         "text": "2026-05-04T14:00:20.193000Z 80 [ERROR] [MY-013183] [InnoDB] Deadlock found when trying to get lock; try restarting transaction",
         "template": "T6",
         "score": 0.77
       },
       {
-        "role": "trigger",
+        "role": "context",
         "line": 10,
         "text": "2026-05-04T14:00:22.718000Z 12 [Warning] [MY-010055] [Server] IP address '<ip>' could not be resolved",
         "template": "T3",
         "score": 0.47
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 11,
         "text": "2026-05-04T14:00:25.980000Z 0 [Warning] [MY-010914] [Server] Too many connections: 152 of 151 max_connections reached, refusing new connections",
         "template": "T7",
         "score": 0.59
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 12,
         "text": "2026-05-04T14:00:28.240000Z 0 [ERROR] [MY-010914] [Server] Too many connections",
         "template": "T8",
@@ -170,7 +171,7 @@
     "stats": {
       "lines_in": 14,
       "tokens_in_est": 661,
-      "tokens_out_est": 855
+      "tokens_out_est": 859
     }
   },
   "log_lines": 14

@@ -45,13 +45,14 @@
     "envelope": "gcp",
     "lines_in": 30,
     "tokens_in": 3829,
-    "tokens_out": 2077,
+    "tokens_out": 2103,
     "compression": 2,
     "template_count": 17,
     "pct_ts": 100,
     "pct_level": 100,
     "evidence_count": 12,
     "roles": [
+      "context",
       "trigger",
       "root_cause",
       "consequence"
@@ -60,7 +61,7 @@
     "recall": 1,
     "facts_found": 5,
     "facts_total": 5,
-    "role_accuracy": 0.4,
+    "role_accuracy": 0.8,
     "citation_integrity": 1,
     "context_loss": [],
     "schema_valid": true,
@@ -77,16 +78,9 @@
     "window": "09:00:00 to 09:00:17",
     "evidence": [
       {
-        "role": "trigger",
+        "role": "context",
         "line": 4,
         "text": "{\"severity\":\"WARNING\",\"timestamp\":\"2026-05-28T09:00:02.881Z\",\"logName\":\"projects/acme-prod-4421/logs/run.googleapis.com%2Fstdout\",\"resource\":{\"type\":\"cloud_run_revision\",\"labels\":{\"service_name\":\"order-processor\",\"revision_name\":\"order-processor-00042-xkz\",\"location\":\"us-central1\"}},\"jsonPayload\":{\"message\":\"cloud storage upload retry\",\"bucket\":\"acme-prod-invoices\",\"object\":\"invoices/2026/05/28/ord_AA1122BB.pdf\",\"attempt\":2,\"reason\":\"503 Service Unavailable\"}}",
-        "template": "T3",
-        "score": 0.43
-      },
-      {
-        "role": "trigger",
-        "line": 7,
-        "text": "{\"severity\":\"WARNING\",\"timestamp\":\"2026-05-28T09:00:04.901Z\",\"logName\":\"projects/acme-prod-4421/logs/run.googleapis.com%2Fstdout\",\"resource\":{\"type\":\"cloud_run_revision\",\"labels\":{\"service_name\":\"order-processor\",\"revision_name\":\"order-processor-00042-xkz\",\"location\":\"us-central1\"}},\"jsonPayload\":{\"message\":\"cloud storage upload retry\",\"bucket\":\"acme-prod-invoices\",\"object\":\"invoices/2026/05/28/ord_BB9988CC.pdf\",\"attempt\":2,\"reason\":\"503 Service Unavailable\"}}",
         "template": "T3",
         "score": 0.43
       },
@@ -105,49 +99,56 @@
         "score": 0.5
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
+        "line": 17,
+        "text": "{\"severity\":\"ERROR\",\"timestamp\":\"2026-05-28T09:00:10.901Z\",\"logName\":\"projects/acme-prod-4421/logs/run.googleapis.com%2Fstdout\",\"resource\":{\"type\":\"cloud_run_revision\",\"labels\":{\"service_name\":\"order-processor\",\"revision_name\":\"order-processor-00042-xkz\",\"location\":\"us-central1\"}},\"jsonPayload\":{\"message\":\"pubsub publish failed\",\"topic\":\"projects/acme-prod-4421/topics/order-events\",\"error\":\"rpc error: code = Unavailable desc = io.grpc.StatusRuntimeException: UNAVAILABLE: Channel Pipeline closed while sending\",\"messageId\":\"msg_7712699\",\"orderId\":\"ord_GG7788HH\"}}",
+        "template": "T11",
+        "score": 0.73
+      },
+      {
+        "role": "consequence",
         "line": 19,
         "text": "{\"severity\":\"ERROR\",\"timestamp\":\"2026-05-28T09:00:12.001Z\",\"logName\":\"projects/acme-prod-4421/logs/run.googleapis.com%2Fstdout\",\"resource\":{\"type\":\"cloud_run_revision\",\"labels\":{\"service_name\":\"order-processor\",\"revision_name\":\"order-processor-00042-xkz\",\"location\":\"us-central1\"}},\"jsonPayload\":{\"message\":\"order event not delivered: downstream inventory-service will not see this order\",\"orderId\":\"ord_GG7788HH\",\"topic\":\"projects/acme-prod-4421/topics/order-events\",\"consequence\":\"inventory reservation skipped\"}}",
         "template": "T12",
         "score": 0.76
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 21,
         "text": "{\"severity\":\"ERROR\",\"timestamp\":\"2026-05-28T09:00:13.001Z\",\"logName\":\"projects/acme-prod-4421/logs/run.googleapis.com%2Fstdout\",\"resource\":{\"type\":\"cloud_run_revision\",\"labels\":{\"service_name\":\"order-processor\",\"revision_name\":\"order-processor-00042-xkz\",\"location\":\"us-central1\"}},\"jsonPayload\":{\"message\":\"pubsub publish failed\",\"topic\":\"projects/acme-prod-4421/topics/order-events\",\"error\":\"rpc error: code = Unavailable desc = io.grpc.StatusRuntimeException: UNAVAILABLE: Channel Pipeline closed while sending\",\"messageId\":\"msg_7712801\",\"orderId\":\"ord_HH9900II\"}}",
         "template": "T11",
         "score": 0.93
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 22,
         "text": "{\"severity\":\"ERROR\",\"timestamp\":\"2026-05-28T09:00:13.501Z\",\"logName\":\"projects/acme-prod-4421/logs/run.googleapis.com%2Fstdout\",\"resource\":{\"type\":\"cloud_run_revision\",\"labels\":{\"service_name\":\"order-processor\",\"revision_name\":\"order-processor-00042-xkz\",\"location\":\"us-central1\"}},\"jsonPayload\":{\"message\":\"order event not delivered: downstream inventory-service will not see this order\",\"orderId\":\"ord_EE5566FF\",\"topic\":\"projects/acme-prod-4421/topics/order-events\",\"consequence\":\"inventory reservation skipped\"}}",
         "template": "T12",
         "score": 0.76
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 23,
         "text": "{\"severity\":\"ERROR\",\"timestamp\":\"2026-05-28T09:00:14.001Z\",\"logName\":\"projects/acme-prod-4421/logs/run.googleapis.com%2Fstdout\",\"resource\":{\"type\":\"cloud_run_revision\",\"labels\":{\"service_name\":\"order-processor\",\"revision_name\":\"order-processor-00042-xkz\",\"location\":\"us-central1\"}},\"jsonPayload\":{\"message\":\"POST /v2/orders 500\",\"latency_ms\":8,\"userId\":\"usr_44902\",\"error\":\"pubsub publish failed: UNAVAILABLE\"}}",
         "template": "T13",
         "score": 0.79
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 24,
         "text": "{\"severity\":\"ERROR\",\"timestamp\":\"2026-05-28T09:00:14.601Z\",\"logName\":\"projects/acme-prod-4421/logs/run.googleapis.com%2Fstdout\",\"resource\":{\"type\":\"cloud_run_revision\",\"labels\":{\"service_name\":\"order-processor\",\"revision_name\":\"order-processor-00042-xkz\",\"location\":\"us-central1\"}},\"jsonPayload\":{\"message\":\"pubsub publish failed\",\"topic\":\"projects/acme-prod-4421/topics/order-events\",\"error\":\"rpc error: code = Unavailable desc = io.grpc.StatusRuntimeException: UNAVAILABLE: Channel Pipeline closed while sending\",\"messageId\":\"msg_7712889\",\"orderId\":\"ord_II0011JJ\"}}",
         "template": "T11",
         "score": 0.93
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 26,
         "text": "{\"severity\":\"ERROR\",\"timestamp\":\"2026-05-28T09:00:15.601Z\",\"logName\":\"projects/acme-prod-4421/logs/run.googleapis.com%2Fstdout\",\"resource\":{\"type\":\"cloud_run_revision\",\"labels\":{\"service_name\":\"order-processor\",\"revision_name\":\"order-processor-00042-xkz\",\"location\":\"us-central1\"}},\"jsonPayload\":{\"message\":\"POST /v2/orders 500\",\"latency_ms\":6,\"userId\":\"usr_67711\",\"error\":\"pubsub publish failed: UNAVAILABLE\"}}",
         "template": "T13",
         "score": 0.79
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 28,
         "text": "{\"severity\":\"CRITICAL\",\"timestamp\":\"2026-05-28T09:00:16.601Z\",\"logName\":\"projects/acme-prod-4421/logs/run.googleapis.com%2Fstdout\",\"resource\":{\"type\":\"cloud_run_revision\",\"labels\":{\"service_name\":\"order-processor\",\"revision_name\":\"order-processor-00042-xkz\",\"location\":\"us-central1\"}},\"jsonPayload\":{\"message\":\"pubsub topic unavailable: all publish attempts exhausted, order pipeline halted\",\"topic\":\"projects/acme-prod-4421/topics/order-events\",\"failedOrders\":[\"ord_GG7788HH\",\"ord_EE5566FF\",\"ord_HH9900II\",\"ord_II0011JJ\"],\"action\":\"manual intervention required\"}}",
         "template": "T14",
@@ -196,7 +197,7 @@
     "stats": {
       "lines_in": 30,
       "tokens_in_est": 3829,
-      "tokens_out_est": 2077
+      "tokens_out_est": 2103
     }
   },
   "log_lines": 30

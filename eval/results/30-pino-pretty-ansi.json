@@ -45,23 +45,23 @@
     "envelope": "none",
     "lines_in": 179,
     "tokens_in": 4820,
-    "tokens_out": 805,
+    "tokens_out": 813,
     "compression": 6,
     "template_count": 13,
     "pct_ts": 100,
     "pct_level": 100,
     "evidence_count": 12,
     "roles": [
+      "context",
       "trigger",
       "root_cause",
-      "consequence",
-      "context"
+      "consequence"
     ],
     "has_root_cause": true,
     "recall": 1,
     "facts_found": 5,
     "facts_total": 5,
-    "role_accuracy": 0,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [],
     "schema_valid": true,
@@ -78,84 +78,84 @@
     "window": "11:50:00 to 12:13:22",
     "evidence": [
       {
-        "role": "trigger",
+        "role": "context",
         "line": 5,
         "text": "[11:50:04.450] WARN (1234): slow query 310ms table=products",
         "template": "T4",
         "score": 0.44
       },
       {
-        "role": "trigger",
-        "line": 21,
-        "text": "[11:50:20.243] WARN (1234): slow query 211ms table=sessions",
-        "template": "T4",
-        "score": 0.44
-      },
-      {
-        "role": "root_cause",
+        "role": "context",
         "line": 29,
         "text": "[11:50:28.147] ERROR (1234): unhandled exception msg=\"Cannot read properties of undefined (reading 'id')\" req=GET /api/cart/9919",
         "template": "T6",
         "score": 0.91
       },
       {
-        "role": "consequence",
+        "role": "context",
         "line": 48,
         "text": "[11:50:47.294] ERROR (1234): unhandled exception msg=\"Cannot read properties of undefined (reading 'id')\" req=GET /api/cart/9938",
         "template": "T6",
         "score": 0.91
       },
       {
-        "role": "context",
+        "role": "trigger",
         "line": 160,
         "text": "[12:13:00.001] WARN (1234): redis latency spike 420ms host=redis-01",
         "template": "T7",
         "score": 0.55
       },
       {
-        "role": "context",
+        "role": "trigger",
+        "line": 162,
+        "text": "[12:13:02.334] WARN (1234): redis latency spike 670ms host=redis-01",
+        "template": "T7",
+        "score": 0.55
+      },
+      {
+        "role": "root_cause",
         "line": 164,
         "text": "[12:13:05.667] ERROR (1234): redis connection timeout host=redis-01 port=6379 err=\"connect ETIMEDOUT\"",
         "template": "T8",
         "score": 0.79
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 165,
         "text": "[12:13:06.778] ERROR (1234): session lookup failed sessionId=sess_a3f9c1 err=\"redis connection timeout\"",
         "template": "T9",
         "score": 0.79
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 167,
         "text": "[12:13:09.001] WARN (1234): falling back to db session store sessionId=sess_b8e2d7",
         "template": "T10",
         "score": 0.59
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 168,
         "text": "[12:13:10.112] ERROR (1234): redis connection timeout host=redis-01 port=6379 err=\"connect ETIMEDOUT\"",
         "template": "T8",
         "score": 0.79
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 169,
         "text": "[12:13:11.223] ERROR (1234): session lookup failed sessionId=sess_c7f3e9 err=\"redis connection timeout\"",
         "template": "T9",
         "score": 0.79
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 170,
         "text": "[12:13:12.334] ERROR (1234): cart service unavailable downstream=redis status=503",
         "template": "T11",
         "score": 0.85
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 175,
         "text": "[12:13:17.889] WARN (1234): circuit breaker open downstream=redis after 3 failures",
         "template": "T12",
@@ -197,7 +197,7 @@
     "stats": {
       "lines_in": 179,
       "tokens_in_est": 4820,
-      "tokens_out_est": 805
+      "tokens_out_est": 813
     }
   },
   "log_lines": 179

@@ -40,7 +40,7 @@
     "envelope": "syslog-rfc3164",
     "lines_in": 18,
     "tokens_in": 528,
-    "tokens_out": 455,
+    "tokens_out": 457,
     "compression": 1,
     "template_count": 9,
     "pct_ts": 100,
@@ -49,13 +49,13 @@
     "roles": [
       "trigger",
       "root_cause",
-      "context"
+      "consequence"
     ],
     "has_root_cause": true,
     "recall": 0.75,
     "facts_found": 3,
     "facts_total": 4,
-    "role_accuracy": 0.33,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [
       "failed with result"
@@ -88,21 +88,21 @@
         "score": 0.52
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 11,
         "text": "May 04 14:00:17 app-01 checkout[4471]: ERROR failed to write order journal: No space left on device",
         "template": "T5",
         "score": 0.74
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 12,
         "text": "May 04 14:00:18 app-01 checkout[4471]: ERROR POST /v1/checkout 500 12ms write failed",
         "template": "T6",
         "score": 0.85
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 16,
         "text": "May 04 14:00:21 app-01 checkout[4471]: FATAL shutting down: cannot persist state, No space left on device",
         "template": "T5",
@@ -144,7 +144,7 @@
     "stats": {
       "lines_in": 18,
       "tokens_in_est": 528,
-      "tokens_out_est": 455
+      "tokens_out_est": 457
     }
   },
   "log_lines": 18

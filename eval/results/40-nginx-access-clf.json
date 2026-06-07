@@ -44,7 +44,7 @@
     "format": "text",
     "envelope": "none",
     "lines_in": 5045,
-    "tokens_in": 405831,
+    "tokens_in": 405985,
     "tokens_out": 379,
     "compression": 1071,
     "template_count": 5,
@@ -112,7 +112,7 @@
     "compression": 1071,
     "stats": {
       "lines_in": 5045,
-      "tokens_in_est": 405831,
+      "tokens_in_est": 405985,
       "tokens_out_est": 379
     }
   },

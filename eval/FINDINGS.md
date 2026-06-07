@@ -99,3 +99,41 @@ Worst: **nginx-access(1) haproxy(2)** postgres(4) systemd(4) ecs(5) spring(5) py
 
 ### Bottom line
 The **faithfulness contract holds** under real-world mess (cite 1.00, faith 7.8) — logpod doesn't lie. The gap to "actually good" is **(a) correct causal roles** and **(b) surfacing what the severity gate currently hides**. Those two (tasks #12 and #4) move more capsules from 5-6 to 8-9 than anything else.
+
+---
+
+## #12 result — causal-role fix (re-judged, before → after)
+
+Fix shipped in `fix(causal): pick the originating error as root, suppress distractors`
+(root = earliest originating error followed by fallout; recurring/spread templates
+barred from root/trigger, demoted to context). Re-ran the harness and re-judged all 38.
+
+| axis | before | after | Δ |
+|---|---|---|---|
+| signal | 6.32 | **7.08** | +0.76 |
+| context_loss | 5.71 | **6.39** | +0.68 |
+| actionability | 6.50 | **6.95** | +0.45 |
+| overall | 6.29 | **6.82** | **+0.53** |
+| faithfulness | 7.76 | 6.95 | −0.82 |
+
+Deterministic role-accuracy 0.45 → 0.71; recall 0.821 → 0.834 (no regression);
+citation integrity still **1.00** everywhere.
+
+**Up ≥2 (13):** vercel 5→8, k8s-timestamps 5→9, winston 6→9, journalctl 6→9, ecs
+5→8, bunyan 7→9, k8s-plain 7→9, pino-nestjs 7→9, gcp 6→8, docker 6→8, pino-pretty
+6→8, cloudwatch-export 5→7, systemd 4→6. The distractor-as-root / symptom-as-root
+cases the judge flagged are fixed.
+
+**Down ≥2 (5):** java-gc 5→3 (the OOM block is multi-line → #3, untouched by #12),
+syslog-rfc5424 8→6, rfc3164 7→5, otel 9→7, zap 9→7. Two honest secondary effects:
+1. **"Earliest error" can be a trigger, not the root.** When the true originating
+   failure is a slightly *later* error, picking the absolute-earliest mislabels an
+   early-warning-ish error as root (otel/syslog/zap). Trigger-precedes-root is by
+   design, but the boundary is fuzzy.
+2. **Demoted distractors appear as `context` and read as noise** (zap s3, redis
+   overcommit, mysql IP-resolution). They are faithful (cite still 1.00) but add
+   clutter — hence the faithfulness dip is about *labeling/noise, not fabrication*.
+
+**#12 v2 (cheap follow-up):** drop recurring/distractor lines from evidence
+entirely (keep them only in routine_summary), and consider a small grace window so
+the root can be the *first error in the burst* rather than the strict earliest.

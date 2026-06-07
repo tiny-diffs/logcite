@@ -50,7 +50,7 @@
     "envelope": "none",
     "lines_in": 137,
     "tokens_in": 10217,
-    "tokens_out": 851,
+    "tokens_out": 849,
     "compression": 12,
     "template_count": 13,
     "pct_ts": 100,
@@ -59,7 +59,8 @@
     "roles": [
       "trigger",
       "root_cause",
-      "consequence"
+      "consequence",
+      "context"
     ],
     "has_root_cause": true,
     "recall": 0.67,
@@ -113,14 +114,14 @@
         "score": 0.81
       },
       {
-        "role": "consequence",
+        "role": "context",
         "line": 45,
         "text": "{\"level\":\"error\",\"timestamp\":\"2026-05-04T14:20:05.175Z\",\"component\":\"upstream\",\"msg\":\"no healthy upstream: cluster=payment-svc all endpoints unhealthy or ejected\"}",
         "template": "T8",
         "score": 0.68
       },
       {
-        "role": "consequence",
+        "role": "context",
         "line": 49,
         "text": "{\"level\":\"error\",\"timestamp\":\"2026-05-04T14:20:05.545Z\",\"component\":\"upstream\",\"msg\":\"no healthy upstream: cluster=payment-svc all endpoints unhealthy or ejected\"}",
         "template": "T8",
@@ -176,7 +177,7 @@
     "stats": {
       "lines_in": 137,
       "tokens_in_est": 10217,
-      "tokens_out_est": 851
+      "tokens_out_est": 849
     }
   },
   "log_lines": 137

@@ -45,7 +45,7 @@
     "envelope": "none",
     "lines_in": 169,
     "tokens_in": 6529,
-    "tokens_out": 959,
+    "tokens_out": 964,
     "compression": 7,
     "template_count": 15,
     "pct_ts": 100,
@@ -60,7 +60,7 @@
     "recall": 1,
     "facts_found": 5,
     "facts_total": 5,
-    "role_accuracy": 0.4,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [],
     "schema_valid": true,
@@ -91,42 +91,42 @@
         "score": 0.51
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 83,
         "text": "time=\"2026-05-04T13:47:26Z\" level=error msg=\"grpc dial inventory-svc:443 failed: tls: certificate has expired or is not yet valid\" target=inventory-svc:443",
         "template": "T9",
         "score": 0.75
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 84,
         "text": "time=\"2026-05-04T13:47:27Z\" level=error msg=\"inventory reservation failed: rpc error: code = unavailable desc = connection refused\" order_id=ORD-10027",
         "template": "T10",
         "score": 0.75
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 86,
         "text": "time=\"2026-05-04T13:47:28Z\" level=error msg=\"grpc dial inventory-svc:443 failed: tls: certificate has expired or is not yet valid\" target=inventory-svc:443",
         "template": "T9",
         "score": 0.75
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 87,
         "text": "time=\"2026-05-04T13:47:29Z\" level=error msg=\"inventory reservation failed: rpc error: code = unavailable desc = connection refused\" order_id=ORD-10028",
         "template": "T10",
         "score": 0.75
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 107,
         "text": "time=\"2026-05-04T13:47:43Z\" level=warn msg=\"circuit open for inventory-svc after 5 consecutive failures, fast-failing all calls\"",
         "template": "T12",
         "score": 0.55
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 130,
         "text": "time=\"2026-05-04T13:47:56Z\" level=error msg=\"inventory reservation failed: rpc error: code = unavailable desc = circuit breaker open\" order_id=ORD-10040",
         "template": "T13",
@@ -196,7 +196,7 @@
     "stats": {
       "lines_in": 169,
       "tokens_in_est": 6529,
-      "tokens_out_est": 959
+      "tokens_out_est": 964
     }
   },
   "log_lines": 169

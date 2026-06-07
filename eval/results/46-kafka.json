@@ -47,6 +47,7 @@
     "pct_level": 100,
     "evidence_count": 8,
     "roles": [
+      "context",
       "trigger",
       "root_cause",
       "consequence"
@@ -72,7 +73,7 @@
     "window": "17:00:00 to 17:00:31",
     "evidence": [
       {
-        "role": "trigger",
+        "role": "context",
         "line": 4,
         "text": "[2026-05-04 14:00:05,880] WARN [SocketServer listenerType=ZK_BROKER] Unexpected error from /<ip>; closing connection (org.apache.kafka.common.network.Selector)",
         "template": "T3",
@@ -86,7 +87,7 @@
         "score": 0.51
       },
       {
-        "role": "trigger",
+        "role": "context",
         "line": 7,
         "text": "[2026-05-04 14:00:13,665] WARN [SocketServer listenerType=ZK_BROKER] Unexpected error from /<ip>; closing connection (org.apache.kafka.common.network.Selector)",
         "template": "T3",

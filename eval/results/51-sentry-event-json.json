@@ -50,13 +50,14 @@
     "envelope": "none",
     "lines_in": 23,
     "tokens_in": 3035,
-    "tokens_out": 2008,
+    "tokens_out": 2011,
     "compression": 2,
     "template_count": 10,
     "pct_ts": 100,
     "pct_level": 100,
     "evidence_count": 10,
     "roles": [
+      "context",
       "trigger",
       "root_cause",
       "consequence"
@@ -65,7 +66,7 @@
     "recall": 1,
     "facts_found": 6,
     "facts_total": 6,
-    "role_accuracy": 0.5,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [],
     "schema_valid": true,
@@ -82,14 +83,14 @@
     "window": "13:00:00 to 13:01:50",
     "evidence": [
       {
-        "role": "trigger",
+        "role": "context",
         "line": 4,
         "text": "{\"event_id\":\"a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d4\",\"level\":\"warning\",\"timestamp\":\"2026-05-04T13:00:14.000Z\",\"message\":\"Redis SLOWLOG entry detected command=LRANGE duration_ms=142\",\"platform\":\"python\",\"environment\":\"production\",\"release\":\"<email>\",\"server_name\":\"worker-prod-01\",\"tags\":{\"component\":\"worker\",\"queue\":\"orders\"}}",
         "template": "T2",
         "score": 0.44
       },
       {
-        "role": "trigger",
+        "role": "context",
         "line": 7,
         "text": "{\"event_id\":\"a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3d7\",\"level\":\"warning\",\"timestamp\":\"2026-05-04T13:00:33.000Z\",\"message\":\"Redis SLOWLOG entry detected command=LRANGE duration_ms=198\",\"platform\":\"python\",\"environment\":\"production\",\"release\":\"<email>\",\"server_name\":\"worker-prod-01\",\"tags\":{\"component\":\"worker\",\"queue\":\"orders\"}}",
         "template": "T2",
@@ -103,28 +104,28 @@
         "score": 0.59
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 13,
         "text": "{\"event_id\":\"a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3dd\",\"level\":\"error\",\"timestamp\":\"2026-05-04T13:01:12.000Z\",\"level\":\"error\",\"message\":\"redis.exceptions.ConnectionError: Error 111 connecting to redis-primary:6379. Connection refused.\",\"platform\":\"python\",\"environment\":\"production\",\"release\":\"<email>\",\"server_name\":\"worker-prod-01\",\"exception\":{\"values\":[{\"type\":\"redis.exceptions.ConnectionError\",\"value\":\"Error 111 connecting to redis-primary:6379. Connection refused.\",\"stacktrace\":{\"frames\":[{\"filename\":\"worker/consumer.py\",\"lineno\":88,\"function\":\"fetch_batch\",\"in_app\":true,\"context_line\":\"    messages = redis_client.lrange(queue_key, 0, batch_size)\",\"pre_context\":[\"    def fetch_batch(self, queue_key, batch_size=10):\",\"        \\\"\\\"\\\"Pull a batch of messages from Redis queue.\\\"\\\"\\\"\"],\"post_context\":[\"    except redis.exceptions.ConnectionError as exc:\",\"        logger.error('redis connection lost', exc_info=True)\"]},{\"filename\":\"worker/consumer.py\",\"lineno\":112,\"function\":\"run_loop\",\"in_app\":true,\"context_line\":\"            batch = self.fetch_batch(self.queue_key)\",\"pre_context\":[\"        while self.running:\",\"            try:\"],\"post_context\":[\"            except Exception as exc:\",\"                self.handle_error(exc)\"]}]}}]},\"tags\":{\"component\":\"worker\",\"queue\":\"orders\"}}",
         "template": "T4",
         "score": 0.85
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 14,
         "text": "{\"event_id\":\"a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3de\",\"level\":\"error\",\"timestamp\":\"2026-05-04T13:01:14.000Z\",\"message\":\"redis connection lost — cannot dequeue messages, worker stalled\",\"platform\":\"python\",\"environment\":\"production\",\"release\":\"<email>\",\"server_name\":\"worker-prod-01\",\"exception\":{\"values\":[{\"type\":\"redis.exceptions.ConnectionError\",\"value\":\"Error 111 connecting to redis-primary:6379. Connection refused.\",\"stacktrace\":{\"frames\":[{\"filename\":\"worker/consumer.py\",\"lineno\":88,\"function\":\"fetch_batch\",\"in_app\":true,\"context_line\":\"    messages = redis_client.lrange(queue_key, 0, batch_size)\"}]}}]},\"tags\":{\"component\":\"worker\",\"queue\":\"orders\"}}",
         "template": "T5",
         "score": 0.85
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 16,
         "text": "{\"event_id\":\"a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3e0\",\"level\":\"error\",\"timestamp\":\"2026-05-04T13:01:17.000Z\",\"message\":\"order processing halted: queue consumer exited abnormally\",\"platform\":\"python\",\"environment\":\"production\",\"release\":\"<email>\",\"server_name\":\"worker-prod-01\",\"exception\":{\"values\":[{\"type\":\"RuntimeError\",\"value\":\"order processing halted: queue consumer exited abnormally\",\"stacktrace\":{\"frames\":[{\"filename\":\"worker/supervisor.py\",\"lineno\":45,\"function\":\"supervise\",\"in_app\":true,\"context_line\":\"            raise RuntimeError('order processing halted: queue consumer exited abnormally')\",\"pre_context\":[\"        if not consumer.is_alive():\",\"            logger.error('consumer thread died unexpectedly')\"],\"post_context\":[\"        except Exception:\",\"            self.alert('supervisor caught unrecoverable error')\"]}]}}]},\"tags\":{\"component\":\"worker\",\"queue\":\"orders\"}}",
         "template": "T6",
         "score": 0.85
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 17,
         "text": "{\"event_id\":\"a1b2c3d4e5f6a1b2c3d4e5f6a1b2c3e1\",\"level\":\"fatal\",\"timestamp\":\"2026-05-04T13:01:18.000Z\",\"message\":\"unhandled exception in supervisor — process will exit\",\"platform\":\"python\",\"environment\":\"production\",\"release\":\"<email>\",\"server_name\":\"worker-prod-01\",\"exception\":{\"values\":[{\"type\":\"SystemExit\",\"value\":\"unhandled exception in supervisor — process will exit\",\"stacktrace\":{\"frames\":[{\"filename\":\"worker/main.py\",\"lineno\":22,\"function\":\"main\",\"in_app\":true,\"context_line\":\"    sys.exit(supervisor.run())\"}]}}]},\"tags\":{\"component\":\"worker\",\"queue\":\"orders\"}}",
         "template": "T7",
@@ -187,7 +188,7 @@
     "stats": {
       "lines_in": 23,
       "tokens_in_est": 3035,
-      "tokens_out_est": 2008
+      "tokens_out_est": 2011
     }
   },
   "log_lines": 23

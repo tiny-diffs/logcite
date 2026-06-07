@@ -45,7 +45,7 @@
     "envelope": "none",
     "lines_in": 35,
     "tokens_in": 2603,
-    "tokens_out": 1235,
+    "tokens_out": 1230,
     "compression": 2,
     "template_count": 7,
     "pct_ts": 100,
@@ -53,6 +53,7 @@
     "evidence_count": 10,
     "roles": [
       "trigger",
+      "context",
       "root_cause",
       "consequence"
     ],
@@ -60,7 +61,7 @@
     "recall": 1,
     "facts_found": 5,
     "facts_total": 5,
-    "role_accuracy": 0.6,
+    "role_accuracy": 0.8,
     "citation_integrity": 1,
     "context_loss": [],
     "schema_valid": true,
@@ -84,21 +85,21 @@
         "score": 0.48
       },
       {
-        "role": "root_cause",
+        "role": "context",
         "line": 12,
         "text": "{\"timestamp\":1748822405111,\"level\":\"error\",\"message\":\"kv store error: namespace=SESSIONS operation=get key=sess_u9901 error=KV_NAMESPACE_NOT_FOUND\",\"source\":\"edge\",\"requestId\":\"req_1K2L3M4N5O6P\",\"region\":\"iad1\",\"route\":\"/api/v1/session\"}",
         "template": "T3",
         "score": 0.88
       },
       {
-        "role": "consequence",
+        "role": "trigger",
         "line": 14,
         "text": "{\"timestamp\":1748822406001,\"level\":\"warn\",\"message\":\"upstream fetch slow: origin=https://api.internal.acme.com latency=412ms threshold=300ms\",\"source\":\"edge\",\"requestId\":\"req_3M4N5O6P7Q8R\",\"region\":\"iad1\",\"route\":\"/api/v1/cart\"}",
         "template": "T2",
         "score": 0.48
       },
       {
-        "role": "consequence",
+        "role": "root_cause",
         "line": 20,
         "text": "{\"timestamp\":1748822408441,\"level\":\"error\",\"message\":\"upstream fetch failed: origin=https://api.internal.acme.com status=502 body=bad gateway error=upstream connect error or disconnect/reset before headers\",\"source\":\"edge\",\"requestId\":\"req_9S0T1U2V3W4X\",\"region\":\"iad1\",\"route\":\"/api/v1/cart\"}",
         "template": "T4",
@@ -126,21 +127,21 @@
         "score": 0.85
       },
       {
-        "role": "consequence",
+        "role": "context",
         "line": 30,
         "text": "{\"timestamp\":1748822411511,\"level\":\"error\",\"message\":\"kv store error: namespace=SESSIONS operation=get key=sess_u8899 error=KV_NAMESPACE_NOT_FOUND\",\"source\":\"edge\",\"requestId\":\"req_7A8B9C0D1E2F\",\"region\":\"iad1\",\"route\":\"/api/v1/session\"}",
         "template": "T3",
         "score": 0.88
       },
       {
-        "role": "consequence",
+        "role": "context",
         "line": 32,
         "text": "{\"timestamp\":1748822412001,\"level\":\"error\",\"message\":\"GET /api/v1/cart 502 9ms\",\"source\":\"edge\",\"requestId\":\"req_9C0D1E2F3G4H\",\"region\":\"iad1\",\"route\":\"/api/v1/cart\",\"duration\":9,\"status\":502}",
         "template": "T1",
         "score": 0.64
       },
       {
-        "role": "consequence",
+        "role": "context",
         "line": 34,
         "text": "{\"timestamp\":1748822412589,\"level\":\"error\",\"message\":\"GET /api/v1/checkout 502 8ms\",\"source\":\"edge\",\"requestId\":\"req_1E2F3G4H5I6J\",\"region\":\"iad1\",\"route\":\"/api/v1/checkout\",\"duration\":8,\"status\":502}",
         "template": "T1",
@@ -182,7 +183,7 @@
     "stats": {
       "lines_in": 35,
       "tokens_in_est": 2603,
-      "tokens_out_est": 1235
+      "tokens_out_est": 1230
     }
   },
   "log_lines": 35

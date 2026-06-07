@@ -45,7 +45,7 @@
     "envelope": "k8s-timestamps",
     "lines_in": 46,
     "tokens_in": 2581,
-    "tokens_out": 1173,
+    "tokens_out": 1193,
     "compression": 2,
     "template_count": 12,
     "pct_ts": 100,
@@ -60,7 +60,7 @@
     "recall": 1,
     "facts_found": 5,
     "facts_total": 5,
-    "role_accuracy": 0.4,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [],
     "schema_valid": true,
@@ -78,20 +78,6 @@
     "evidence": [
       {
         "role": "trigger",
-        "line": 5,
-        "text": "2024-03-14T08:00:05.441003100Z {\"level\":40,\"time\":1710403205000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"stripe webhook signature mismatch event=evt_bad01\"}",
-        "template": "T4",
-        "score": 0.43
-      },
-      {
-        "role": "trigger",
-        "line": 8,
-        "text": "2024-03-14T08:00:08.772145600Z {\"level\":40,\"time\":1710403208000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"stripe webhook signature mismatch event=evt_bad02\"}",
-        "template": "T4",
-        "score": 0.43
-      },
-      {
-        "role": "trigger",
         "line": 23,
         "text": "2024-03-14T08:00:25.422790100Z {\"level\":40,\"time\":1710403225000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"redis latency spike 180ms cmd=SET key=session:u8812\"}",
         "template": "T5",
@@ -105,49 +91,49 @@
         "score": 0.71
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 26,
         "text": "2024-03-14T08:00:28.753123400Z {\"level\":50,\"time\":1710403228000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"redis connection refused host=redis-master:6379 err=ECONNREFUSED\"}",
         "template": "T6",
         "score": 0.77
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 27,
         "text": "2024-03-14T08:00:29.863234500Z {\"level\":50,\"time\":1710403229000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"idempotency key lookup failed: redis connection refused key=idem:r0011\"}",
         "template": "T7",
         "score": 0.8
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 28,
         "text": "2024-03-14T08:00:30.973345600Z {\"level\":50,\"time\":1710403230000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"POST /v2/charge 500 3ms reqId=r0011 err=idempotency unavailable\"}",
         "template": "T8",
         "score": 0.69
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 30,
         "text": "2024-03-14T08:00:33.193567800Z {\"level\":50,\"time\":1710403233000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"redis connection refused host=redis-master:6379 err=ECONNREFUSED\"}",
         "template": "T6",
         "score": 0.77
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 31,
         "text": "2024-03-14T08:00:34.303678900Z {\"level\":50,\"time\":1710403234000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"idempotency key lookup failed: redis connection refused key=idem:r0012\"}",
         "template": "T7",
         "score": 0.8
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 32,
         "text": "2024-03-14T08:00:35.413789000Z {\"level\":50,\"time\":1710403235000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"POST /v2/charge 500 2ms reqId=r0012 err=idempotency unavailable\"}",
         "template": "T8",
         "score": 0.69
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 33,
         "text": "2024-03-14T08:00:36.523890100Z {\"level\":50,\"time\":1710403236000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"duplicate charge risk: cannot verify idempotency key=idem:r0012 skipping\"}",
         "template": "T9",
@@ -159,6 +145,20 @@
         "text": "2024-03-14T08:00:38.744012300Z {\"level\":50,\"time\":1710403238000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"circuit breaker open svc=redis after 3 failures\"}",
         "template": "T10",
         "score": 0.85
+      },
+      {
+        "role": "consequence",
+        "line": 39,
+        "text": "2024-03-14T08:00:43.184456700Z {\"level\":50,\"time\":1710403243000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"GET /health 503 1ms svc=payments-api degraded=redis\"}",
+        "template": "T11",
+        "score": 0.8
+      },
+      {
+        "role": "consequence",
+        "line": 44,
+        "text": "2024-03-14T08:00:48.734901200Z {\"level\":50,\"time\":1710403248000,\"pid\":7,\"service\":\"payments-api\",\"msg\":\"GET /health 503 1ms svc=payments-api degraded=redis\"}",
+        "template": "T11",
+        "score": 0.8
       }
     ],
     "routine_summary": {
@@ -196,7 +196,7 @@
     "stats": {
       "lines_in": 46,
       "tokens_in_est": 2581,
-      "tokens_out_est": 1173
+      "tokens_out_est": 1193
     }
   },
   "log_lines": 46

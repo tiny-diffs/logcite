@@ -50,21 +50,22 @@
     "envelope": "none",
     "lines_in": 2639,
     "tokens_in": 170082,
-    "tokens_out": 706,
-    "compression": 241,
+    "tokens_out": 709,
+    "compression": 240,
     "template_count": 38,
     "pct_ts": 100,
     "pct_level": 5.6,
     "evidence_count": 7,
     "roles": [
       "context",
-      "root_cause"
+      "root_cause",
+      "consequence"
     ],
     "has_root_cause": true,
     "recall": 0.5,
     "facts_found": 3,
     "facts_total": 6,
-    "role_accuracy": 0,
+    "role_accuracy": 0.67,
     "citation_integrity": 1,
     "context_loss": [
       "number of connection slots currently in use: 100/100",
@@ -99,35 +100,35 @@
         "score": 0.77
       },
       {
-        "role": "context",
+        "role": "root_cause",
         "line": 511,
         "text": "2026-05-04 14:25:52.050 UTC [1510] app_user@appdb ERROR:  deadlock detected",
         "template": "T28",
         "score": 0.8
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 517,
         "text": "2026-05-04 14:25:52.100 UTC [1511] app_user@appdb ERROR:  deadlock detected",
         "template": "T28",
         "score": 0.8
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 525,
         "text": "2026-05-04 14:25:56.000 UTC [1550] app_user@appdb ERROR:  canceling statement due to lock timeout",
         "template": "T34",
         "score": 0.71
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 528,
         "text": "2026-05-04 14:25:57.019 UTC [1551] app_user@appdb ERROR:  canceling statement due to lock timeout",
         "template": "T34",
         "score": 0.71
       },
       {
-        "role": "root_cause",
+        "role": "context",
         "line": 2634,
         "text": "2026-05-04 14:56:43.100 UTC [0] postgres FATAL:  pre-existing shared memory block is still in use",
         "template": "T36",
@@ -165,11 +166,11 @@
         }
       ]
     },
-    "compression": 241,
+    "compression": 240,
     "stats": {
       "lines_in": 2639,
       "tokens_in_est": 170082,
-      "tokens_out_est": 706
+      "tokens_out_est": 709
     }
   },
   "log_lines": 2639

@@ -45,14 +45,14 @@
     "envelope": "none",
     "lines_in": 69,
     "tokens_in": 3409,
-    "tokens_out": 976,
+    "tokens_out": 982,
     "compression": 3,
     "template_count": 11,
     "pct_ts": 100,
     "pct_level": 100,
     "evidence_count": 11,
     "roles": [
-      "trigger",
+      "context",
       "root_cause",
       "consequence"
     ],
@@ -60,7 +60,7 @@
     "recall": 0.4,
     "facts_found": 2,
     "facts_total": 5,
-    "role_accuracy": 0,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [
       "smtp relay queue growing",
@@ -81,63 +81,63 @@
     "window": "14:00:00 to 14:02:02",
     "evidence": [
       {
-        "role": "trigger",
+        "role": "context",
         "line": 5,
         "text": "<29>May 04 14:00:04 mail-relay postfix[2211]: warning: hostname verification failed for <ip>: Name or service not known",
         "template": "T3",
         "score": 0.62
       },
       {
-        "role": "trigger",
+        "role": "context",
         "line": 10,
         "text": "<29>May 04 14:00:09 mail-relay postfix[2211]: warning: hostname verification failed for <ip>: Name or service not known",
         "template": "T3",
         "score": 0.62
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 43,
         "text": "<27>May 04 14:00:42 mail-relay postfix[2211]: error: smtp connection to smtp.example.com[<ip>]:25 refused: connection refused",
         "template": "T5",
         "score": 0.91
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 44,
         "text": "<27>May 04 14:00:43 mail-relay postfix[2211]: error: smtp connection to smtp.example.com[<ip>]:25 refused: connection refused",
         "template": "T5",
         "score": 0.91
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 46,
         "text": "<27>May 04 14:00:45 mail-relay postfix[2211]: error: 3A1BC2D016: to=<<email>> relay=smtp.example.com[<ip>]:25 status=deferred (connection refused)",
         "template": "T6",
         "score": 0.94
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 47,
         "text": "<27>May 04 14:00:46 mail-relay postfix[2211]: error: 3A1BC2D017: to=<<email>> relay=smtp.example.com[<ip>]:25 status=deferred (connection refused)",
         "template": "T6",
         "score": 0.94
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 53,
         "text": "<27>May 04 14:00:52 mail-relay postfix[2211]: error: 3A1BC2D021: to=<<email>> relay=smtp.example.com[<ip>]:25 status=bounced (too many hops: deferred queue full)",
         "template": "T7",
         "score": 0.93
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 54,
         "text": "<27>May 04 14:00:53 mail-relay postfix[2211]: error: 3A1BC2D022: to=<<email>> relay=smtp.example.com[<ip>]:25 status=bounced (too many hops: deferred queue full)",
         "template": "T7",
         "score": 0.93
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 59,
         "text": "<27>May 04 14:00:58 mail-relay postfix[2211]: error: postfix master process: unable to fork smtp worker: resource temporarily unavailable",
         "template": "T8",
@@ -193,7 +193,7 @@
     "stats": {
       "lines_in": 69,
       "tokens_in_est": 3409,
-      "tokens_out_est": 976
+      "tokens_out_est": 982
     }
   },
   "log_lines": 69

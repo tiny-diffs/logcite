@@ -40,7 +40,7 @@
     "envelope": "none",
     "lines_in": 18,
     "tokens_in": 578,
-    "tokens_out": 544,
+    "tokens_out": 543,
     "compression": 1,
     "template_count": 10,
     "pct_ts": 0,
@@ -48,6 +48,7 @@
     "evidence_count": 6,
     "roles": [
       "trigger",
+      "context",
       "root_cause",
       "consequence"
     ],
@@ -88,7 +89,7 @@
         "score": 0.59
       },
       {
-        "role": "trigger",
+        "role": "context",
         "line": 10,
         "text": "2211:M 04 May 2026 14:00:21.193 # Background saving error: Cannot allocate memory",
         "template": "T1",
@@ -109,7 +110,7 @@
         "score": 0.52
       },
       {
-        "role": "consequence",
+        "role": "context",
         "line": 18,
         "text": "2211:M 04 May 2026 14:00:41.020 # Background saving error: Cannot allocate memory",
         "template": "T1",
@@ -151,7 +152,7 @@
     "stats": {
       "lines_in": 18,
       "tokens_in_est": 578,
-      "tokens_out_est": 544
+      "tokens_out_est": 543
     }
   },
   "log_lines": 18

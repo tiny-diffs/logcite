@@ -52,6 +52,7 @@
     "pct_level": 100,
     "evidence_count": 12,
     "roles": [
+      "context",
       "trigger",
       "root_cause",
       "consequence"
@@ -77,14 +78,14 @@
     "window": "14:22:10 to 14:22:41",
     "evidence": [
       {
-        "role": "trigger",
+        "role": "context",
         "line": 5,
         "text": "{\"level\":50,\"time\":1746368534000,\"pid\":1,\"context\":\"RateLimitGuard\",\"msg\":\"rate limit exceeded client=c1042\"}",
         "template": "T4",
         "score": 0.71
       },
       {
-        "role": "trigger",
+        "role": "context",
         "line": 9,
         "text": "{\"level\":50,\"time\":1746368538000,\"pid\":1,\"context\":\"RateLimitGuard\",\"msg\":\"rate limit exceeded client=c2261\"}",
         "template": "T4",

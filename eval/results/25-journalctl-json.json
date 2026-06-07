@@ -40,7 +40,7 @@
     "envelope": "none",
     "lines_in": 13,
     "tokens_in": 627,
-    "tokens_out": 618,
+    "tokens_out": 620,
     "compression": 1,
     "template_count": 11,
     "pct_ts": 0,
@@ -49,7 +49,6 @@
     "roles": [
       "trigger",
       "root_cause",
-      "context",
       "consequence"
     ],
     "has_root_cause": true,
@@ -87,21 +86,21 @@
         "score": 0.59
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 8,
         "text": "{\"__REALTIME_TIMESTAMP\":\"1746367207800000\",\"PRIORITY\":\"3\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"_PID\":\"0\",\"MESSAGE\":\"analytics invoked oom-killer: gfp_mask=0x100cca, order=0, oom_score_adj=0\"}",
         "template": "T6",
         "score": 0.85
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 9,
         "text": "{\"__REALTIME_TIMESTAMP\":\"1746367208900000\",\"PRIORITY\":\"3\",\"SYSLOG_IDENTIFIER\":\"kernel\",\"_PID\":\"0\",\"MESSAGE\":\"Out of memory: Killed process 5120 (analytics) total-vm:4194304kB, anon-rss:3981204kB\"}",
         "template": "T7",
         "score": 1
       },
       {
-        "role": "context",
+        "role": "consequence",
         "line": 10,
         "text": "{\"__REALTIME_TIMESTAMP\":\"1746367209900000\",\"PRIORITY\":\"2\",\"SYSLOG_IDENTIFIER\":\"systemd\",\"_PID\":\"1\",\"MESSAGE\":\"analytics.service: A process of this unit has been killed by the OOM killer.\"}",
         "template": "T8",
@@ -150,7 +149,7 @@
     "stats": {
       "lines_in": 13,
       "tokens_in_est": 627,
-      "tokens_out_est": 618
+      "tokens_out_est": 620
     }
   },
   "log_lines": 13

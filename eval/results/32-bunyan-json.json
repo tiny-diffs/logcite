@@ -45,7 +45,7 @@
     "envelope": "none",
     "lines_in": 160,
     "tokens_in": 12206,
-    "tokens_out": 1249,
+    "tokens_out": 1256,
     "compression": 10,
     "template_count": 15,
     "pct_ts": 100,
@@ -60,7 +60,7 @@
     "recall": 1,
     "facts_found": 5,
     "facts_total": 5,
-    "role_accuracy": 0.2,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [],
     "schema_valid": true,
@@ -91,63 +91,56 @@
         "score": 0.75
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 141,
         "text": "{\"name\":\"api-gateway\",\"hostname\":\"gw-01\",\"pid\":3301,\"level\":50,\"msg\":\"upstream connect failed upstream=catalog-svc addr=<ip>:8080 err=\\\"connection refused\\\"\",\"time\":\"2026-05-05T11:00:10.010Z\",\"v\":0}",
         "template": "T7",
         "score": 0.99
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 142,
         "text": "{\"name\":\"api-gateway\",\"hostname\":\"gw-01\",\"pid\":3301,\"level\":50,\"msg\":\"request failed GET /v2/catalog/items err=\\\"upstream connect failed\\\" statusOut=502\",\"time\":\"2026-05-05T11:00:11.120Z\",\"v\":0}",
         "template": "T8",
         "score": 0.81
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 144,
         "text": "{\"name\":\"api-gateway\",\"hostname\":\"gw-01\",\"pid\":3301,\"level\":50,\"msg\":\"upstream connect failed upstream=catalog-svc addr=<ip>:8080 err=\\\"connection refused\\\"\",\"time\":\"2026-05-05T11:00:13.340Z\",\"v\":0}",
         "template": "T7",
         "score": 0.99
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 145,
         "text": "{\"name\":\"api-gateway\",\"hostname\":\"gw-01\",\"pid\":3301,\"level\":50,\"msg\":\"request failed GET /v2/catalog/items err=\\\"upstream connect failed\\\" statusOut=502\",\"time\":\"2026-05-05T11:00:14.450Z\",\"v\":0}",
         "template": "T8",
         "score": 0.81
       },
       {
-        "role": "trigger",
-        "line": 147,
-        "text": "{\"name\":\"api-gateway\",\"hostname\":\"gw-01\",\"pid\":3301,\"level\":40,\"msg\":\"retrying upstream=catalog-svc attempt=1 after 200ms\",\"time\":\"2026-05-05T11:00:15.760Z\",\"v\":0}",
-        "template": "T9",
-        "score": 0.59
-      },
-      {
-        "role": "trigger",
+        "role": "consequence",
         "line": 148,
         "text": "{\"name\":\"api-gateway\",\"hostname\":\"gw-01\",\"pid\":3301,\"level\":50,\"msg\":\"upstream health check failed upstream=catalog-svc consecutive_failures=3\",\"time\":\"2026-05-05T11:00:16.670Z\",\"v\":0}",
         "template": "T10",
         "score": 0.85
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 149,
         "text": "{\"name\":\"api-gateway\",\"hostname\":\"gw-01\",\"pid\":3301,\"level\":50,\"msg\":\"removing upstream from pool upstream=catalog-svc reason=\\\"health check failed\\\"\",\"time\":\"2026-05-05T11:00:17.780Z\",\"v\":0}",
         "template": "T11",
         "score": 0.85
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 151,
         "text": "{\"name\":\"api-gateway\",\"hostname\":\"gw-01\",\"pid\":3301,\"level\":50,\"msg\":\"no healthy upstreams available pool=catalog-svc returning 503\",\"time\":\"2026-05-05T11:00:20.001Z\",\"v\":0}",
         "template": "T12",
         "score": 0.99
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 152,
         "text": "{\"name\":\"api-gateway\",\"hostname\":\"gw-01\",\"pid\":3301,\"level\":50,\"msg\":\"request failed GET /v2/catalog/items err=\\\"no healthy upstreams available\\\" statusOut=503\",\"time\":\"2026-05-05T11:00:21.112Z\",\"v\":0}",
         "template": "T13",
@@ -159,6 +152,13 @@
         "text": "{\"name\":\"api-gateway\",\"hostname\":\"gw-01\",\"pid\":3301,\"level\":50,\"msg\":\"request failed GET /v2/catalog/search err=\\\"no healthy upstreams available\\\" statusOut=503\",\"time\":\"2026-05-05T11:00:22.223Z\",\"v\":0}",
         "template": "T13",
         "score": 1
+      },
+      {
+        "role": "consequence",
+        "line": 156,
+        "text": "{\"name\":\"api-gateway\",\"hostname\":\"gw-01\",\"pid\":3301,\"level\":50,\"msg\":\"no healthy upstreams available pool=catalog-svc returning 503\",\"time\":\"2026-05-05T11:00:25.556Z\",\"v\":0}",
+        "template": "T12",
+        "score": 0.99
       }
     ],
     "routine_summary": {
@@ -196,7 +196,7 @@
     "stats": {
       "lines_in": 160,
       "tokens_in_est": 12206,
-      "tokens_out_est": 1249
+      "tokens_out_est": 1256
     }
   },
   "log_lines": 160

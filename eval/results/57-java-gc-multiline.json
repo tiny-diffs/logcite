@@ -45,22 +45,21 @@
     "envelope": "none",
     "lines_in": 17,
     "tokens_in": 868,
-    "tokens_out": 458,
+    "tokens_out": 457,
     "compression": 2,
     "template_count": 5,
     "pct_ts": 70.6,
     "pct_level": 29.4,
     "evidence_count": 3,
     "roles": [
-      "trigger",
-      "root_cause",
-      "consequence"
+      "context",
+      "root_cause"
     ],
     "has_root_cause": true,
     "recall": 0.8,
     "facts_found": 4,
     "facts_total": 5,
-    "role_accuracy": 0.25,
+    "role_accuracy": 0,
     "citation_integrity": 1,
     "context_loss": [
       "cacheloader.java:142"
@@ -79,7 +78,7 @@
     "window": "14:00:00 to 14:00:27",
     "evidence": [
       {
-        "role": "trigger",
+        "role": "context",
         "line": 7,
         "text": "2026-05-04T14:00:16.000+0000: 1216.000: WARN  c.acme.cache.CacheLoader - cache region 'invoices' at 1.9GB, eviction disabled",
         "template": "T1",
@@ -93,7 +92,7 @@
         "score": 0.71
       },
       {
-        "role": "consequence",
+        "role": "context",
         "line": 16,
         "text": "2026-05-04T14:00:25.000+0000: 1225.000: WARN  c.acme.health.Heartbeat - liveness probe failing, heap exhausted",
         "template": "T0",
@@ -135,7 +134,7 @@
     "stats": {
       "lines_in": 17,
       "tokens_in_est": 868,
-      "tokens_out_est": 458
+      "tokens_out_est": 457
     }
   },
   "log_lines": 17

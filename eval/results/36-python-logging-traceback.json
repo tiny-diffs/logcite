@@ -50,7 +50,7 @@
     "envelope": "none",
     "lines_in": 65,
     "tokens_in": 1775,
-    "tokens_out": 932,
+    "tokens_out": 933,
     "compression": 2,
     "template_count": 24,
     "pct_ts": 46.2,
@@ -58,6 +58,7 @@
     "evidence_count": 12,
     "roles": [
       "trigger",
+      "context",
       "root_cause",
       "consequence"
     ],
@@ -65,7 +66,7 @@
     "recall": 0.67,
     "facts_found": 4,
     "facts_total": 6,
-    "role_accuracy": 0.75,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [
       "queuepool limit of size 10 overflow 5 reached",
@@ -99,42 +100,42 @@
         "score": 0.54
       },
       {
-        "role": "trigger",
+        "role": "context",
         "line": 16,
         "text": "2026-05-09 15:00:16,667 ERROR    [request] billing.views: unhandled exception during GET /invoices",
         "template": "T5",
         "score": 0.77
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 35,
         "text": "2026-05-09 15:00:16,668 ERROR    [request] billing.views: GET /invoices responded 500 user=u-1007",
         "template": "T18",
         "score": 0.75
       },
       {
-        "role": "trigger",
+        "role": "context",
         "line": 36,
         "text": "2026-05-09 15:00:17,778 WARNING  [request] billing.views: payment method expired customer_id=cust-7704 invoice_id=INV-0047",
         "template": "T3",
         "score": 0.64
       },
       {
-        "role": "trigger",
+        "role": "context",
         "line": 37,
         "text": "2026-05-09 15:00:18,889 ERROR    [request] billing.views: unhandled exception during POST /invoices",
         "template": "T5",
         "score": 0.77
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 47,
         "text": "2026-05-09 15:00:18,890 ERROR    [request] billing.views: POST /invoices responded 500 user=u-1008",
         "template": "T18",
         "score": 0.75
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 49,
         "text": "2026-05-09 15:00:20,112 ERROR    [db] billing.db: database connection failed host=pg-primary port=5432 err=\"FATAL: remaining connection slots are reserved for non-replication superuser connections\"",
         "template": "T21",
@@ -148,7 +149,7 @@
         "score": 0.85
       },
       {
-        "role": "consequence",
+        "role": "context",
         "line": 51,
         "text": "2026-05-09 15:00:22,334 WARNING  [request] billing.views: payment method expired customer_id=cust-7705 invoice_id=INV-0048",
         "template": "T3",
@@ -204,7 +205,7 @@
     "stats": {
       "lines_in": 65,
       "tokens_in_est": 1775,
-      "tokens_out_est": 932
+      "tokens_out_est": 933
     }
   },
   "log_lines": 65

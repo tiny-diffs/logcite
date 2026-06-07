@@ -50,13 +50,14 @@
     "envelope": "none",
     "lines_in": 53,
     "tokens_in": 2215,
-    "tokens_out": 987,
+    "tokens_out": 989,
     "compression": 2,
     "template_count": 14,
     "pct_ts": 75.5,
     "pct_level": 75.5,
     "evidence_count": 11,
     "roles": [
+      "context",
       "trigger",
       "root_cause",
       "consequence"
@@ -65,7 +66,7 @@
     "recall": 0.83,
     "facts_found": 5,
     "facts_total": 6,
-    "role_accuracy": 0.8,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [
       "orders_controller.rb:58"
@@ -84,14 +85,14 @@
     "window": "19:00:00 to 19:00:29",
     "evidence": [
       {
-        "role": "trigger",
+        "role": "context",
         "line": 7,
         "text": "W, [2026-05-10T16:00:02.223 #6621]  WARN -- : [Rack::Attack] Throttled ip=<ip> path=/api/sessions limit=100",
         "template": "T3",
         "score": 0.65
       },
       {
-        "role": "trigger",
+        "role": "context",
         "line": 13,
         "text": "W, [2026-05-10T16:00:05.556 #6621]  WARN -- : [Rack::Attack] Throttled ip=<ip> path=/api/sessions limit=100",
         "template": "T3",
@@ -112,21 +113,21 @@
         "score": 0.71
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 23,
         "text": "E, [2026-05-10T16:00:14.556 #6621] ERROR -- : ActiveRecord::StatementInvalid (PG::QueryCanceled: ERROR:  canceling statement due to conflict with recovery):",
         "template": "T5",
         "score": 0.95
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 30,
         "text": "E, [2026-05-10T16:00:15.667 #6621] ERROR -- : ActiveRecord::StatementInvalid (PG::QueryCanceled: ERROR:  canceling statement due to conflict with recovery):",
         "template": "T5",
         "score": 0.95
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 39,
         "text": "E, [2026-05-10T16:00:18.001 #6621] ERROR -- : pg::querycanceled: canceling statement due to conflict with recovery hot_standby_feedback=off replica=pg-replica-01",
         "template": "T10",
@@ -196,7 +197,7 @@
     "stats": {
       "lines_in": 53,
       "tokens_in_est": 2215,
-      "tokens_out_est": 987
+      "tokens_out_est": 989
     }
   },
   "log_lines": 53

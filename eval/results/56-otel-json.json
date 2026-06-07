@@ -50,14 +50,13 @@
     "envelope": "none",
     "lines_in": 136,
     "tokens_in": 19484,
-    "tokens_out": 1753,
+    "tokens_out": 1759,
     "compression": 11,
     "template_count": 35,
     "pct_ts": 0,
     "pct_level": 100,
     "evidence_count": 9,
     "roles": [
-      "trigger",
       "root_cause",
       "consequence"
     ],
@@ -82,49 +81,49 @@
     "window": "unknown",
     "evidence": [
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 111,
         "text": "{\"Timestamp\":\"2025-05-04T10:01:48.004Z\",\"ObservedTimestamp\":\"2025-05-04T10:01:48.005Z\",\"SeverityText\":\"WARN\",\"SeverityNumber\":13,\"Body\":\"vault token renewal attempt failed: connection refused <ip>:8200\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"vault.addr\":\"<ip>:8200\",\"error\":\"connection refused\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"00000000000000000000000000000000\",\"SpanId\":\"0000000000000000\"}",
         "template": "T27",
         "score": 0.53
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 112,
         "text": "{\"Timestamp\":\"2025-05-04T10:01:49.205Z\",\"ObservedTimestamp\":\"2025-05-04T10:01:49.206Z\",\"SeverityText\":\"WARN\",\"SeverityNumber\":13,\"Body\":\"vault token renewal attempt failed: connection refused <ip>:8200\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"vault.addr\":\"<ip>:8200\",\"error\":\"connection refused\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"00000000000000000000000000000000\",\"SpanId\":\"0000000000000000\"}",
         "template": "T27",
         "score": 0.53
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 118,
         "text": "{\"Timestamp\":\"2025-05-04T10:01:55.010Z\",\"ObservedTimestamp\":\"2025-05-04T10:01:55.011Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"vault token expired: failed to renew after 3 attempts, secret fetch will fail\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"vault.addr\":\"<ip>:8200\",\"vault.attempts\":3,\"error\":\"token expired\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d\",\"SpanId\":\"aabbccddeeff0001\"}",
         "template": "T29",
         "score": 0.85
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 120,
         "text": "{\"Timestamp\":\"2025-05-04T10:01:57.001Z\",\"ObservedTimestamp\":\"2025-05-04T10:01:57.002Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"failed to fetch stripe api key from vault: permission denied path=secret/data/stripe-api-key\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"vault.path\":\"secret/data/stripe-api-key\",\"http.status_code\":403,\"error\":\"permission denied\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d\",\"SpanId\":\"aabbccddeeff0002\"}",
         "template": "T30",
         "score": 0.85
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 121,
         "text": "{\"Timestamp\":\"2025-05-04T10:01:57.850Z\",\"ObservedTimestamp\":\"2025-05-04T10:01:57.851Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"stripe client initialization failed: api key unavailable\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"error\":\"api key unavailable\",\"stripe.endpoint\":\"https://api.stripe.com/v1\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d\",\"SpanId\":\"aabbccddeeff0003\"}",
         "template": "T31",
         "score": 0.85
       },
       {
-        "role": "trigger",
+        "role": "consequence",
         "line": 129,
         "text": "{\"Timestamp\":\"2025-05-04T10:02:01.700Z\",\"ObservedTimestamp\":\"2025-05-04T10:02:01.701Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"health check degraded: stripe integration unavailable\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"health.component\":\"stripe\",\"health.status\":\"degraded\"},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"7a8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d\",\"SpanId\":\"00112233446677cc\"}",
         "template": "T33",
         "score": 0.85
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 130,
         "text": "{\"Timestamp\":\"2025-05-04T10:02:02.050Z\",\"ObservedTimestamp\":\"2025-05-04T10:02:02.051Z\",\"SeverityText\":\"ERROR\",\"SeverityNumber\":17,\"Body\":\"POST /v1/payments failed: stripe charge error: invalid api key provided\",\"Attributes\":{\"service.name\":\"payment-gateway\",\"http.method\":\"POST\",\"http.route\":\"/v1/payments\",\"http.status_code\":502,\"error\":\"invalid api key provided\",\"payment.amount\":820.00},\"Resource\":{\"deployment.environment\":\"production\"},\"TraceId\":\"8b9c0d1e2f3a4b5c6d7e8f9a0b1c2d3e\",\"SpanId\":\"1122334455887788\"}",
         "template": "T32",
@@ -180,7 +179,7 @@
     "stats": {
       "lines_in": 136,
       "tokens_in_est": 19484,
-      "tokens_out_est": 1753
+      "tokens_out_est": 1759
     }
   },
   "log_lines": 136

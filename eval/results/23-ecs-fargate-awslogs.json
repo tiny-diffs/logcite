@@ -40,7 +40,7 @@
     "envelope": "none",
     "lines_in": 24,
     "tokens_in": 766,
-    "tokens_out": 840,
+    "tokens_out": 841,
     "compression": 1,
     "template_count": 12,
     "pct_ts": 100,
@@ -55,7 +55,7 @@
     "recall": 1,
     "facts_found": 4,
     "facts_total": 4,
-    "role_accuracy": 0.5,
+    "role_accuracy": 1,
     "citation_integrity": 1,
     "context_loss": [],
     "schema_valid": true,
@@ -100,14 +100,14 @@
         "score": 0.53
       },
       {
-        "role": "trigger",
+        "role": "root_cause",
         "line": 14,
         "text": "2026-05-04T14:00:17.066Z ERROR [dynamo] ProvisionedThroughputExceededException: rate exceeded for table orders",
         "template": "T6",
         "score": 0.75
       },
       {
-        "role": "root_cause",
+        "role": "consequence",
         "line": 15,
         "text": "2026-05-04T14:00:18.421Z ERROR [sqs-consumer] batch processing failed: ProvisionedThroughputExceededException",
         "template": "T7",
@@ -191,7 +191,7 @@
     "stats": {
       "lines_in": 24,
       "tokens_in_est": 766,
-      "tokens_out_est": 840
+      "tokens_out_est": 841
     }
   },
   "log_lines": 24
