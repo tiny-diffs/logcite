@@ -1,97 +1,93 @@
 ---
 name: logpod-diagnose
-description: Diagnose a production incident from logs using logpod. Use when asked to find the root cause / explain an outage / triage logs. logpod (deterministic, no LLM) compresses the logs into a small CITED candidate set; YOU reason over only that closed set and write a structured diagnosis; logpod then verifies you invented nothing.
+description: Diagnose a production incident from logs using logpod compress. Use when asked to find the root cause, explain an outage, triage logs, or compare log evidence. logpod produces a cited, role-tagged IncidentCapsule; reason from that capsule and cite real source lines.
 ---
 
-# Diagnose an incident with logpod
+# Diagnose logs with logpod
 
-logpod does the cheap, faithful part (compress millions of lines into a small,
-cited candidate set). **You** do the reasoning. The contract: you may only cite
-candidate ids that logpod gave you, so your diagnosis is auditable line-by-line
-and cannot hallucinate — logpod's `verify` enforces it.
+Use logpod to turn large logs into a small, cited `IncidentCapsule`. The capsule
+contains the evidence an agent should inspect first: each evidence item has a
+real source `line`, verbatim `text`, anomaly `score`, template id, and causal
+`role`.
 
-This is **not** a grep: your output is a causal explanation (root + chain +
-confidence + next action), not a list of lines. But it is also **not** a free
-LLM summary: every claim is pinned to a real, cited candidate.
+## Commands
 
-## Workflow
+Create a capsule:
 
-1. **Get the cited candidate pool** (the closed set you may reason over):
+```bash
+logpod compress <logfile> --pretty -s <service> -o capsule.json
+```
 
-   ```bash
-   logpod pool <logfile> --limit 60 -o pool.json --pretty
-   ```
+Validate it:
 
-   `pool.json` is `{ schema, service, window, lines_in, candidates: [...] }`.
-   Each candidate is one real, cited line:
-   `{ id:"E7", line:30006, time:"14:22:16", level:"ERROR", template:"T5", score:0.85, text:"…" }`.
-   **You may reason over these candidates only.** Do not invent lines, do not
-   read the raw log into your reasoning, do not paraphrase a line into a fact.
+```bash
+logpod validate capsule.json
+```
 
-2. **Reason over the pool** and decide:
-   - **root_cause** — the *earliest originating* failure, not the loudest or
-     latest symptom. A FATAL crash or a downstream 500 is usually a consequence;
-     a recurring error that appears all over the window is a distractor, not the
-     root. Prefer the first candidate that *explains* what follows.
-   - **trigger** — a pre-failure warning that preceded the root.
-   - **consequence** — downstream fallout caused by the root.
-   - **context** — kept for grounding, off the causal path (e.g. a distractor).
-   - Build the **causal chain** as directed edges between candidate ids.
-   - Set **confidence** (0..1) and list **alternatives** if the root is unclear.
+Inspect nearby raw context for a cited line when needed:
 
-3. **Write the diagnosis** as `logpod.diagnosis/v1`, citing ONLY pool ids:
+```bash
+logpod expand <logfile> --line <line> --context 5
+```
 
-   ```json
-   {
-     "schema": "logpod.diagnosis/v1",
-     "root": "E7",
-     "confidence": 0.82,
-     "roles": { "E4": "trigger", "E7": "root_cause", "E9": "consequence", "E11": "consequence" },
-     "causal_chain": [
-       { "from": "E4", "to": "E7", "rel": "trigger" },
-       { "from": "E7", "to": "E9", "rel": "causes" },
-       { "from": "E7", "to": "E11", "rel": "causes" }
-     ],
-     "diagnosis": "Connection-pool exhaustion: a slow-acquire warning (E4) preceded the OperationalError (E7), which cascaded into an upstream timeout (E9) and pool exhaustion (E11). The recurring rate-limit errors are an unrelated distractor.",
-     "alternatives": [{ "root": "E4", "why": "if the slow pool, not the DB, was the true cause" }],
-     "next": [{ "action": "expand", "ref": "E7", "reason": "see the failing connection target" }],
-     "quotes": ["OperationalError"]
-   }
-   ```
+## How to reason from the capsule
 
-   Rules: every id in `root`, `roles`, `causal_chain`, `alternatives`, `next.ref`
-   must be a real pool id. `roles` values ∈ root_cause|trigger|consequence|context.
-   `rel` ∈ trigger|causes|precedes|correlates. Any string in `quotes` must be a
-   verbatim substring of some candidate's `text`. Reference ids inline in the
-   `diagnosis` prose (e.g. "…the OperationalError (E7)…").
+Read `capsule.evidence` in source-line order. Interpret roles as:
 
-4. **Verify — mandatory self-check** (the citation firewall):
+- `trigger` — pre-failure warning or condition before the originating failure
+- `root_cause` — likely originating failure that explains the cascade
+- `consequence` — downstream fallout after the root cause
+- `context` — grounding or possible distractor, not the main causal path
 
-   ```bash
-   logpod verify diagnosis.json --pool pool.json
-   ```
+Prefer the causal chain implied by role + line order:
 
-   Exit `0` = clean. Exit `3` = you cited an id that doesn't exist or a quote
-   that isn't real — the output lists `unknown_ids` / `bad_quotes`. **Fix and
-   re-verify until it exits 0** before presenting the diagnosis. Never present
-   a diagnosis that fails verify.
+```text
+trigger → root_cause → consequence(s)
+```
 
-5. **Optionally pull raw context** for a citation to confirm a hypothesis
-   (still cited — it seeks to the real line, not a re-scan):
+Use `routine_summary.top_templates` to identify high-volume routine noise and to
+explain what logpod compressed away.
 
-   ```bash
-   logpod expand <logfile> --line 30006 --context 5
-   ```
+## When to expand
 
-## Why this is trustworthy
+Use `expand` only around cited evidence lines when:
 
-- **Closed set:** you only ever see/cite the candidates logpod selected — you
-  physically cannot reference a line that isn't real.
-- **Auditable:** every role, edge, and quote resolves to a cited line; a human
-  can check each one.
-- **Can be wrong, never fabricated:** `confidence` + `alternatives` admit
-  uncertainty; `verify` mechanically blocks invention.
+- the root cause line needs nearby config/request/user context
+- a consequence line needs blast-radius confirmation
+- a `context` line might be a distractor and needs disambiguation
+- the capsule appears to miss a recovery or impact line near the incident
 
-If the pool clearly doesn't contain the real root (rare — a level-less or quiet
-line the candidate gate dropped), say so explicitly and recommend
-`logpod compress … --templates` or a wider `--limit` rather than guessing.
+Do not read the whole raw log unless the user explicitly asks.
+
+## Diagnosis output format
+
+Return a concise, auditable diagnosis:
+
+```text
+Root cause: <one sentence> [line N]
+Chain: <trigger line> → <root line> → <consequence lines>
+Evidence:
+- line A: <quoted/cited evidence text>
+- line B: <quoted/cited evidence text>
+- line C: <quoted/cited evidence text>
+Confidence: <low|medium|high> — <why>
+Next actions:
+1. <specific action tied to cited evidence>
+2. <specific action tied to the affected component>
+```
+
+## Rules
+
+- Cite source line numbers from the capsule.
+- Keep quotes anchored to `evidence.text` or `expand` output.
+- Do not invent services, metrics, timestamps, stack frames, or root causes.
+- Treat recurring `context` evidence as possible distractor noise.
+- If the capsule lacks the likely root cause, say so and suggest rerunning with a
+  larger evidence budget:
+
+  ```bash
+  logpod compress <logfile> --pretty -n 24 -o capsule.json
+  ```
+
+- If important INFO/recovery signals are missing, call that out as a known
+  limitation and use targeted `expand` around the incident lines.

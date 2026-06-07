@@ -85,8 +85,6 @@ bun test
 ```bash
 logpod compress <file|->        # logs → IncidentCapsule (compact JSON by default)
 logpod expand <file>           # raw lines around a cited line (seek, not re-scan)
-logpod pool <file|->           # the cited candidate set for a host-agent reasoner
-logpod verify <diag.json>      # check a diagnosis cites only real pool ids
 logpod validate <file|->        # check a capsule against the v1 schema
 ```
 
@@ -141,26 +139,24 @@ The full `IncidentCapsule` type lives in [`src/types.ts`](src/types.ts).
 
 ---
 
-## Reasoning, without an LLM inside (CLI + skill)
+## Agent diagnosis with the capsule (CLI + skill)
 
 logpod's role assignment is heuristic — good, but it has a ceiling. The fix
-isn't to bake an LLM into logpod (that breaks the no-inference, no-hallucination
-guarantee). Instead, logpod stays deterministic and **the agent already using it
-does the reasoning**, guided by a skill — and logpod mechanically checks the
-agent invented nothing.
+isn't to bake an LLM into logpod (that breaks the no-inference guarantee).
+Instead, logpod stays deterministic and **the agent already using it reasons from
+the compressed capsule**, guided by a skill.
 
 ```bash
-logpod pool app.log -o pool.json          # closed set of CITED candidates (E1…En)
-#   → the host agent reads pool.json and writes diagnosis.json,
-#     citing only those ids (root, causal chain, roles, confidence, next)
-logpod verify diagnosis.json --pool pool.json   # exit 0 ok · 3 if it cited a
-#     non-existent id or a quote that isn't a verbatim substring of a candidate
+logpod compress app.log --pretty -o capsule.json
+logpod validate capsule.json
+# The host agent reads capsule.evidence, cites real line numbers, and optionally:
+logpod expand app.log --line 30006 --context 5
 ```
 
-The agent can be **wrong** (it reports `confidence` and `alternatives`) but it
-**cannot fabricate**: every id resolves to a real cited line and every quote is
-verified. It's reasoning you audit line-by-line — not a grep, not an unconstrained
-summary. The skill that drives it lives in [`skills/diagnose/SKILL.md`](skills/diagnose/SKILL.md).
+The capsule is the contract: every evidence item has a real source `line`, a
+verbatim `text`, a `template`, a score, and a causal `role`. The agent can still
+be wrong about interpretation, but its claims are auditable line-by-line. The
+skill that drives this workflow lives in [`skills/diagnose/SKILL.md`](skills/diagnose/SKILL.md).
 
 ---
 

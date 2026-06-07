@@ -22,16 +22,10 @@ export type { Checkpoint } from "./lineindex.ts";
 export { expandFile, expandText } from "./expand.ts";
 export type { ExpandResult, ContextLine } from "./expand.ts";
 export { countTokens, TOKENIZER } from "./tokens.ts";
-export { verifyDiagnosis } from "./diagnose.ts";
-export type { VerifyResult } from "./diagnose.ts";
 export { validateCapsule } from "./validate.ts";
 export type { ValidationResult } from "./validate.ts";
 export type {
-  Candidate,
-  CandidatePool,
-  CausalRelation,
   CompressOptions,
-  Diagnosis,
   Evidence,
   EvidenceRole,
   IncidentCapsule,
