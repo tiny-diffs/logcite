@@ -10,18 +10,6 @@ contains the evidence an agent should inspect first: each evidence item has a
 real source `line`, verbatim `text`, anomaly `score`, template id, and causal
 `role`.
 
-## Finding the log file
-
-If the user references a file as `@aws.log`, first try the path without `@`
-(`aws.log`) in the current working directory. If it is not there, search only the
-project tree, never the whole filesystem:
-
-```bash
-find . -maxdepth 5 -name 'aws.log' -o -name '@aws.log'
-```
-
-If still missing, ask the user for the exact path.
-
 ## Commands
 
 Create a capsule:
@@ -63,6 +51,14 @@ precondition/distractor.
 
 Use `routine_summary.top_templates` to identify high-volume routine noise and to
 explain what logpod compressed away.
+
+Always inspect `routine_summary.recurring_failures` before concluding the
+incident. These are repeated WARN/ERROR/FATAL templates that may represent
+slow-burn incidents, broken scheduled jobs, webhook drift, or degraded external
+providers. Summarize their `count`, `first`/`last` line span, and `sample` when
+present. Do not automatically promote them to the main causal chain; report them
+as recurring operational failures unless expanded context shows they caused the
+point incident.
 
 ## When to expand
 

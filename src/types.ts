@@ -38,6 +38,8 @@ export interface Template {
   first: number;
   /** Source line number of the most recent line that matched. */
   last: number;
+  /** First matching line text, redacted according to compression options. */
+  sample: string;
 }
 
 /** Causal role assigned to an evidence line within the incident. */
@@ -55,11 +57,23 @@ export interface Evidence {
   score: number;
 }
 
+export interface RecurringFailure {
+  id: string;
+  pattern: string;
+  count: number;
+  level: LogLevel;
+  first: number;
+  last: number;
+  sample: string;
+}
+
 export interface RoutineSummary {
   total_lines: number;
   template_count: number;
   /** A few highest-volume routine templates, for at-a-glance context. */
   top_templates: { id: string; pattern: string; count: number }[];
+  /** Repeated WARN/ERROR/FATAL templates that may indicate slow-burn incidents or broken jobs. */
+  recurring_failures: RecurringFailure[];
 }
 
 /** The compressed artifact handed to the agent. */

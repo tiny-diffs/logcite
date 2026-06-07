@@ -54,6 +54,17 @@ Logpod's output is an `IncidentCapsule`:
     "template_count": 16,
     "top_templates": [
       { "id": "T3", "pattern": "request <*> <*>", "count": 14296 }
+    ],
+    "recurring_failures": [
+      {
+        "id": "T11",
+        "pattern": "getEsimProfile <*> Invalid request body <*> physical sim <*> eUICC profile <*> exist",
+        "count": 165,
+        "level": "ERROR",
+        "first": 1024,
+        "last": 132012,
+        "sample": "2026-01-18T01:00:00Z ERROR getEsimProfile ..."
+      }
     ]
   },
   "stats": {
@@ -70,6 +81,9 @@ Contract:
 - **Role-tagged** — `trigger`, `root_cause`, `consequence`, or `context`.
 - **Schema-valid** — `logpod validate` checks the capsule shape.
 - **Expandable** — `logpod expand` shows raw context around any cited line.
+- **Slow-burn aware** — repeated WARN/ERROR/FATAL templates are surfaced as
+  `routine_summary.recurring_failures`, so broken scheduled jobs are not hidden
+  as routine noise.
 - **Cheap** — the agent reasons over hundreds of tokens, not hundreds of
   thousands.
 

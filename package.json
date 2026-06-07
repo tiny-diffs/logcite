@@ -13,9 +13,7 @@
   "scripts": {
     "test": "bun test",
     "dev:install": "bash scripts/install-dev.sh",
-    "skills:install": "bash scripts/install-skills.sh",
-    "gen-fixture": "bun run scripts/gen-fixture.ts",
-    "ab": "bun run scripts/gen-incident.ts > fixtures/incident.log && bun run scripts/ab-grep.ts fixtures/incident.log"
+    "skills:install": "bash scripts/install-skills.sh"
   },
   "devDependencies": {
     "@types/bun": "latest"

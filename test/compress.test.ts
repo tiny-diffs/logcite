@@ -86,4 +86,30 @@ describe("compress", () => {
     const hasProbe = capsule.evidence.some((e) => e.text.includes("health probe"));
     expect(hasProbe).toBe(false);
   });
+
+  test("surfaces recurring failures so slow-burn jobs are not hidden as routine noise", () => {
+    const lines: string[] = [];
+    let t = Date.UTC(2026, 0, 18, 1, 0, 0);
+    const stamp = () => new Date((t += 3_600_000)).toISOString().replace(".000Z", "Z");
+    for (let i = 0; i < 80; i++) {
+      if (i % 10 === 0) {
+        lines.push(
+          `${stamp()} ERROR getEsimProfile imsi=72454302100000${i} Invalid request body : This is physical sim , eUICC profile can not be exist for this sim`,
+        );
+      }
+      lines.push(`${stamp()} INFO health probe ok 200`);
+    }
+    lines.push(`${stamp()} WARN pool acquire 480ms`);
+    lines.push(`${stamp()} ERROR psycopg2.OperationalError: connection failed`);
+
+    const slowBurn = compress(lines.join("\n"), { service: "api" });
+    const recurring = slowBurn.routine_summary.recurring_failures.find((r) =>
+      r.sample.includes("getEsimProfile"),
+    );
+
+    expect(recurring?.count).toBe(8);
+    expect(recurring?.level).toBe("ERROR");
+    expect(recurring?.sample).toContain("physical sim");
+    expect(recurring?.last).toBeGreaterThan(recurring!.first);
+  });
 });

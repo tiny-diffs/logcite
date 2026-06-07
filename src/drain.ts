@@ -21,6 +21,8 @@ interface LogGroup {
   /** Source line span of matching lines — recurring (spread) vs concentrated. */
   first: number;
   last: number;
+  /** First matching line text, already redacted by preprocessing when enabled. */
+  sample: string;
 }
 
 const WILDCARD = "<*>";
@@ -118,6 +120,7 @@ export class Drain {
       levels: new Map(),
       first: line.line,
       last: line.line,
+      sample: line.raw,
     };
     if (line.level) g.levels.set(line.level, 1);
     groups.push(g);
@@ -142,6 +145,7 @@ export class Drain {
         level: dominant(g.levels),
         first: g.first,
         last: g.last,
+        sample: g.sample,
       }))
       .sort((a, b) => b.count - a.count);
   }

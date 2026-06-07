@@ -31,6 +31,7 @@ export type {
   IncidentCapsule,
   LogLevel,
   ParsedLine,
+  RecurringFailure,
   RoutineSummary,
   Template,
 } from "./types.ts";

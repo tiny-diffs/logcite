@@ -20,10 +20,24 @@ function buildRoutineSummary(templates: Template[], totalLines: number): Routine
     .slice() // already sorted desc by count
     .slice(0, 5)
     .map((t) => ({ id: t.id, pattern: t.pattern, count: t.count }));
+  const recurringFailures = templates
+    .filter((t) => t.count >= 3 && (t.level === "WARN" || t.level === "ERROR" || t.level === "FATAL"))
+    .sort((a, b) => b.count - a.count || a.first - b.first)
+    .slice(0, 5)
+    .map((t) => ({
+      id: t.id,
+      pattern: t.pattern,
+      count: t.count,
+      level: t.level as "WARN" | "ERROR" | "FATAL",
+      first: t.first,
+      last: t.last,
+      sample: t.sample,
+    }));
   return {
     total_lines: totalLines,
     template_count: templates.length,
     top_templates: top,
+    recurring_failures: recurringFailures,
   };
 }
 
