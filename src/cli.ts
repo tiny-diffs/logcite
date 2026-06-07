@@ -16,10 +16,12 @@ import { countRareLines, templateReport } from "./report.ts";
 import { validateCapsule } from "./validate.ts";
 import { LineIndex } from "./lineindex.ts";
 import { expandFile } from "./expand.ts";
+import { scanStream, type CompiledPattern, type ScanOptions } from "./scan.ts";
+import { secretPatterns, redactLine, redactSecrets } from "./redact.ts";
 import type { ReadLimits } from "./linereader.ts";
 import type { CompressOptions, LogLevel } from "./types.ts";
 
-const VERSION = "0.0.1";
+const VERSION = "0.1.0";
 
 const EXIT = { OK: 0, INPUT: 1, USAGE: 2, SCHEMA: 3 } as const;
 
@@ -38,6 +40,10 @@ interface Args {
     context?: number;
     stats?: boolean;
     templates?: boolean;
+    patterns?: string[];
+    preset?: string;
+    group?: string;
+    limitGroups?: number;
   };
 }
 
@@ -45,6 +51,7 @@ const HELP = `logpod — systems log compression for AI agents (v${VERSION})
 
 Usage:
   logpod compress <file|->         Compress logs into an IncidentCapsule
+  logpod scan <file|->             Count pattern matches (no inference)
   logpod expand <file>             Show the raw lines around a cited line
   logpod validate <file|->         Validate a capsule against the v1 schema
 
@@ -61,6 +68,10 @@ Options:
       --max-lines <n>     Process at most the first N lines
       --max-bytes <n>     Process at most the first N bytes
       --no-redact         Do not redact PII before templating
+      --pattern <id=re>   (scan) count lines matching a regex; repeatable
+      --preset <name>     (scan) built-in pattern set: secrets
+      --group <capture>   (scan) bucket matches by a named capture group
+      --limit-groups <n>  (scan) max groups per finding (default 20)
       --stats             (compress) print numbers only, with timing
       --templates         (compress) print the template breakdown
       --limit <n>         (compress --templates) show top N rows (default: 20)
@@ -74,6 +85,8 @@ Options:
 
 Examples:
   logpod compress fixtures/api.log -o capsule.json --index capsule.idx
+  logpod scan aws.log --pattern "not_found=eSIM not found for IMSI: (?<imsi>\\d+)" --group imsi
+  logpod scan aws.log --preset secrets
   cat app.log | logpod compress - --level ERROR,WARN
   kubectl logs -n prod api 2>&1 | logpod compress -
   logpod compress fixtures/api.log --stats --max-lines 100000
@@ -163,6 +176,18 @@ function parseArgs(argv: string[]): Args {
       case "--no-redact":
         opts.redact = false;
         break;
+      case "--pattern":
+        (opts.patterns ??= []).push(needValue(i++, a));
+        break;
+      case "--preset":
+        opts.preset = needValue(i++, a);
+        break;
+      case "--group":
+        opts.group = needValue(i++, a);
+        break;
+      case "--limit-groups":
+        opts.limitGroups = num(needValue(i++, a), a);
+        break;
       case "--stats":
         opts.stats = true;
         break;
@@ -214,6 +239,31 @@ function streamOptions(opts: Args["opts"]): StreamOptions {
 
 function readLimits(opts: Args["opts"]): ReadLimits {
   return { maxBytes: opts.maxBytes, maxLines: opts.maxLines };
+}
+
+/** Compile `--pattern id=regex` flags plus any `--preset` into scan patterns. */
+function compilePatterns(opts: Args["opts"]): CompiledPattern[] {
+  const out: CompiledPattern[] = [];
+  for (const raw of opts.patterns ?? []) {
+    const eq = raw.indexOf("=");
+    if (eq <= 0) die(`pattern must be id=regex (got "${raw}")`);
+    const id = raw.slice(0, eq);
+    const src = raw.slice(eq + 1);
+    try {
+      out.push({ id, regex: new RegExp(src) });
+    } catch (e) {
+      die(`invalid regex for "${id}": ${(e as Error).message}`);
+    }
+  }
+  if (opts.preset) {
+    if (opts.preset !== "secrets") die(`unknown preset: ${opts.preset} (try: secrets)`);
+    // Secrets are always emitted redacted, regardless of --no-redact.
+    for (const { id, re } of secretPatterns()) {
+      out.push({ id, regex: re, sampleFor: (line) => redactSecrets(redactLine(line)), dropIfEmpty: true });
+    }
+  }
+  if (out.length === 0) die("scan needs --preset or --pattern");
+  return out;
 }
 
 /** Open a positional source as a byte stream (never loading it whole). */
@@ -279,6 +329,29 @@ async function main(): Promise<void> {
       }
 
       if (index && args.opts.index) await Bun.write(args.opts.index, index.serialize());
+      break;
+    }
+
+    case "scan": {
+      const patterns = compilePatterns(args.opts);
+      if (args.opts.group) {
+        const token = `(?<${args.opts.group}>`;
+        const missing = patterns.filter((p) => !p.regex.source.includes(token)).map((p) => p.id);
+        if (missing.length > 0) {
+          die(`group "${args.opts.group}" not found in pattern(s): ${missing.join(", ")}`);
+        }
+      }
+      const scanOpts: ScanOptions = {
+        patterns,
+        group: args.opts.group,
+        limitGroups: args.opts.limitGroups,
+        redactSample: args.opts.redact,
+      };
+      const src = args.positionals[0];
+      const source = !src || src === "-" ? "<stdin>" : src;
+      const stream = await openStream(args.positionals);
+      const result = await scanStream(stream, readLimits(args.opts), scanOpts);
+      await emit({ schema: result.schema, source, lines_in: result.lines_in, findings: result.findings }, args.opts);
       break;
     }
 

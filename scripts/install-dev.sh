@@ -1,9 +1,16 @@
 #!/usr/bin/env bash
-# Link this checkout as the local `logpod` executable for development testing.
+# Build a standalone `logpod` binary from this checkout and install it on PATH.
+#
+# Installs to $LOGPOD_BIN_DIR (default ~/.local/bin). A compiled binary is used
+# instead of `bun link` so the version on PATH is self-contained and updates
+# cleanly in place — no stale shim can shadow it.
 set -euo pipefail
 
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT"
+
+BIN_DIR="${LOGPOD_BIN_DIR:-$HOME/.local/bin}"
+TARGET="$BIN_DIR/logpod"
 
 if ! command -v bun >/dev/null 2>&1; then
   echo "error: bun is required but was not found in PATH" >&2
@@ -13,31 +20,50 @@ fi
 echo "→ Installing dependencies"
 bun install
 
-echo "→ Linking local package as the development logpod executable"
-bun link
+echo "→ Building standalone logpod binary"
+tmp="$(mktemp -d)"
+trap 'rm -rf "$tmp"' EXIT
+bun build src/cli.ts --compile --outfile "$tmp/logpod"
 
-if ! command -v logpod >/dev/null 2>&1; then
-  cat >&2 <<'MSG'
-error: `logpod` was linked, but it is not available in PATH.
-Make sure Bun's global bin directory is on PATH (usually ~/.bun/bin), then rerun this script.
-MSG
-  exit 1
-fi
-
-echo "→ logpod path: $(command -v logpod)"
-echo "→ logpod version: $(logpod --version)"
-
-tmp="$(mktemp)"
-trap 'rm -f "$tmp"' EXIT
-cat > "$tmp" <<'LOG'
+echo "→ Smoke testing the freshly built binary"
+log="$tmp/sample.log"
+cat > "$log" <<'LOG'
 2026-05-04T14:22:11Z INFO health probe ok 200
 2026-05-04T14:22:15Z WARN pool acquire 480ms
 2026-05-04T14:22:16Z ERROR psycopg2.OperationalError: connection failed
 2026-05-04T14:22:20Z ERROR pool exhausted, queue=18
+Authorization: Bearer smoketestsecrettoken
 LOG
 
-echo "→ Smoke testing installed executable"
-logpod compress "$tmp" --stats -s api >/dev/null
-logpod compress "$tmp" -s api | logpod validate - >/dev/null
+"$tmp/logpod" compress "$log" --stats -s api >/dev/null
+"$tmp/logpod" compress "$log" -s api | "$tmp/logpod" validate - >/dev/null
+# scan: a custom pattern and the secrets preset (must redact, never leak).
+"$tmp/logpod" scan "$log" --pattern "err=ERROR" >/dev/null
+if "$tmp/logpod" scan "$log" --preset secrets | grep -q "smoketestsecrettoken"; then
+  echo "error: secrets preset leaked a raw secret" >&2
+  exit 1
+fi
 
+echo "→ Installing to $TARGET"
+mkdir -p "$BIN_DIR"
+install -m 0755 "$tmp/logpod" "$TARGET"
+
+if ! command -v logpod >/dev/null 2>&1; then
+  cat >&2 <<MSG
+warning: installed to $TARGET, but \`logpod\` is not on PATH.
+Add this to your shell profile, then restart your shell:
+  export PATH="$BIN_DIR:\$PATH"
+MSG
+else
+  resolved="$(command -v logpod)"
+  if [[ "$resolved" != "$TARGET" ]]; then
+    cat >&2 <<MSG
+warning: \`logpod\` on PATH resolves to $resolved, not the binary just installed
+at $TARGET. An earlier PATH entry is shadowing it — remove that copy or reorder PATH.
+MSG
+  fi
+fi
+
+echo "→ logpod path: $(command -v logpod)"
+echo "→ logpod version: $(logpod --version)"
 echo "✓ Development executable is installed and working"

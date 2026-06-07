@@ -16,6 +16,43 @@ Built with [Bun](https://bun.sh) + TypeScript.
 
 ---
 
+## Does it beat grep?
+
+`bun run scripts/eval-end-to-end.ts fixtures/incident.log` compares raw logs,
+grep strategies, and the capsule on diagnostic signal.
+
+Latest synthetic incident result:
+
+| strategy | tokens | recall | root latency | diagnostic score | roles |
+|---|---:|:---:|---:|:---:|:---:|
+| raw log | 7,358,737 | 5/5 | 4,352,418 tokens | 0.80 | no |
+| `grep ERROR` | 140,249 | 3/5 | 12,171 tokens | 0.23 | no |
+| `grep -iE 'error\|warn'` | 141,049 | 5/5 | 12,221 tokens | 0.84 | no |
+| `grep ... \| head -40` | 1,077 | 0/5 | ∞ | 0.00 | no |
+| `grep ERROR \| strip vars \| uniq` | 51 | 3/5 | 42 tokens | 0.41 | no |
+| **logpod capsule** | **721** | **5/5** | **202 tokens** | **1.00** | **yes** |
+
+What matters:
+
+- Capsule keeps the same 5/5 facts as the best grep strategy.
+- Capsule is **196× smaller** than `grep -iE 'error|warn'`.
+- The root cause appears after **202 tokens**, not 12k+ tokens.
+- The capsule carries causal roles; grep does not.
+
+But the goal isn't to retire your shell. For big logs and root-cause triage,
+logpod is the better *starting point* — it condenses noise into a small, cited
+capsule and saves tokens. The shell still wins when you already know the exact
+pattern you want, or need custom parsing. The strongest workflow is both:
+
+```text
+logpod compress   →  where to look first + token savings
+logpod expand     →  real context around the cited lines
+logpod scan       →  count recurrence / blast radius (auditable)
+shell (grep/awk)  →  refine a specific pattern when needed
+```
+
+---
+
 ## What Logpod gives an agent
 
 Logpod's output is an `IncidentCapsule`:
@@ -86,6 +123,9 @@ Contract:
   as routine noise.
 - **Cheap** — the agent reasons over hundreds of tokens, not hundreds of
   thousands.
+- **Triage, not a verdict** — the capsule tells an agent *where to look first*.
+  Confirm root cause with `logpod expand` (real context) and `logpod scan`
+  (recurrence / blast radius) before trusting the chain.
 
 ---
 
@@ -144,6 +184,7 @@ bun run scripts/eval-end-to-end.ts fixtures/incident.log
 
 ```bash
 logpod compress <file|->         # logs → IncidentCapsule
+logpod scan <file|->             # count pattern matches (no inference)
 logpod expand <file>             # raw lines around a cited line
 logpod validate <file|->         # validate an IncidentCapsule
 ```
@@ -185,6 +226,43 @@ logpod compress app.log --stats
 logpod compress app.log --templates --limit 10
 logpod compress huge.log --max-bytes 50000000 -o capsule.json --index capsule.idx
 ```
+
+### `scan`
+
+Count how often a pattern occurs — deterministic and auditable, with **no**
+causal inference. This is the structured replacement for incident-time `grep`:
+each finding carries `count`, `first`/`last` line numbers, and a redacted
+`sample`. Streams in constant memory without grouping; with `--group`, memory is
+bounded by distinct group-key cardinality. Honors `--max-lines` / `--max-bytes`.
+
+```bash
+# count a custom pattern (id=regex; repeatable)
+logpod scan aws.log --pattern "expired_new=operation_type cannot be NEW"
+
+# group matches by a named capture
+logpod scan aws.log \
+  --pattern "not_found=eSIM not found for IMSI: (?<imsi>\d+)" \
+  --group imsi --limit-groups 10
+
+# audit for leaked credentials (samples always redacted)
+logpod scan aws.log --preset secrets
+```
+
+Useful options:
+
+| flag | purpose |
+|---|---|
+| `--pattern <id=regex>` | count lines matching `regex`, labeled `id`; repeatable |
+| `--preset secrets` | scan for leaked credentials (Authorization/Bearer/JWT/api_key/appKey/appSecret/password/PEM…) |
+| `--group <capture>` | bucket matches by a regex named capture group |
+| `--limit-groups <n>` | max groups emitted per finding, default `20` |
+| `--no-redact` | disable PII redaction in samples (secrets stay redacted) |
+| `--max-lines` / `--max-bytes` | process only a prefix of the input |
+| `-o, --output <file>` / `--pretty` | same I/O contract as `compress` |
+
+Output is `logpod.scan/v1`: `{ schema, source, lines_in, findings[] }`. An
+explicit `--pattern` with no hits still reports `count: 0`; empty `--preset`
+rules are omitted. Secret samples are never emitted raw.
 
 ### `expand`
 
@@ -245,8 +323,10 @@ The skill tells the agent to:
 2. validate the capsule,
 3. reason from `capsule.evidence`,
 4. cite source line numbers,
-5. use `logpod expand` only around cited evidence lines when more context is
-   needed.
+5. use `logpod expand` around cited evidence lines when more context is needed,
+6. use `logpod scan` to quantify recurrence / blast radius of a suspected cause,
+7. drop to the shell (`grep`/`sed`/`awk`) only to refine a pattern the capsule
+   already pointed at.
 
 Example user request after installing the skill:
 
@@ -254,32 +334,8 @@ Example user request after installing the skill:
 using the logpod skill find the incidents in @aws.log
 ```
 
-The intended workflow is capsule-first diagnosis, not raw-log scanning.
-
----
-
-## Does it beat grep?
-
-`bun run scripts/eval-end-to-end.ts fixtures/incident.log` compares raw logs,
-grep strategies, and the capsule on diagnostic signal.
-
-Latest synthetic incident result:
-
-| strategy | tokens | recall | root latency | diagnostic score | roles |
-|---|---:|:---:|---:|:---:|:---:|
-| raw log | 7,358,737 | 5/5 | 4,352,418 tokens | 0.80 | no |
-| `grep ERROR` | 140,249 | 3/5 | 12,171 tokens | 0.23 | no |
-| `grep -iE 'error\|warn'` | 141,049 | 5/5 | 12,221 tokens | 0.84 | no |
-| `grep ... \| head -40` | 1,077 | 0/5 | ∞ | 0.00 | no |
-| `grep ERROR \| strip vars \| uniq` | 51 | 3/5 | 42 tokens | 0.41 | no |
-| **logpod capsule** | **721** | **5/5** | **202 tokens** | **1.00** | **yes** |
-
-What matters:
-
-- Capsule keeps the same 5/5 facts as the best grep strategy.
-- Capsule is **196× smaller** than `grep -iE 'error|warn'`.
-- The root cause appears after **202 tokens**, not 12k+ tokens.
-- The capsule carries causal roles; grep does not.
+The intended workflow is capsule-first triage that funnels into targeted
+`expand`/`scan` (and shell only when needed), not raw-log scanning.
 
 ---
 

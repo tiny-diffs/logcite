@@ -1,6 +1,6 @@
 ---
 name: logpod-diagnose
-description: Diagnose a production incident from logs using logpod compress. Use when asked to find the root cause, explain an outage, triage logs, or compare log evidence. logpod produces a cited, role-tagged IncidentCapsule; reason from that capsule and cite real source lines.
+description: Diagnose a production incident from logs using logpod. Use when asked to find the root cause, explain an outage, triage logs, or compare log evidence (logpod compress → a cited, role-tagged IncidentCapsule); and when asked to count how often a pattern occurs, break failures down by a field, or audit logs for leaked credentials (logpod scan). Reason from the capsule/scan output and cite real source lines.
 ---
 
 # Diagnose logs with logpod
@@ -28,6 +28,22 @@ Inspect nearby raw context for a cited line when needed:
 
 ```bash
 logpod expand <logfile> --line <line> --context 5
+```
+
+Count a specific pattern deterministically (no inference) — use this instead of
+`grep` when the question is "how many / how often / grouped by what":
+
+```bash
+# count + first/last line + redacted sample for one or more patterns
+logpod scan <logfile> --pattern "expired_new=operation_type cannot be NEW"
+
+# group matches by a regex named capture (e.g. per-IMSI failure spread)
+logpod scan <logfile> \
+  --pattern "not_found=eSIM not found for IMSI: (?<imsi>\d+)" \
+  --group imsi --limit-groups 10
+
+# audit the log for leaked credentials (samples are always redacted)
+logpod scan <logfile> --preset secrets
 ```
 
 ## How to reason from the capsule
@@ -59,6 +75,18 @@ providers. Summarize their `count`, `first`/`last` line span, and `sample` when
 present. Do not automatically promote them to the main causal chain; report them
 as recurring operational failures unless expanded context shows they caused the
 point incident.
+
+## compress vs scan
+
+`compress` *infers* the incident — use it to find a root cause and causal chain.
+`scan` *counts* — use it when the user asks how often something happens, wants a
+breakdown by some field, or needs a credential-leak audit. They compose well:
+diagnose the chain from the capsule, then `scan --pattern` to quantify the blast
+radius of a cited failure (e.g. how many lines, spanning which line range, broken
+down by tenant/IMSI/route). Each `scan` finding carries `count`, `first`/`last`
+line numbers, and a redacted `sample`; cite those numbers the same way you cite
+capsule evidence. Never paste a raw secret — the `secrets` preset already
+redacts samples, so report the finding `id`/`count`, not the value.
 
 ## When to expand
 

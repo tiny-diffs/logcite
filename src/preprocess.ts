@@ -10,7 +10,10 @@
  * Everything here is line-oriented and dependency-free so it stays fast on
  * millions of lines.
  */
+import { redactLine } from "./redact.ts";
 import type { LogLevel, ParsedLine } from "./types.ts";
+
+export { redactLine };
 
 const LEVELS: Record<string, LogLevel> = {
   TRACE: "TRACE",
@@ -63,20 +66,6 @@ const LEVEL_RE = /\b(TRACE|DEBUG|INFO(?:RMATION)?|NOTICE|WARN(?:ING)?|ERR(?:OR)?
 /** Strip ANSI color/escape codes so they don't pollute parsing or templates. */
 export function stripAnsi(s: string): string {
   return s.indexOf("\x1b") === -1 ? s : s.replace(ANSI_RE, "");
-}
-
-/** PII / high-cardinality patterns redacted before templating. */
-const REDACTIONS: [RegExp, string][] = [
-  [/[\w.+-]+@[\w-]+\.[\w.-]+/g, "<email>"],
-  [/\b(?:\d{1,3}\.){3}\d{1,3}\b/g, "<ip>"],
-  [/\b[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\b/gi, "<uuid>"],
-  [/\b(?:Bearer\s+)?[A-Za-z0-9_-]{24,}\.[A-Za-z0-9_-]{6,}\b/g, "<token>"],
-];
-
-export function redactLine(s: string): string {
-  let out = s;
-  for (const [re, rep] of REDACTIONS) out = out.replace(re, rep);
-  return out;
 }
 
 /** A detected leading (or, for CLF, inline) timestamp. */
