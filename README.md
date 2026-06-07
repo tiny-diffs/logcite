@@ -14,27 +14,27 @@ incident chain: real log lines, causal roles, template context, and token stats.
 
 Built with [Bun](https://bun.sh) + TypeScript.
 
+The intended use is for an AI agent to use the `logcite` CLI with the bundled
+Logcite diagnosis skill installed, so it can compress, validate, expand, and
+scan logs through auditable commands instead of reading raw logs directly.
+
 ---
 
 ## Does it beat grep?
 
-`bun run scripts/eval-end-to-end.ts fixtures/incident.log` compares raw logs,
-grep strategies, and the capsule on diagnostic signal.
-
 Latest synthetic incident result:
 
-| strategy | tokens | recall | root latency | diagnostic score | roles |
-|---|---:|:---:|---:|:---:|:---:|
-| raw log | 7,358,737 | 5/5 | 4,352,418 tokens | 0.80 | no |
-| `grep ERROR` | 140,249 | 3/5 | 12,171 tokens | 0.23 | no |
-| `grep -iE 'error\|warn'` | 141,049 | 5/5 | 12,221 tokens | 0.84 | no |
-| `grep ... \| head -40` | 1,077 | 0/5 | ∞ | 0.00 | no |
-| `grep ERROR \| strip vars \| uniq` | 51 | 3/5 | 42 tokens | 0.41 | no |
-| **logcite capsule** | **721** | **5/5** | **202 tokens** | **1.00** | **yes** |
+| strategy | tokens | root latency | diagnostic score | roles |
+|---|---:|---:|:---:|:---:|
+| raw log | 7,358,737 | 4,352,418 tokens | 0.80 | no |
+| `grep ERROR` | 140,249 | 12,171 tokens | 0.23 | no |
+| `grep -iE 'error\|warn'` | 141,049 | 12,221 tokens | 0.84 | no |
+| `grep ... \| head -40` | 1,077 | ∞ | 0.00 | no |
+| `grep ERROR \| strip vars \| uniq` | 51 | 42 tokens | 0.41 | no |
+| **logcite capsule** | **721** | **202 tokens** | **1.00** | **yes** |
 
 What matters:
 
-- Capsule keeps the same 5/5 facts as the best grep strategy.
 - Capsule is **196× smaller** than `grep -iE 'error|warn'`.
 - The root cause appears after **202 tokens**, not 12k+ tokens.
 - The capsule carries causal roles; grep does not.
@@ -298,7 +298,9 @@ Exit codes:
 
 ## Agent skill
 
-Logcite ships a local agent skill for diagnosis:
+Logcite ships a local agent skill for diagnosis. The idea is that an agent uses
+the `logcite` CLI with this skill installed, keeping every step inspectable and
+repeatable:
 
 ```text
 skills/diagnose/SKILL.md
