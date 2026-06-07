@@ -10,6 +10,18 @@ contains the evidence an agent should inspect first: each evidence item has a
 real source `line`, verbatim `text`, anomaly `score`, template id, and causal
 `role`.
 
+## Finding the log file
+
+If the user references a file as `@aws.log`, first try the path without `@`
+(`aws.log`) in the current working directory. If it is not there, search only the
+project tree, never the whole filesystem:
+
+```bash
+find . -maxdepth 5 -name 'aws.log' -o -name '@aws.log'
+```
+
+If still missing, ask the user for the exact path.
+
 ## Commands
 
 Create a capsule:
@@ -45,6 +57,10 @@ Prefer the causal chain implied by role + line order:
 trigger → root_cause → consequence(s)
 ```
 
+If the capsule has no `trigger`, do not force one. Start the chain at
+`root_cause` and mention any earlier `context` line only as a possible
+precondition/distractor.
+
 Use `routine_summary.top_templates` to identify high-volume routine noise and to
 explain what logpod compressed away.
 
@@ -65,7 +81,7 @@ Return a concise, auditable diagnosis:
 
 ```text
 Root cause: <one sentence> [line N]
-Chain: <trigger line> → <root line> → <consequence lines>
+Chain: <trigger line if present> → <root line> → <consequence lines>
 Evidence:
 - line A: <quoted/cited evidence text>
 - line B: <quoted/cited evidence text>
@@ -82,6 +98,8 @@ Next actions:
 - Keep quotes anchored to `evidence.text` or `expand` output.
 - Do not invent services, metrics, timestamps, stack frames, or root causes.
 - Treat recurring `context` evidence as possible distractor noise.
+- Do not promote a `context` line into the main chain unless expanded context
+  strongly supports it; if you do, label it as "possible precondition", not fact.
 - If the capsule lacks the likely root cause, say so and suggest rerunning with a
   larger evidence budget:
 
