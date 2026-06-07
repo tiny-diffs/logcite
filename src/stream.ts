@@ -20,7 +20,15 @@ import { assembleCapsule, formatWindow } from "./capsule.ts";
 import { countTokens } from "./tokens.ts";
 import { streamLines, type ReadLimits } from "./linereader.ts";
 import type { LineIndex } from "./lineindex.ts";
-import type { CompressOptions, IncidentCapsule, LogLevel, ParsedLine, Template } from "./types.ts";
+import type {
+  Candidate,
+  CandidatePool,
+  CompressOptions,
+  IncidentCapsule,
+  LogLevel,
+  ParsedLine,
+  Template,
+} from "./types.ts";
 
 const DEFAULT_MAX_CANDIDATES = 4096;
 const TOKEN_SAMPLE = 4096;
@@ -38,7 +46,7 @@ export interface StreamOptions extends CompressOptions {
   maxCandidates?: number;
 }
 
-interface Candidate {
+interface BufferedCandidate {
   line: ParsedLine;
   templateId: string;
   /** Severity-based weight used only to prune the buffer when it overflows. */
@@ -70,7 +78,7 @@ export class StreamAccumulator {
   private tokenSample: string[] = [];
   private numericSample: number[] = [];
   private numericSeen = 0;
-  private candidates: Candidate[] = [];
+  private candidates: BufferedCandidate[] = [];
 
   private cachedCapsule?: IncidentCapsule;
 
@@ -174,6 +182,57 @@ export class StreamAccumulator {
       evidence,
     });
     return this.cachedCapsule;
+  }
+
+  /**
+   * The over-collected, cited candidate pool for the CLI+skill reasoner.
+   *
+   * Unlike `capsule()` (which heuristically commits to ~12 evidence lines with
+   * fixed roles), this returns a larger set of *scored, cited* candidates at a
+   * lower threshold and assigns NO causal roles — the host agent reasons over
+   * the closed set and `verify` enforces it cites only these ids. logpod itself
+   * stays deterministic and makes no inference.
+   */
+  pool(limit = 60, minScore = 0.2): CandidatePool {
+    const templates = this.drain.templates();
+    const countById = new Map(templates.map((t) => [t.id, t.count]));
+    const p95 = percentile(this.numericSample, 0.95);
+
+    const scored = this.candidates.map((c) => ({
+      line: c.line,
+      templateId: c.templateId,
+      score: scoreOne(
+        c.line.level,
+        c.line.message,
+        countById.get(c.templateId) ?? 1,
+        this.linesIn,
+        p95,
+      ),
+    }));
+
+    const fmt = (t: number | null) => (t === null ? null : new Date(t).toISOString().slice(11, 19));
+    const candidates: Candidate[] = scored
+      .filter((s) => s.score >= minScore)
+      .sort((a, b) => b.score - a.score) // keep the strongest…
+      .slice(0, limit)
+      .sort((a, b) => a.line.line - b.line.line) // …then present in source order
+      .map((s, i) => ({
+        id: `E${i + 1}`,
+        line: s.line.line,
+        time: fmt(s.line.ts),
+        level: s.line.level,
+        template: s.templateId,
+        score: Math.round(s.score * 100) / 100,
+        text: s.line.raw,
+      }));
+
+    return {
+      schema: "logpod.candidate_pool/v1",
+      service: this.opts.service ?? "unknown",
+      window: formatWindow(this.tsLo, this.tsHi),
+      lines_in: this.linesIn,
+      candidates,
+    };
   }
 }
 

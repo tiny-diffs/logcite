@@ -85,6 +85,8 @@ bun test
 ```bash
 logpod compress <file|->        # logs → IncidentCapsule (compact JSON by default)
 logpod expand <file>           # raw lines around a cited line (seek, not re-scan)
+logpod pool <file|->           # the cited candidate set for a host-agent reasoner
+logpod verify <diag.json>      # check a diagnosis cites only real pool ids
 logpod validate <file|->        # check a capsule against the v1 schema
 ```
 
@@ -136,6 +138,29 @@ validateCapsule(capsule); // { valid: true, errors: [] }
 ```
 
 The full `IncidentCapsule` type lives in [`src/types.ts`](src/types.ts).
+
+---
+
+## Reasoning, without an LLM inside (CLI + skill)
+
+logpod's role assignment is heuristic — good, but it has a ceiling. The fix
+isn't to bake an LLM into logpod (that breaks the no-inference, no-hallucination
+guarantee). Instead, logpod stays deterministic and **the agent already using it
+does the reasoning**, guided by a skill — and logpod mechanically checks the
+agent invented nothing.
+
+```bash
+logpod pool app.log -o pool.json          # closed set of CITED candidates (E1…En)
+#   → the host agent reads pool.json and writes diagnosis.json,
+#     citing only those ids (root, causal chain, roles, confidence, next)
+logpod verify diagnosis.json --pool pool.json   # exit 0 ok · 3 if it cited a
+#     non-existent id or a quote that isn't a verbatim substring of a candidate
+```
+
+The agent can be **wrong** (it reports `confidence` and `alternatives`) but it
+**cannot fabricate**: every id resolves to a real cited line and every quote is
+verified. It's reasoning you audit line-by-line — not a grep, not an unconstrained
+summary. The skill that drives it lives in [`skills/diagnose/SKILL.md`](skills/diagnose/SKILL.md).
 
 ---
 

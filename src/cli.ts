@@ -18,8 +18,9 @@ import { countRareLines, templateReport } from "./report.ts";
 import { validateCapsule } from "./validate.ts";
 import { LineIndex } from "./lineindex.ts";
 import { expandFile } from "./expand.ts";
+import { verifyDiagnosis } from "./diagnose.ts";
 import type { ReadLimits } from "./linereader.ts";
-import type { CompressOptions, LogLevel } from "./types.ts";
+import type { CandidatePool, CompressOptions, LogLevel } from "./types.ts";
 
 const VERSION = "0.0.1";
 
@@ -40,6 +41,7 @@ interface Args {
     context?: number;
     stats?: boolean;
     templates?: boolean;
+    pool?: string;
   };
 }
 
@@ -48,7 +50,13 @@ const HELP = `logpod — systems log compression for AI agents (v${VERSION})
 Usage:
   logpod compress <file|->         Compress logs into an IncidentCapsule
   logpod expand <file>             Show the raw lines around a cited line
+  logpod pool <file|->             Emit the cited candidate set for a reasoner
+  logpod verify <diag.json>        Check a diagnosis cites only real pool ids
   logpod validate <file|->         Validate a capsule against the v1 schema
+
+The pool/verify pair powers the CLI+skill reasoner: \`pool\` hands a host agent
+the closed set of cited candidates; the agent writes a diagnosis citing those
+ids; \`verify --pool\` enforces it invented nothing. logpod itself never reasons.
 
 Options:
   -s, --service <name>    Service name in the capsule        (default: unknown)
@@ -65,6 +73,8 @@ Options:
       --index <file>      (compress) also write a line-offset index sidecar
       --line <n>          (expand) the cited line to expand
       --context <n>       (expand) lines of context each side (default: 20)
+      --limit <n>         (pool) max candidates to emit          (default: 60)
+      --pool <file>       (verify) the candidate pool to check against
   -o, --output <file>     Write output to a file instead of stdout
       --pretty            Indent JSON output
   -h, --help              Show this help
@@ -166,6 +176,9 @@ function parseArgs(argv: string[]): Args {
         break;
       case "--templates":
         opts.templates = true;
+        break;
+      case "--pool":
+        opts.pool = needValue(i++, a);
         break;
       case "--pretty":
         opts.pretty = true;
@@ -302,6 +315,37 @@ async function main(): Promise<void> {
         die((e as Error).message, EXIT.INPUT);
       }
       break;
+    }
+
+    case "pool": {
+      // Over-collected, cited candidate set for the CLI+skill reasoner.
+      const { stream } = await openStream(args.positionals);
+      const acc = await compressStream(stream, readLimits(args.opts), streamOptions(args.opts));
+      await emit(acc.pool(args.opts.limit ?? 60), args.opts);
+      break;
+    }
+
+    case "verify": {
+      // Citation firewall: check an agent's diagnosis cites only real pool ids.
+      if (!args.opts.pool) die("verify needs --pool <pool.json>");
+      const poolFile = Bun.file(args.opts.pool);
+      if (!(await poolFile.exists())) die(`no such pool: ${args.opts.pool}`, EXIT.INPUT);
+      let pool: CandidatePool;
+      let diag: unknown;
+      try {
+        pool = JSON.parse(await poolFile.text()) as CandidatePool;
+      } catch (e) {
+        die(`pool is not valid JSON: ${(e as Error).message}`, EXIT.INPUT);
+      }
+      try {
+        diag = JSON.parse(await readText(args.positionals));
+      } catch (e) {
+        await emit({ valid: false, errors: [`diagnosis is not valid JSON: ${(e as Error).message}`] }, args.opts);
+        process.exit(EXIT.SCHEMA);
+      }
+      const result = verifyDiagnosis(diag, pool!);
+      await emit(result, args.opts);
+      process.exit(result.valid ? EXIT.OK : EXIT.SCHEMA);
     }
 
     case "validate": {

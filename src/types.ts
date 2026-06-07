@@ -79,6 +79,68 @@ export interface IncidentCapsule {
   routine_summary: RoutineSummary;
 }
 
+/**
+ * A single cited candidate the host agent may reason over. Stable id (`E1`…),
+ * every field traceable to a real source line — the closed set a reasoner is
+ * allowed to cite. See {@link CandidatePool}.
+ */
+export interface Candidate {
+  /** Stable reference id within the pool, e.g. "E7". */
+  id: string;
+  /** Real 1-based source line number. */
+  line: number;
+  /** "HH:MM:SS" or null. */
+  time: string | null;
+  level: LogLevel | null;
+  /** Drain template id. */
+  template: string;
+  /** 0..1 anomaly score. */
+  score: number;
+  /** The line text (redacted of PII). */
+  text: string;
+}
+
+/**
+ * The over-collected, cited candidate set emitted by `logpod pool`. A host
+ * agent reasons over *only* these candidates; `logpod verify` enforces that any
+ * diagnosis cites ids that exist here (the closed-set citation firewall).
+ */
+export interface CandidatePool {
+  schema: "logpod.candidate_pool/v1";
+  service: string;
+  window: string;
+  lines_in: number;
+  candidates: Candidate[];
+}
+
+/** Causal relation between two candidates in a diagnosis chain. */
+export type CausalRelation = "trigger" | "causes" | "precedes" | "correlates";
+
+/**
+ * The structured diagnosis a host agent produces from a {@link CandidatePool}.
+ * Every id must resolve to a pool candidate; `logpod verify` checks this so the
+ * agent can be wrong but never fabricate.
+ */
+export interface Diagnosis {
+  schema: "logpod.diagnosis/v1";
+  /** Candidate id of the originating failure. */
+  root: string;
+  /** 0..1 self-reported confidence in the root. */
+  confidence: number;
+  /** Role per candidate id (only ids the agent kept). */
+  roles: Record<string, EvidenceRole>;
+  /** Directed causal edges between candidate ids. */
+  causal_chain: { from: string; to: string; rel: CausalRelation }[];
+  /** One-paragraph explanation; should reference candidate ids inline. */
+  diagnosis: string;
+  /** Optional rival hypotheses. */
+  alternatives?: { root: string; why: string }[];
+  /** Optional next debugging actions (e.g. expand a cited line). */
+  next?: { action: string; ref?: string; reason: string }[];
+  /** Optional verbatim snippets used — each must be a substring of a candidate. */
+  quotes?: string[];
+}
+
 export interface CompressOptions {
   /** Service name recorded in the capsule. */
   service?: string;
