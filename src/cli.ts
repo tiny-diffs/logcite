@@ -1,10 +1,10 @@
 #!/usr/bin/env bun
 /**
- * Logpod CLI.
+ * Logcite CLI.
  *
- *   logpod compress <file|->        read logs, print an IncidentCapsule
- *   logpod expand <file>            show raw context around a cited line
- *   logpod validate <file|->        check a capsule against the v1 schema
+ *   logcite compress <file|->        read logs, print an IncidentCapsule
+ *   logcite expand <file>            show raw context around a cited line
+ *   logcite validate <file|->        check a capsule against the v1 schema
  *
  * Output is compact JSON by default (pipe-friendly); --pretty indents it.
  * JSON always goes to stdout (or --output); diagnostics go to stderr.
@@ -47,13 +47,13 @@ interface Args {
   };
 }
 
-const HELP = `logpod — systems log compression for AI agents (v${VERSION})
+const HELP = `logcite — systems log compression for AI agents (v${VERSION})
 
 Usage:
-  logpod compress <file|->         Compress logs into an IncidentCapsule
-  logpod scan <file|->             Count pattern matches (no inference)
-  logpod expand <file>             Show the raw lines around a cited line
-  logpod validate <file|->         Validate a capsule against the v1 schema
+  logcite compress <file|->         Compress logs into an IncidentCapsule
+  logcite scan <file|->             Count pattern matches (no inference)
+  logcite expand <file>             Show the raw lines around a cited line
+  logcite validate <file|->         Validate a capsule against the v1 schema
 
 Agents diagnose from the compressed IncidentCapsule: cited evidence lines carry
 real source line numbers and causal roles (trigger/root_cause/consequence/context).
@@ -84,15 +84,15 @@ Options:
   -V, --version           Show version
 
 Examples:
-  logpod compress fixtures/api.log -o capsule.json --index capsule.idx
-  logpod scan aws.log --pattern "not_found=eSIM not found for IMSI: (?<imsi>\\d+)" --group imsi
-  logpod scan aws.log --preset secrets
-  cat app.log | logpod compress - --level ERROR,WARN
-  kubectl logs -n prod api 2>&1 | logpod compress -
-  logpod compress fixtures/api.log --stats --max-lines 100000
-  logpod compress fixtures/api.log --templates --limit 10
-  logpod expand fixtures/api.log --line 30006 --index capsule.idx
-  logpod validate capsule.json
+  logcite compress fixtures/api.log -o capsule.json --index capsule.idx
+  logcite scan aws.log --pattern "not_found=eSIM not found for IMSI: (?<imsi>\\d+)" --group imsi
+  logcite scan aws.log --preset secrets
+  cat app.log | logcite compress - --level ERROR,WARN
+  kubectl logs -n prod api 2>&1 | logcite compress -
+  logcite compress fixtures/api.log --stats --max-lines 100000
+  logcite compress fixtures/api.log --templates --limit 10
+  logcite expand fixtures/api.log --line 30006 --index capsule.idx
+  logcite validate capsule.json
 `;
 
 const VALID_LEVELS = new Set<LogLevel>(["TRACE", "DEBUG", "INFO", "WARN", "ERROR", "FATAL"]);
@@ -208,7 +208,7 @@ function parseArgs(argv: string[]): Args {
 }
 
 function die(msg: string, code: number = EXIT.USAGE): never {
-  process.stderr.write(`logpod: ${msg}\n`);
+  process.stderr.write(`logcite: ${msg}\n`);
   process.exit(code);
 }
 

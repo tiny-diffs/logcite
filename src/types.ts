@@ -1,5 +1,5 @@
 /**
- * Core type definitions for Logpod log compression.
+ * Core type definitions for Logcite log compression.
  *
  * The output contract is the `IncidentCapsule`: a schema-valid JSON object that
  * an AI agent can read in place of raw logs. Every piece of evidence cites a
@@ -78,7 +78,7 @@ export interface RoutineSummary {
 
 /** The compressed artifact handed to the agent. */
 export interface IncidentCapsule {
-  schema: "logpod.incident_capsule/v1";
+  schema: "logcite.incident_capsule/v1";
   service: string;
   /** Human window, e.g. "14:22:11 to 15:22:11". */
   window: string;

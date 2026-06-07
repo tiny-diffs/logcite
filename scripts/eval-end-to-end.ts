@@ -1,5 +1,5 @@
 /**
- * End-to-end eval: grep vs logpod capsule — diagnostic quality.
+ * End-to-end eval: grep vs logcite capsule — diagnostic quality.
  *
  * Beyond binary recall, we measure whether an LLM could *actually* diagnose
  * from the output: signal density, root accessibility, temporal fidelity,
@@ -131,12 +131,12 @@ rows.push(makeRow("grep ERROR | strip vars | uniq", await sh(
   `grep -E 'ERROR' ${F} | sed -E 's/[0-9]+//g; s/^[^ ]+ //' | sort | uniq -c | sort -rn | head -20`
 ), false));
 
-// 6) logpod capsule (streaming pipeline)
+// 6) logcite capsule (streaming pipeline)
 const started = performance.now();
 const capsule = await compressLines(streamLines(Bun.file(file).stream()), { service: "api" });
 const capsuleMs = (performance.now() - started).toFixed(0);
 const capsuleText = JSON.stringify(capsule);
-rows.push(makeRow("logpod capsule", capsuleText, true, capsule.evidence.length));
+rows.push(makeRow("logcite capsule", capsuleText, true, capsule.evidence.length));
 
 // --- scoring --------------------------------------------------------------
 
@@ -162,7 +162,7 @@ function makeRow(name: string, text: string, roles: boolean, itemCount?: number)
 function pad(s: string, n: number) { return s.padEnd(n); }
 function padL(s: string, n: number) { return s.padStart(n); }
 
-console.log(`\n=== End-to-End Diagnostic Eval: grep vs logpod ===\n`);
+console.log(`\n=== End-to-End Diagnostic Eval: grep vs logcite ===\n`);
 console.log(`log: ${file} — ${rawText.split("\n").length.toLocaleString()} lines, 5 planted facts\n`);
 
 console.log(
@@ -199,7 +199,7 @@ for (const r of rows) {
 console.log("-".repeat(115));
 
 // Summary comparison
-const cap = rows.find((r) => r.name === "logpod capsule")!;
+const cap = rows.find((r) => r.name === "logcite capsule")!;
 const grepBest = rows.find((r) => r.name === "grep -iE 'error|warn'")!;
 const raw = rows.find((r) => r.name === "raw log (whole file)")!;
 

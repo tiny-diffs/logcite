@@ -1,7 +1,7 @@
 /**
- * Capsule validation — backs `logpod validate`.
+ * Capsule validation — backs `logcite validate`.
  *
- * Checks that a value is a well-formed `logpod.incident_capsule/v1`: required
+ * Checks that a value is a well-formed `logcite.incident_capsule/v1`: required
  * fields and types, evidence role/line/score sanity, and the internal
  * consistency the schema promises (compression == round(tokens_in/tokens_out)).
  *
@@ -30,8 +30,8 @@ export function validateCapsule(value: unknown): ValidationResult {
   }
 
   const schema = typeof value.schema === "string" ? value.schema : null;
-  if (schema !== "logpod.incident_capsule/v1") {
-    err(`schema: expected "logpod.incident_capsule/v1", got ${JSON.stringify(value.schema)}`);
+  if (schema !== "logcite.incident_capsule/v1") {
+    err(`schema: expected "logcite.incident_capsule/v1", got ${JSON.stringify(value.schema)}`);
   }
 
   if (typeof value.service !== "string") err("service: must be a string");

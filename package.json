@@ -1,11 +1,11 @@
 {
-  "name": "logpod",
+  "name": "logcite",
   "version": "0.1.0",
   "description": "Systems log compression for AI agents — turns millions of log lines into a cited, schema-valid IncidentCapsule.",
   "type": "module",
   "module": "src/index.ts",
   "bin": {
-    "logpod": "src/cli.ts"
+    "logcite": "src/cli.ts"
   },
   "exports": {
     ".": "./src/index.ts"

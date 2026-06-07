@@ -53,7 +53,7 @@ export interface CapsuleParts {
 /** Serialize precomputed parts into a capsule and compute the compression ratio. */
 export function assembleCapsule(parts: CapsuleParts): IncidentCapsule {
   const capsuleCore = {
-    schema: "logpod.incident_capsule/v1" as const,
+    schema: "logcite.incident_capsule/v1" as const,
     service: parts.service,
     window: parts.window,
     evidence: parts.evidence,

@@ -22,7 +22,7 @@ describe("cli", () => {
     expect(code).toBe(0);
     expect(stdout.split("\n").filter(Boolean).length).toBe(1); // compact = one line
     const capsule = JSON.parse(stdout);
-    expect(capsule.schema).toBe("logpod.incident_capsule/v1");
+    expect(capsule.schema).toBe("logcite.incident_capsule/v1");
     expect(capsule.service).toBe("api");
     expect(capsule.evidence.some((e: any) => e.role === "root_cause")).toBe(true);
   });

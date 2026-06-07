@@ -37,7 +37,7 @@ eSIM not found for IMSI: 724543021000000
 describe("scanStream", () => {
   test("counts matching lines with first/last/sample", async () => {
     const res = await scanStream(streamOf(LOG), {}, { patterns: [{ id: "err", regex: /ERROR/ }] });
-    expect(res.schema).toBe("logpod.scan/v1");
+    expect(res.schema).toBe("logcite.scan/v1");
     expect(res.lines_in).toBe(5);
     const f = res.findings[0]!;
     expect(f.count).toBe(1);
@@ -112,7 +112,7 @@ describe("scan CLI", () => {
     const { stdout, code } = await run(["scan", "-", "--pattern", "err=ERROR"], LOG);
     expect(code).toBe(0);
     const out = JSON.parse(stdout);
-    expect(out.schema).toBe("logpod.scan/v1");
+    expect(out.schema).toBe("logcite.scan/v1");
     expect(out.source).toBe("<stdin>");
     expect(out.findings[0].count).toBe(1);
   });

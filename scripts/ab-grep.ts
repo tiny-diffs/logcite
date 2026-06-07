@@ -80,12 +80,12 @@ rows.push({
   roles: false,
 });
 
-// 5) Logpod capsule (streaming pipeline).
+// 5) Logcite capsule (streaming pipeline).
 const started = performance.now();
 const capsule = await compressLines(streamLines(Bun.file(file).stream()), { service: "api" });
 const capsuleMs = (performance.now() - started).toFixed(0);
 const capsuleText = JSON.stringify(capsule);
-rows.push({ name: "logpod capsule", text: capsuleText, roles: true });
+rows.push({ name: "logcite capsule", text: capsuleText, roles: true });
 
 // --- report ---------------------------------------------------------------
 const totalLines = (await Bun.file(file).text()).split("\n").length - 1;

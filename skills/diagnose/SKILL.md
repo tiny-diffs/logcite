@@ -1,11 +1,11 @@
 ---
-name: logpod-diagnose
-description: Diagnose a production incident from logs using logpod. Use when asked to find the root cause, explain an outage, triage logs, or compare log evidence (logpod compress → a cited, role-tagged IncidentCapsule); and when asked to count how often a pattern occurs, break failures down by a field, or audit logs for leaked credentials (logpod scan). Reason from the capsule/scan output and cite real source lines.
+name: logcite-diagnose
+description: Diagnose a production incident from logs using logcite. Use when asked to find the root cause, explain an outage, triage logs, or compare log evidence (logcite compress → a cited, role-tagged IncidentCapsule); and when asked to count how often a pattern occurs, break failures down by a field, or audit logs for leaked credentials (logcite scan). Reason from the capsule/scan output and cite real source lines.
 ---
 
-# Diagnose logs with logpod
+# Diagnose logs with logcite
 
-Use logpod to turn large logs into a small, cited `IncidentCapsule`. The capsule
+Use logcite to turn large logs into a small, cited `IncidentCapsule`. The capsule
 contains the evidence an agent should inspect first: each evidence item has a
 real source `line`, verbatim `text`, anomaly `score`, template id, and causal
 `role`.
@@ -15,19 +15,19 @@ real source `line`, verbatim `text`, anomaly `score`, template id, and causal
 Create a capsule:
 
 ```bash
-logpod compress <logfile> --pretty -s <service> -o capsule.json
+logcite compress <logfile> --pretty -s <service> -o capsule.json
 ```
 
 Validate it:
 
 ```bash
-logpod validate capsule.json
+logcite validate capsule.json
 ```
 
 Inspect nearby raw context for a cited line when needed:
 
 ```bash
-logpod expand <logfile> --line <line> --context 5
+logcite expand <logfile> --line <line> --context 5
 ```
 
 Count a specific pattern deterministically (no inference) — use this instead of
@@ -35,15 +35,15 @@ Count a specific pattern deterministically (no inference) — use this instead o
 
 ```bash
 # count + first/last line + redacted sample for one or more patterns
-logpod scan <logfile> --pattern "expired_new=operation_type cannot be NEW"
+logcite scan <logfile> --pattern "expired_new=operation_type cannot be NEW"
 
 # group matches by a regex named capture (e.g. per-IMSI failure spread)
-logpod scan <logfile> \
+logcite scan <logfile> \
   --pattern "not_found=eSIM not found for IMSI: (?<imsi>\d+)" \
   --group imsi --limit-groups 10
 
 # audit the log for leaked credentials (samples are always redacted)
-logpod scan <logfile> --preset secrets
+logcite scan <logfile> --preset secrets
 ```
 
 ## How to reason from the capsule
@@ -66,7 +66,7 @@ If the capsule has no `trigger`, do not force one. Start the chain at
 precondition/distractor.
 
 Use `routine_summary.top_templates` to identify high-volume routine noise and to
-explain what logpod compressed away.
+explain what logcite compressed away.
 
 Always inspect `routine_summary.recurring_failures` before concluding the
 incident. These are repeated WARN/ERROR/FATAL templates that may represent
@@ -128,7 +128,7 @@ Next actions:
   larger evidence budget:
 
   ```bash
-  logpod compress <logfile> --pretty -n 24 -o capsule.json
+  logcite compress <logfile> --pretty -n 24 -o capsule.json
   ```
 
 - If important INFO/recovery signals are missing, call that out as a known

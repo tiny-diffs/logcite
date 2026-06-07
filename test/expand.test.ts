@@ -10,7 +10,7 @@ function streamOf(text: string): ReadableStream<Uint8Array> {
 }
 
 async function tmpLog(text: string): Promise<string> {
-  const path = join(tmpdir(), `logpod-expand-${Date.now()}-${Math.random().toString(36).slice(2)}.log`);
+  const path = join(tmpdir(), `logcite-expand-${Date.now()}-${Math.random().toString(36).slice(2)}.log`);
   await Bun.write(path, text);
   return path;
 }

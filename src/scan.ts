@@ -31,7 +31,7 @@ export interface ScanFinding {
 }
 
 export interface ScanResult {
-  schema: "logpod.scan/v1";
+  schema: "logcite.scan/v1";
   source: string;
   lines_in: number;
   findings: ScanFinding[];
@@ -141,5 +141,5 @@ export async function scanStream(
     return finding;
   });
 
-  return { schema: "logpod.scan/v1", lines_in: linesIn, findings };
+  return { schema: "logcite.scan/v1", lines_in: linesIn, findings };
 }

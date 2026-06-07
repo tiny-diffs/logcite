@@ -54,7 +54,7 @@ describe("compress", () => {
   const capsule = compress(INCIDENT, { service: "api" });
 
   test("emits a schema-valid capsule", () => {
-    expect(capsule.schema).toBe("logpod.incident_capsule/v1");
+    expect(capsule.schema).toBe("logcite.incident_capsule/v1");
     expect(capsule.service).toBe("api");
     expect(capsule.window).toContain(" to ");
     expect(capsule.stats.lines_in).toBe(11);

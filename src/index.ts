@@ -1,12 +1,12 @@
 /**
- * Logpod — systems log compression for AI agents.
+ * Logcite — systems log compression for AI agents.
  *
  * Turns line-oriented logs into a cited, schema-valid IncidentCapsule:
  *
- *   import { compress } from "logpod";              // in-memory, small inputs
+ *   import { compress } from "logcite";              // in-memory, small inputs
  *   const capsule = compress(rawLogText, { service: "api" });
  *
- *   import { compressLines } from "logpod";         // streaming, bounded memory
+ *   import { compressLines } from "logcite";         // streaming, bounded memory
  *   const capsule = await compressLines(lineSource, { service: "api" });
  *
  * Every piece of evidence cites a real line number and is tagged by its causal

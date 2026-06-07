@@ -1,14 +1,14 @@
-# Logpod
+# Logcite
 
-**Log compression for AI agents.** Logpod turns noisy production logs into a
+**Log compression for AI agents.** Logcite turns noisy production logs into a
 small, cited, schema-valid `IncidentCapsule` that an agent can actually read.
 
-Instead of handing an LLM 100k+ tokens of `grep` output, Logpod gives it the
+Instead of handing an LLM 100k+ tokens of `grep` output, Logcite gives it the
 incident chain: real log lines, causal roles, template context, and token stats.
 
 ```text
 305,283 log lines · 7,358,737 tokens
-        ↓ logpod compress
+        ↓ logcite compress
 721-token IncidentCapsule · causal roles
 ```
 
@@ -30,7 +30,7 @@ Latest synthetic incident result:
 | `grep -iE 'error\|warn'` | 141,049 | 5/5 | 12,221 tokens | 0.84 | no |
 | `grep ... \| head -40` | 1,077 | 0/5 | ∞ | 0.00 | no |
 | `grep ERROR \| strip vars \| uniq` | 51 | 3/5 | 42 tokens | 0.41 | no |
-| **logpod capsule** | **721** | **5/5** | **202 tokens** | **1.00** | **yes** |
+| **logcite capsule** | **721** | **5/5** | **202 tokens** | **1.00** | **yes** |
 
 What matters:
 
@@ -40,26 +40,26 @@ What matters:
 - The capsule carries causal roles; grep does not.
 
 But the goal isn't to retire your shell. For big logs and root-cause triage,
-logpod is the better *starting point* — it condenses noise into a small, cited
+logcite is the better *starting point* — it condenses noise into a small, cited
 capsule and saves tokens. The shell still wins when you already know the exact
 pattern you want, or need custom parsing. The strongest workflow is both:
 
 ```text
-logpod compress   →  where to look first + token savings
-logpod expand     →  real context around the cited lines
-logpod scan       →  count recurrence / blast radius (auditable)
+logcite compress   →  where to look first + token savings
+logcite expand     →  real context around the cited lines
+logcite scan       →  count recurrence / blast radius (auditable)
 shell (grep/awk)  →  refine a specific pattern when needed
 ```
 
 ---
 
-## What Logpod gives an agent
+## What Logcite gives an agent
 
-Logpod's output is an `IncidentCapsule`:
+Logcite's output is an `IncidentCapsule`:
 
 ```jsonc
 {
-  "schema": "logpod.incident_capsule/v1",
+  "schema": "logcite.incident_capsule/v1",
   "service": "api",
   "window": "14:00:00 to 23:56:12",
   "compression": 10206,
@@ -116,32 +116,32 @@ Contract:
 
 - **Cited** — every evidence item has a real source `line` and verbatim `text`.
 - **Role-tagged** — `trigger`, `root_cause`, `consequence`, or `context`.
-- **Schema-valid** — `logpod validate` checks the capsule shape.
-- **Expandable** — `logpod expand` shows raw context around any cited line.
+- **Schema-valid** — `logcite validate` checks the capsule shape.
+- **Expandable** — `logcite expand` shows raw context around any cited line.
 - **Slow-burn aware** — repeated WARN/ERROR/FATAL templates are surfaced as
   `routine_summary.recurring_failures`, so broken scheduled jobs are not hidden
   as routine noise.
 - **Cheap** — the agent reasons over hundreds of tokens, not hundreds of
   thousands.
 - **Triage, not a verdict** — the capsule tells an agent *where to look first*.
-  Confirm root cause with `logpod expand` (real context) and `logpod scan`
+  Confirm root cause with `logcite expand` (real context) and `logcite scan`
   (recurrence / blast radius) before trusting the chain.
 
 ---
 
 ## Install
 
-Logpod runs on Bun. Install the CLI globally:
+Logcite runs on Bun. Install the CLI globally:
 
 ```bash
-bun install -g logpod
+bun install -g logcite
 ```
 
 Verify:
 
 ```bash
-logpod --version
-logpod --help
+logcite --version
+logcite --help
 ```
 
 ---
@@ -157,19 +157,19 @@ bun run scripts/gen-incident.ts > fixtures/incident.log
 Compress it:
 
 ```bash
-logpod compress fixtures/incident.log --pretty -s api -o capsule.json
+logcite compress fixtures/incident.log --pretty -s api -o capsule.json
 ```
 
 Validate it:
 
 ```bash
-logpod validate capsule.json
+logcite validate capsule.json
 ```
 
 Inspect raw context around the root-cause line:
 
 ```bash
-logpod expand fixtures/incident.log --line 180455 --context 5
+logcite expand fixtures/incident.log --line 180455 --context 5
 ```
 
 Run the A/B eval against grep:
@@ -183,10 +183,10 @@ bun run scripts/eval-end-to-end.ts fixtures/incident.log
 ## CLI
 
 ```bash
-logpod compress <file|->         # logs → IncidentCapsule
-logpod scan <file|->             # count pattern matches (no inference)
-logpod expand <file>             # raw lines around a cited line
-logpod validate <file|->         # validate an IncidentCapsule
+logcite compress <file|->         # logs → IncidentCapsule
+logcite scan <file|->             # count pattern matches (no inference)
+logcite expand <file>             # raw lines around a cited line
+logcite validate <file|->         # validate an IncidentCapsule
 ```
 
 ### `compress`
@@ -194,10 +194,10 @@ logpod validate <file|->         # validate an IncidentCapsule
 Read a log file or stdin and emit an `IncidentCapsule`.
 
 ```bash
-logpod compress app.log --pretty -s api
-logpod compress app.log -o capsule.json
-cat app.log | logpod compress - --pretty -s api
-kubectl logs -n prod api 2>&1 | logpod compress - --pretty -s api
+logcite compress app.log --pretty -s api
+logcite compress app.log -o capsule.json
+cat app.log | logcite compress - --pretty -s api
+kubectl logs -n prod api 2>&1 | logcite compress - --pretty -s api
 ```
 
 Useful options:
@@ -222,9 +222,9 @@ Useful options:
 Examples:
 
 ```bash
-logpod compress app.log --stats
-logpod compress app.log --templates --limit 10
-logpod compress huge.log --max-bytes 50000000 -o capsule.json --index capsule.idx
+logcite compress app.log --stats
+logcite compress app.log --templates --limit 10
+logcite compress huge.log --max-bytes 50000000 -o capsule.json --index capsule.idx
 ```
 
 ### `scan`
@@ -237,15 +237,15 @@ bounded by distinct group-key cardinality. Honors `--max-lines` / `--max-bytes`.
 
 ```bash
 # count a custom pattern (id=regex; repeatable)
-logpod scan aws.log --pattern "expired_new=operation_type cannot be NEW"
+logcite scan aws.log --pattern "expired_new=operation_type cannot be NEW"
 
 # group matches by a named capture
-logpod scan aws.log \
+logcite scan aws.log \
   --pattern "not_found=eSIM not found for IMSI: (?<imsi>\d+)" \
   --group imsi --limit-groups 10
 
 # audit for leaked credentials (samples always redacted)
-logpod scan aws.log --preset secrets
+logcite scan aws.log --preset secrets
 ```
 
 Useful options:
@@ -260,7 +260,7 @@ Useful options:
 | `--max-lines` / `--max-bytes` | process only a prefix of the input |
 | `-o, --output <file>` / `--pretty` | same I/O contract as `compress` |
 
-Output is `logpod.scan/v1`: `{ schema, source, lines_in, findings[] }`. An
+Output is `logcite.scan/v1`: `{ schema, source, lines_in, findings[] }`. An
 explicit `--pattern` with no hits still reports `count: 0`; empty `--preset`
 rules are omitted. Secret samples are never emitted raw.
 
@@ -269,8 +269,8 @@ rules are omitted. Secret samples are never emitted raw.
 Show a cited line and nearby raw context.
 
 ```bash
-logpod expand app.log --line 30006 --context 5
-logpod expand huge.log --line 30006 --context 5 --index capsule.idx
+logcite expand app.log --line 30006 --context 5
+logcite expand huge.log --line 30006 --context 5 --index capsule.idx
 ```
 
 Use `--index` when you created one during `compress`; expansion seeks near the
@@ -281,8 +281,8 @@ line instead of rescanning from the top.
 Validate capsule JSON from a file or stdin.
 
 ```bash
-logpod validate capsule.json
-logpod compress app.log | logpod validate -
+logcite validate capsule.json
+logcite compress app.log | logcite validate -
 ```
 
 Exit codes:
@@ -298,7 +298,7 @@ Exit codes:
 
 ## Agent skill
 
-Logpod ships a local agent skill for diagnosis:
+Logcite ships a local agent skill for diagnosis:
 
 ```text
 skills/diagnose/SKILL.md
@@ -313,25 +313,25 @@ bun run skills:install
 This installs:
 
 ```text
-~/.agents/skills/logpod-diagnose
-~/.claude-code/skills/logpod-diagnose
+~/.agents/skills/logcite-diagnose
+~/.claude-code/skills/logcite-diagnose
 ```
 
 The skill tells the agent to:
 
-1. run `logpod compress <logfile> --pretty -o capsule.json`,
+1. run `logcite compress <logfile> --pretty -o capsule.json`,
 2. validate the capsule,
 3. reason from `capsule.evidence`,
 4. cite source line numbers,
-5. use `logpod expand` around cited evidence lines when more context is needed,
-6. use `logpod scan` to quantify recurrence / blast radius of a suspected cause,
+5. use `logcite expand` around cited evidence lines when more context is needed,
+6. use `logcite scan` to quantify recurrence / blast radius of a suspected cause,
 7. drop to the shell (`grep`/`sed`/`awk`) only to refine a pattern the capsule
    already pointed at.
 
 Example user request after installing the skill:
 
 ```text
-using the logpod skill find the incidents in @aws.log
+using the logcite skill find the incidents in @aws.log
 ```
 
 The intended workflow is capsule-first triage that funnels into targeted
@@ -342,7 +342,7 @@ The intended workflow is capsule-first triage that funnels into targeted
 ## Library API
 
 ```ts
-import { compress, compressLines, validateCapsule } from "logpod";
+import { compress, compressLines, validateCapsule } from "logcite";
 
 // Small inputs: in-memory string.
 const capsule = compress(rawLogText, { service: "api" });
@@ -383,7 +383,7 @@ raw bytes
   └─ capsule.ts       assemble schema-valid JSON + token stats
 ```
 
-The implementation is deterministic. There is no LLM inside Logpod.
+The implementation is deterministic. There is no LLM inside Logcite.
 
 Design choices:
 
@@ -399,7 +399,7 @@ Design choices:
 
 There is one compression engine: `compressStream` / `StreamAccumulator`.
 
-During a pass Logpod keeps:
+During a pass Logcite keeps:
 
 - template counts,
 - a capped anomaly candidate buffer,
@@ -456,7 +456,7 @@ bun run scripts/eval-end-to-end.ts fixtures/incident.log
 
 | path | responsibility |
 |---|---|
-| `src/cli.ts` | `logpod` executable: `compress`, `expand`, `validate` |
+| `src/cli.ts` | `logcite` executable: `compress`, `expand`, `validate` |
 | `src/stream.ts` | streaming compression engine |
 | `src/linereader.ts` | byte stream → line stream with line numbers/offsets |
 | `src/preprocess.ts` | timestamp/level parsing, JSON/envelope handling, redaction |
@@ -469,7 +469,7 @@ bun run scripts/eval-end-to-end.ts fixtures/incident.log
 | `src/validate.ts` | capsule schema validation |
 | `src/types.ts` | public TypeScript types |
 | `skills/diagnose/SKILL.md` | agent workflow for capsule-based diagnosis |
-| `scripts/install-dev.sh` | link this checkout as the local `logpod` binary |
+| `scripts/install-dev.sh` | link this checkout as the local `logcite` binary |
 | `scripts/install-skills.sh` | copy project skills to local agent directories |
 | `scripts/eval-end-to-end.ts` | grep vs capsule diagnostic eval |
 | `eval/` | heavier provider/format evaluation harness |
@@ -478,7 +478,7 @@ bun run scripts/eval-end-to-end.ts fixtures/incident.log
 
 ## Limits
 
-Logpod is useful today, but the current heuristics have known limits:
+Logcite is useful today, but the current heuristics have known limits:
 
 - **Severity bias** — quiet `INFO` lines can be important but may not enter
   evidence.
@@ -486,7 +486,7 @@ Logpod is useful today, but the current heuristics have known limits:
 - **Single-incident bias** — multiple unrelated incidents in one file can blur
   role labels.
 - **Multi-line payloads** — stack traces and code refs need better stitching.
-- **No semantic inference** — Logpod finds and structures evidence; the agent or
+- **No semantic inference** — Logcite finds and structures evidence; the agent or
   human still diagnoses from that evidence.
 
 ---

@@ -21,12 +21,12 @@ async function run(args: string[], stdin?: string) {
 
 describe("--output (#1)", () => {
   test("writes JSON to a file and nothing to stdout", async () => {
-    const out = join(tmpdir(), `logpod-${Date.now()}.json`);
+    const out = join(tmpdir(), `logcite-${Date.now()}.json`);
     const { stdout, code } = await run(["compress", "-", "-o", out], LOG);
     expect(code).toBe(0);
     expect(stdout.trim()).toBe(""); // stdout stays clean
     const capsule = JSON.parse(await Bun.file(out).text());
-    expect(capsule.schema).toBe("logpod.incident_capsule/v1");
+    expect(capsule.schema).toBe("logcite.incident_capsule/v1");
   });
 });
 
