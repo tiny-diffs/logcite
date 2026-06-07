@@ -14,9 +14,11 @@ incident chain: real log lines, causal roles, template context, and token stats.
 
 Built with [Bun](https://bun.sh) + TypeScript.
 
-The intended use is for an AI agent to use the `logcite` CLI with the bundled
-Logcite diagnosis skill installed, so it can compress, validate, expand, and
-scan logs through auditable commands instead of reading raw logs directly.
+The intended use is to give an AI agent the same kind of log-navigation
+tooling you already use in the terminal: the `logcite` CLI plus the bundled
+Logcite diagnosis skill. The agent can compress first, then use `expand` and
+`scan` to navigate evidence and blast radius through auditable commands instead
+of reading raw logs directly.
 
 ---
 
@@ -298,9 +300,10 @@ Exit codes:
 
 ## Agent skill
 
-Logcite ships a local agent skill for diagnosis. The idea is that an agent uses
-the `logcite` CLI with this skill installed, keeping every step inspectable and
-repeatable:
+Logcite ships a local agent skill for diagnosis. The idea is to give the agent
+the log-navigation tooling you already use: a CLI it can run with the skill
+installed, so `compress`, `expand`, and `scan` become inspectable, repeatable
+steps in the investigation:
 
 ```text
 skills/diagnose/SKILL.md
