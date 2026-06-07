@@ -1,81 +1,127 @@
 # Logpod
 
-**Log compression for AI agents.** Logpod turns millions of log lines into a
-cited, schema-valid `IncidentCapsule` an agent can actually read — the debugging
-signal, without the token bill.
+**Log compression for AI agents.** Logpod turns noisy production logs into a
+small, cited, schema-valid `IncidentCapsule` that an agent can actually read.
 
-```
-1,200,000 lines · 671 MB JSONL · ~241M tokens  ──▶  4,168 tokens
-                                                    ~58,000× smaller, one streaming pass
-```
+Instead of handing an LLM 100k+ tokens of `grep` output, Logpod gives it the
+incident chain: real log lines, causal roles, template context, and token stats.
 
-Agents are great at debugging until they hit the logs. Every read burns context,
-and the window fills with routine noise long before the agent reaches the answer.
-Logpod hands it only what matters — and unlike an LLM summary, **every claim cites a
-real line number**, so nothing is invented and nothing is summarized away.
+```text
+305,283 log lines · 7,358,737 tokens
+        ↓ logpod compress
+721-token IncidentCapsule · causal roles
+```
 
 Built with [Bun](https://bun.sh) + TypeScript.
 
 ---
 
-## See it
+## What Logpod gives an agent
 
-```console
-$ logpod compress app.log -s api --pretty       # 50,011 lines → 557 tokens · 2,167×
-```
+Logpod's output is an `IncidentCapsule`:
 
 ```jsonc
 {
   "schema": "logpod.incident_capsule/v1",
   "service": "api",
-  "window": "00:00:00 to 01:23:11",
-  "compression": 2167,
+  "window": "14:00:00 to 23:56:12",
+  "compression": 10206,
   "evidence": [
-    { "role": "trigger",     "line": 30005, "text": "… WARN pool acquire 480ms",                  "template": "T9",  "score": 0.57 },
-    { "role": "root_cause",  "line": 30006, "text": "… ERROR psycopg2.OperationalError: …failed",  "template": "T10", "score": 0.85 },
-    { "role": "consequence", "line": 30009, "text": "… ERROR upstream timeout id=abc124",          "template": "T12", "score": 0.85 },
-    { "role": "consequence", "line": 30010, "text": "… WARN circuit breaker open svc=db",          "template": "T13", "score": 0.59 },
-    { "role": "consequence", "line": 30011, "text": "… ERROR pool exhausted, queue=18",            "template": "T14", "score": 0.85 }
+    {
+      "role": "trigger",
+      "line": 180454,
+      "text": "2026-05-05T10:02:53.219Z WARN pool acquire 480ms",
+      "template": "T10",
+      "score": 0.58
+    },
+    {
+      "role": "root_cause",
+      "line": 180455,
+      "text": "2026-05-05T10:02:53.297Z ERROR psycopg2.OperationalError: connection to db_users failed",
+      "template": "T11",
+      "score": 0.85
+    },
+    {
+      "role": "consequence",
+      "line": 180459,
+      "text": "2026-05-05T10:02:54.519Z WARN circuit breaker open svc=db",
+      "template": "T15",
+      "score": 0.51
+    }
   ],
   "routine_summary": {
-    "total_lines": 50011,
+    "total_lines": 305283,
     "template_count": 16,
-    "top_templates": [ { "id": "T3", "pattern": "request <*> <*>", "count": 14296 }, /* … */ ]
+    "top_templates": [
+      { "id": "T3", "pattern": "request <*> <*>", "count": 14296 }
+    ]
+  },
+  "stats": {
+    "lines_in": 305283,
+    "tokens_in_est": 7358737,
+    "tokens_out_est": 721
   }
 }
 ```
 
-Five evidence lines out of 50,011 — the incident, in causal order, each citing
-its real line number. The other ~50,000 lines collapse into 16 routine templates.
+Contract:
 
-That's the whole contract:
+- **Cited** — every evidence item has a real source `line` and verbatim `text`.
+- **Role-tagged** — `trigger`, `root_cause`, `consequence`, or `context`.
+- **Schema-valid** — `logpod validate` checks the capsule shape.
+- **Expandable** — `logpod expand` shows raw context around any cited line.
+- **Cheap** — the agent reasons over hundreds of tokens, not hundreds of
+  thousands.
 
-- **Cited** — every `line` points at a real line in the source, and `logpod
-  expand` hands back the raw window around any citation (via a seek, not a
-  re-scan). The agent can go read the real context whenever it wants; Logpod
-  never makes anything up.
-- **Role-tagged** — `trigger → root_cause → consequence`, so the agent gets
-  *causality*, not a flat `grep` dump.
-- **Schema-valid** — strict JSON your tools and agents parse the same way every
-  time (`logpod validate` enforces it).
+---
+
+## Install
+
+Logpod runs on Bun. Install the CLI globally:
+
+```bash
+bun install -g logpod
+```
+
+Verify:
+
+```bash
+logpod --version
+logpod --help
+```
 
 ---
 
 ## Quick start
 
-```bash
-bun install
-bun link          # exposes the `logpod` binary
-# or skip the link and run it directly during dev:
-bun src/cli.ts compress fixtures/api.log
-```
+Generate a synthetic log with a planted incident:
 
 ```bash
-# kick the tires on a synthetic log with a planted incident
-bun run scripts/gen-fixture.ts 200000 > fixtures/api.log
-logpod compress fixtures/api.log --stats
-logpod compress fixtures/api.log --pretty
-bun test
+bun run scripts/gen-incident.ts > fixtures/incident.log
+```
+
+Compress it:
+
+```bash
+logpod compress fixtures/incident.log --pretty -s api -o capsule.json
+```
+
+Validate it:
+
+```bash
+logpod validate capsule.json
+```
+
+Inspect raw context around the root-cause line:
+
+```bash
+logpod expand fixtures/incident.log --line 180455 --context 5
+```
+
+Run the A/B eval against grep:
+
+```bash
+bun run scripts/eval-end-to-end.ts fixtures/incident.log
 ```
 
 ---
@@ -83,213 +129,307 @@ bun test
 ## CLI
 
 ```bash
-logpod compress <file|->        # logs → IncidentCapsule (compact JSON by default)
-logpod expand <file>           # raw lines around a cited line (seek, not re-scan)
-logpod validate <file|->        # check a capsule against the v1 schema
+logpod compress <file|->         # logs → IncidentCapsule
+logpod expand <file>             # raw lines around a cited line
+logpod validate <file|->         # validate an IncidentCapsule
 ```
 
-`compress` is the one log-reading command; `--stats` and `--templates` are just
-alternate views of the same pass. To compress a live source, pipe into it:
+### `compress`
+
+Read a log file or stdin and emit an `IncidentCapsule`.
 
 ```bash
-logpod compress fixtures/api.log --pretty
-cat app.log | logpod compress - --level ERROR,WARN
-kubectl logs -n prod api 2>&1 | logpod compress -          # no wrapper needed
-logpod compress fixtures/api.log --stats                   # numbers only, with timing
-logpod compress fixtures/api.log --templates --limit 10    # the routine-noise breakdown
-logpod compress huge.log --max-bytes 50000000 -o capsule.json --index huge.idx
-logpod expand huge.log --line 30006 --context 5 --index huge.idx
+logpod compress app.log --pretty -s api
+logpod compress app.log -o capsule.json
+cat app.log | logpod compress - --pretty -s api
+kubectl logs -n prod api 2>&1 | logpod compress - --pretty -s api
 ```
 
-| flag | does |
-|------|------|
-| `-s, --service <name>` | name recorded in the capsule (default `unknown`) |
-| `-n, --max-evidence <n>` | cap evidence lines (default 12) |
-| `--stats` | (compress) print numbers only — lines, tokens, compression, timing |
-| `--templates` | (compress) print the template breakdown; `--limit <n>` caps rows (default 20) |
-| `--level ERROR,WARN` | keep only these severities before compressing |
-| `--max-lines <n>` / `--max-bytes <n>` | process only a prefix — test on a subset without `head` |
-| `--sim <0..1>` / `--depth <n>` | Drain similarity threshold / tree depth |
-| `--no-redact` | skip PII redaction (emails, IPs, UUIDs, tokens) |
-| `--index <file>` | (compress) write a line→byte-offset sidecar for fast `expand` |
-| `--line <n>` / `--context <n>` | (expand) the cited line and how much context each side (default 20) |
-| `-o, --output <file>` | write to a file; stdout stays clean |
-| `--pretty` | indent the JSON |
+Useful options:
 
-JSON always goes to **stdout** (or `--output`); diagnostics go to **stderr**.
-Exit codes: `0` ok · `1` input/parse · `2` CLI usage · `3` schema invalid.
+| flag | purpose |
+|---|---|
+| `-s, --service <name>` | service name recorded in the capsule |
+| `-n, --max-evidence <n>` | max evidence lines, default `12` |
+| `--stats` | output only line/token/compression/performance stats |
+| `--templates` | output the template breakdown instead of the capsule |
+| `--limit <n>` | cap `--templates` rows, default `20` |
+| `--level ERROR,WARN` | filter input by severity before compression |
+| `--max-lines <n>` | process only the first N lines |
+| `--max-bytes <n>` | process only the first N bytes, whole-line safe |
+| `--sim <0..1>` | Drain similarity threshold |
+| `--depth <n>` | Drain tree depth |
+| `--no-redact` | disable PII redaction |
+| `--index <file>` | write a sparse line→byte-offset index for fast expand |
+| `-o, --output <file>` | write JSON to a file; stdout stays clean |
+| `--pretty` | pretty-print JSON |
+
+Examples:
+
+```bash
+logpod compress app.log --stats
+logpod compress app.log --templates --limit 10
+logpod compress huge.log --max-bytes 50000000 -o capsule.json --index capsule.idx
+```
+
+### `expand`
+
+Show a cited line and nearby raw context.
+
+```bash
+logpod expand app.log --line 30006 --context 5
+logpod expand huge.log --line 30006 --context 5 --index capsule.idx
+```
+
+Use `--index` when you created one during `compress`; expansion seeks near the
+line instead of rescanning from the top.
+
+### `validate`
+
+Validate capsule JSON from a file or stdin.
+
+```bash
+logpod validate capsule.json
+logpod compress app.log | logpod validate -
+```
+
+Exit codes:
+
+| code | meaning |
+|---:|---|
+| `0` | ok |
+| `1` | input/read problem |
+| `2` | CLI usage error |
+| `3` | invalid capsule schema |
 
 ---
 
-## Library
+## Agent skill
+
+Logpod ships a local agent skill for diagnosis:
+
+```text
+skills/diagnose/SKILL.md
+```
+
+Install or update it into your local agent skill directories:
+
+```bash
+bun run skills:install
+```
+
+This installs:
+
+```text
+~/.agents/skills/logpod-diagnose
+~/.claude-code/skills/logpod-diagnose
+```
+
+The skill tells the agent to:
+
+1. run `logpod compress <logfile> --pretty -o capsule.json`,
+2. validate the capsule,
+3. reason from `capsule.evidence`,
+4. cite source line numbers,
+5. use `logpod expand` only around cited evidence lines when more context is
+   needed.
+
+Example user request after installing the skill:
+
+```text
+using the logpod skill find the incidents in @aws.log
+```
+
+The intended workflow is capsule-first diagnosis, not raw-log scanning.
+
+---
+
+## Does it beat grep?
+
+`bun run scripts/eval-end-to-end.ts fixtures/incident.log` compares raw logs,
+grep strategies, and the capsule on diagnostic signal.
+
+Latest synthetic incident result:
+
+| strategy | tokens | recall | root latency | diagnostic score | roles |
+|---|---:|:---:|---:|:---:|:---:|
+| raw log | 7,358,737 | 5/5 | 4,352,418 tokens | 0.80 | no |
+| `grep ERROR` | 140,249 | 3/5 | 12,171 tokens | 0.23 | no |
+| `grep -iE 'error\|warn'` | 141,049 | 5/5 | 12,221 tokens | 0.84 | no |
+| `grep ... \| head -40` | 1,077 | 0/5 | ∞ | 0.00 | no |
+| `grep ERROR \| strip vars \| uniq` | 51 | 3/5 | 42 tokens | 0.41 | no |
+| **logpod capsule** | **721** | **5/5** | **202 tokens** | **1.00** | **yes** |
+
+What matters:
+
+- Capsule keeps the same 5/5 facts as the best grep strategy.
+- Capsule is **196× smaller** than `grep -iE 'error|warn'`.
+- The root cause appears after **202 tokens**, not 12k+ tokens.
+- The capsule carries causal roles; grep does not.
+
+---
+
+## Library API
 
 ```ts
 import { compress, compressLines, validateCapsule } from "logpod";
 
-// in-memory — small inputs
+// Small inputs: in-memory string.
 const capsule = compress(rawLogText, { service: "api" });
 
-// streaming — bounded memory over an async line source
-const capsule = await compressLines(lineStream, { service: "api" });
+// Large inputs: streaming line source.
+const streamingCapsule = await compressLines(lineSource, { service: "api" });
 
-validateCapsule(capsule); // { valid: true, errors: [] }
+const result = validateCapsule(capsule);
+if (!result.valid) console.error(result.errors);
 ```
 
-The full `IncidentCapsule` type lives in [`src/types.ts`](src/types.ts).
+Main exported types live in [`src/types.ts`](src/types.ts):
 
----
-
-## Agent diagnosis with the capsule (CLI + skill)
-
-logpod's role assignment is heuristic — good, but it has a ceiling. The fix
-isn't to bake an LLM into logpod (that breaks the no-inference guarantee).
-Instead, logpod stays deterministic and **the agent already using it reasons from
-the compressed capsule**, guided by a skill.
-
-```bash
-logpod compress app.log --pretty -o capsule.json
-logpod validate capsule.json
-# The host agent reads capsule.evidence, cites real line numbers, and optionally:
-logpod expand app.log --line 30006 --context 5
-```
-
-The capsule is the contract: every evidence item has a real source `line`, a
-verbatim `text`, a `template`, a score, and a causal `role`. The agent can still
-be wrong about interpretation, but its claims are auditable line-by-line. The
-skill that drives this workflow lives in [`skills/diagnose/SKILL.md`](skills/diagnose/SKILL.md).
+- `IncidentCapsule`
+- `Evidence`
+- `EvidenceRole`
+- `RoutineSummary`
+- `Template`
+- `CompressOptions`
 
 ---
 
 ## How it works
 
-A single pass, each stage doing one job:
-
-```
+```text
 raw bytes
-  │  linereader.ts   stream lines from a file/stdin/stream — never load it whole
-  ▼
-  │  preprocess.ts   parse ts + level (plain or JSONL), redact PII, mask the prefix
-  ▼
-  │  drain.ts        fixed-depth tree clusters lines into templates (Drain)
-  ▼                  1M lines → a few hundred templates: routine vs anomaly
-  │  anomaly.ts      score each line: severity + template rarity + numeric spike
-  ▼
-  │  causal.ts       tag the survivors by role, gated to the incident's time window
-  ▼                  trigger → root_cause → consequence
-  │  capsule.ts      assemble, count tokens (real BPE), compute the ratio
-  ▼
-IncidentCapsule      schema-valid JSON, every line cited
+  │
+  ├─ linereader.ts    stream lines + preserve source line numbers
+  │
+  ├─ preprocess.ts    parse timestamp/level, unwrap JSON/envelopes, redact PII
+  │
+  ├─ drain.ts         cluster repeated shapes into templates
+  │
+  ├─ anomaly.ts       score severity + rarity + numeric spikes
+  │
+  ├─ causal.ts        select diverse evidence and assign causal roles
+  │
+  └─ capsule.ts       assemble schema-valid JSON + token stats
 ```
 
-Two design choices worth calling out:
+The implementation is deterministic. There is no LLM inside Logpod.
 
-- **Templating, not summarizing.** [Drain](https://github.com/logpai/Drain3)
-  collapses repetitive lines into patterns, so a 4,000-line retry storm becomes
-  one template with a count — and the rare line that actually matters stops
-  hiding in the noise.
-- **Real token counts.** The compression ratio uses an actual BPE tokenizer
-  (`o200k_base`), not a `chars/4` guess, so the number you see is the number an
-  agent pays.
+Design choices:
 
----
-
-## Streaming & memory
-
-There is **one** compression engine: a streaming accumulator
-([`src/stream.ts`](src/stream.ts) + [`src/linereader.ts`](src/linereader.ts)).
-A single online pass feeds Drain and keeps only: template counts, a **capped**
-buffer of candidate anomalies, and reservoir samples for the token estimate and
-the numeric p95. Nothing scales with input size.
-
-| 1.2M lines / 61 MB | peak RSS |
-|--------------------|---------:|
-| `logpod compress <file>` (streaming) | **~340 MB** — bounded, ~constant as the file grows |
-| `compress(text)` (holds the string in memory) | ~940 MB |
-
-The CLI (`compress`, including its `--stats` / `--templates` views) and
-`compressLines` / `compressStream` all stream from bytes, so memory stays bounded on a 100 MB+
-file. The sync `compress(text)` helper feeds the same engine but holds the whole
-input string in memory — use it for small inputs and tests only. Throughput runs
-from ~20k lines/s on rich JSONL (per-line `JSON.parse`) to ~300k lines/s on plain
-text.
+- **Templating, not summarizing** — repeated storms collapse into template counts.
+- **Citations over prose** — the output contains real log lines, not invented
+  summaries.
+- **Bounded streaming** — the CLI does not load the whole file into memory.
+- **Real tokenizer** — token counts use `o200k_base` via `gpt-tokenizer`.
 
 ---
 
-## Does it actually help an agent? (A/B vs grep)
+## Streaming and memory
 
-`bun run ab` plants a known incident in a 300k-line log — a DB outage
-(WARN trigger → connection ERROR → retry storm) **plus a recurring rate-limit
-distractor error** — then compares what a debugging agent would be handed.
-*Recall* = how many of the 5 ground-truth facts survive.
+There is one compression engine: `compressStream` / `StreamAccumulator`.
 
-| strategy | lines | tokens | recall | roles |
-|----------|------:|-------:|:------:|:-----:|
-| raw log (whole file) | 305,283 | 7,358,737 | 5/5 | no |
-| `grep ERROR` | 5,250 | 140,249 | 3/5 | no |
-| `grep -iE 'error\|warn'` | 5,282 | 141,049 | 5/5 | no |
-| `grep -iE 'error\|warn' \| head -40` | 40 | 1,077 | **0/5** | no |
-| `grep ERROR \| strip vars \| uniq -c` | 5 | 51 | 3/5 | no |
-| **logpod capsule** | 1 | **720** | **5/5** | **yes** |
+During a pass Logpod keeps:
 
-What the table says:
+- template counts,
+- a capped anomaly candidate buffer,
+- a token-estimation reservoir,
+- a numeric-spike reservoir,
+- line/window counters.
 
-- `grep ERROR` silently drops the two **WARN**-level facts (the trigger and the
-  circuit breaker).
-- The budgeted `head -40` fills up with the distractor and **never reaches the
-  real incident** — 0/5.
-- Full `error|warn` matches recall but costs **~200×** the capsule's tokens.
-- The capsule recovers all five facts, with causal roles and citations, at
-  **720 tokens** — because rarity+severity scoring surfaces the rare real
-  incident over the recurring noise.
-
-Codified as a regression test in [`test/ab.test.ts`](test/ab.test.ts).
+The CLI path streams from bytes. The sync `compress(text)` helper holds the
+input string and is intended for small logs/tests.
 
 ---
 
-## Design notes (and honest limits)
+## Development
 
-- **Heuristic, not learned.** Scoring is severity + IDF-style rarity + numeric
-  spike. It's cheap and explainable on purpose — no model, no training data.
-- **Single-incident assumption.** Causal roles are gated to a time window around
-  the strongest error. Two unrelated incidents in one window will blur together;
-  the root cause is still found, but the role labels get noisier.
-- **Recall is severity-biased.** The bounded candidate buffer only keeps
-  anomalies (WARN+ or hint matches), so a rare *INFO* line won't become evidence.
-  In practice evidence is dominated by severity, and the buffer is what keeps
-  memory constant.
-- **`o200k_base` is a proxy.** Exact for GPT-4o-family tokenizers; Claude's
-  counts differ slightly. The `_est` suffix on the stats fields is deliberate.
+Install dependencies:
+
+```bash
+bun install
+```
+
+Link the local CLI for testing:
+
+```bash
+bun run dev:install
+```
+
+Install/update local skills:
+
+```bash
+bun run skills:install
+```
+
+Run tests:
+
+```bash
+bun test
+```
+
+Run the grep A/B harness:
+
+```bash
+bun run ab
+```
+
+Run the end-to-end diagnostic eval:
+
+```bash
+bun run scripts/eval-end-to-end.ts fixtures/incident.log
+```
 
 ---
 
-## Layout
+## Repository layout
 
-| file | responsibility |
-|------|----------------|
-| `src/linereader.ts` | stream lines from bytes (+ byte offsets); `--max-bytes` / `--max-lines` |
-| `src/lineindex.ts` | sparse line→byte-offset index, built in the same pass |
-| `src/expand.ts` | expand a cited line into its raw context (`logpod expand`) |
-| `src/preprocess.ts` | line parsing, level/ts detection (ISO, slash, syslog, epoch, CLF, Rails, JSONL), PII redaction |
-| `src/drain.ts` | Drain-style fixed-depth templating (count-based) |
-| `src/anomaly.ts` | per-line scoring (`scoreOne`) |
-| `src/causal.ts` | evidence selection + causal roles (template-diverse, time-gated) |
-| `src/capsule.ts` | capsule assembly + compression ratio |
-| `src/stream.ts` | the streaming engine — bounded-memory accumulator |
-| `src/compress.ts` | sync `compress(text)` convenience over the streaming engine |
-| `src/tokens.ts` | real BPE token counting (`o200k_base`) |
-| `src/validate.ts` | `IncidentCapsule` schema validation |
-| `src/types.ts` | the `IncidentCapsule` schema and shared types |
+| path | responsibility |
+|---|---|
+| `src/cli.ts` | `logpod` executable: `compress`, `expand`, `validate` |
+| `src/stream.ts` | streaming compression engine |
+| `src/linereader.ts` | byte stream → line stream with line numbers/offsets |
+| `src/preprocess.ts` | timestamp/level parsing, JSON/envelope handling, redaction |
+| `src/drain.ts` | Drain-style template clustering |
+| `src/anomaly.ts` | per-line anomaly scoring |
+| `src/causal.ts` | evidence selection and causal role assignment |
+| `src/capsule.ts` | capsule assembly and compression ratio |
+| `src/expand.ts` | raw context expansion around cited lines |
+| `src/lineindex.ts` | sparse line→byte-offset sidecar index |
+| `src/validate.ts` | capsule schema validation |
+| `src/types.ts` | public TypeScript types |
+| `skills/diagnose/SKILL.md` | agent workflow for capsule-based diagnosis |
+| `scripts/install-dev.sh` | link this checkout as the local `logpod` binary |
+| `scripts/install-skills.sh` | copy project skills to local agent directories |
+| `scripts/eval-end-to-end.ts` | grep vs capsule diagnostic eval |
+| `eval/` | heavier provider/format evaluation harness |
+
+---
+
+## Limits
+
+Logpod is useful today, but the current heuristics have known limits:
+
+- **Severity bias** — quiet `INFO` lines can be important but may not enter
+  evidence.
+- **Recovery arc** — capsules may capture the failure better than the recovery.
+- **Single-incident bias** — multiple unrelated incidents in one file can blur
+  role labels.
+- **Multi-line payloads** — stack traces and code refs need better stitching.
+- **No semantic inference** — Logpod finds and structures evidence; the agent or
+  human still diagnoses from that evidence.
 
 ---
 
 ## Roadmap
 
-- [x] CLI — `compress` (with `--stats` / `--templates` views), `expand`, `validate`
-- [x] exact tokenizer — real BPE counts via `o200k_base`
-- [x] streaming ingestion — bounded-memory online pass
-- [x] A/B harness vs grep — `bun run ab`
-- [x] cited-line expansion — `logpod expand` seeks raw context via a sidecar index
-- [ ] **MCP server** — expose `tail_*` / `expand_line` tools so agents read capsules directly
-- [ ] benchmark vs Drain3 / raw-logs control on LogHub-2.0
-- [ ] blind LLM-as-judge A/B (objective recall today; agent-diagnosis judge next)
-```
+- [x] streaming CLI: `compress`, `expand`, `validate`
+- [x] exact token counting with `o200k_base`
+- [x] cited `IncidentCapsule` schema
+- [x] capsule-based diagnosis skill
+- [x] local install scripts for CLI and skills
+- [x] A/B eval vs grep
+- [ ] improve INFO/recovery signal capture
+- [ ] multi-line stack trace stitching + code refs
+- [ ] multi-incident segmentation
+- [ ] MCP server for agent-native `compress` / `expand` tools

@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+# Install Logpod from this checkout: CLI executable + local agent skills.
+set -euo pipefail
+
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$ROOT"
+
+if ! command -v bun >/dev/null 2>&1; then
+  cat >&2 <<'MSG'
+error: Bun is required to install Logpod.
+Install Bun first: https://bun.sh/docs/installation
+MSG
+  exit 1
+fi
+
+echo "==> Installing Logpod CLI"
+bash "$ROOT/scripts/install-dev.sh"
+
+echo
+echo "==> Installing Logpod agent skills"
+bash "$ROOT/scripts/install-skills.sh"
+
+echo
+echo "✓ Logpod installed"
+echo "  CLI:    $(command -v logpod)"
+echo "  Skills: $HOME/.agents/skills/logpod-diagnose"
+echo "          $HOME/.claude-code/skills/logpod-diagnose"
