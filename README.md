@@ -1,15 +1,16 @@
 # Logcite
 
-**Log compression for AI agents.** Logcite turns noisy production logs into a
-small, cited, schema-valid `IncidentCapsule` that an agent can actually read.
+**Log compression for AI agents.** Logcite reads millions of log lines and
+hands an AI agent the causal chain — `trigger → root_cause → consequence`, every
+line cited — in a small, schema-valid `IncidentCapsule` it can actually read.
 
-Instead of handing an LLM 100k+ tokens of `grep` output, Logcite gives it the
-incident chain: real log lines, causal roles, template context, and token stats.
+All in ~983 tokens instead of 100k+ of `grep` output. Not an index, not a smarter
+grep: it infers *which line caused what*, with template context and token stats.
 
 ```text
 305,283 log lines · 7,358,737 tokens
         ↓ logcite compress
-721-token IncidentCapsule · causal roles
+983-token IncidentCapsule · causal roles
 ```
 
 Built with [Bun](https://bun.sh) + TypeScript.
@@ -33,11 +34,11 @@ Latest synthetic incident result:
 | `grep -iE 'error\|warn'` | 141,049 | 12,221 tokens | 0.84 | no |
 | `grep ... \| head -40` | 1,077 | ∞ | 0.00 | no |
 | `grep ERROR \| strip vars \| uniq` | 51 | 42 tokens | 0.41 | no |
-| **logcite capsule** | **721** | **202 tokens** | **1.00** | **yes** |
+| **logcite capsule** | **1,010** | **202 tokens** | **1.00** | **yes** |
 
 What matters:
 
-- Capsule is **196× smaller** than `grep -iE 'error|warn'`.
+- Capsule is **140× smaller** than `grep -iE 'error|warn'`.
 - The root cause appears after **202 tokens**, not 12k+ tokens.
 - The capsule carries causal roles; grep does not.
 
@@ -64,7 +65,7 @@ Logcite's output is an `IncidentCapsule`:
   "schema": "logcite.incident_capsule/v1",
   "service": "api",
   "window": "14:00:00 to 23:56:12",
-  "compression": 10206,
+  "compression": 7469,
   "evidence": [
     {
       "role": "trigger",
@@ -109,7 +110,7 @@ Logcite's output is an `IncidentCapsule`:
   "stats": {
     "lines_in": 305283,
     "tokens_in_est": 7358737,
-    "tokens_out_est": 721
+    "tokens_out_est": 983
   }
 }
 ```
