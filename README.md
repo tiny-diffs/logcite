@@ -133,10 +133,22 @@ Contract:
 
 ## Install
 
-Logcite runs on Bun. Install the CLI globally:
+Logcite runs on Bun. To install the CLI plus the bundled agent skill:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/tiny-diffs/logcite/main/install.sh | bash
+```
+
+Or install only the CLI globally:
 
 ```bash
 bun install -g logcite
+```
+
+Install only the agent skill:
+
+```bash
+npx skills add https://github.com/tiny-diffs/logcite/skills --skill logcite-diagnose
 ```
 
 Verify:
@@ -306,20 +318,19 @@ installed, so `compress`, `expand`, and `scan` become inspectable, repeatable
 steps in the investigation:
 
 ```text
-skills/diagnose/SKILL.md
+skills/logcite-diagnose/SKILL.md
 ```
 
-Install or update it into your local agent skill directories:
+Install or update it with the skills CLI:
+
+```bash
+npx skills add https://github.com/tiny-diffs/logcite/skills --skill logcite-diagnose
+```
+
+From this checkout you can run the same installer via:
 
 ```bash
 bun run skills:install
-```
-
-This installs:
-
-```text
-~/.agents/skills/logcite-diagnose
-~/.claude-code/skills/logcite-diagnose
 ```
 
 The skill tells the agent to:
@@ -473,9 +484,9 @@ bun run scripts/eval-end-to-end.ts fixtures/incident.log
 | `src/lineindex.ts` | sparse line→byte-offset sidecar index |
 | `src/validate.ts` | capsule schema validation |
 | `src/types.ts` | public TypeScript types |
-| `skills/diagnose/SKILL.md` | agent workflow for capsule-based diagnosis |
-| `scripts/install-dev.sh` | link this checkout as the local `logcite` binary |
-| `scripts/install-skills.sh` | copy project skills to local agent directories |
+| `skills/logcite-diagnose/SKILL.md` | agent workflow for capsule-based diagnosis |
+| `scripts/install-dev.sh` | install this checkout as the local `logcite` binary |
+| `scripts/install-skills.sh` | install published skills via `npx skills add` |
 | `scripts/eval-end-to-end.ts` | grep vs capsule diagnostic eval |
 | `eval/` | heavier provider/format evaluation harness |
 

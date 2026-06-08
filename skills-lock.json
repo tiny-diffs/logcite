@@ -1,0 +1,11 @@
+{
+  "version": 1,
+  "skills": {
+    "logcite-diagnose": {
+      "source": "tiny-diffs/logcite",
+      "sourceType": "github",
+      "skillPath": "skills/logcite-diagnose/SKILL.md",
+      "computedHash": "2bf5dec669d6ba325440f2c8449971259c253e0f6cfb6e537c6f9f0bbce47a2a"
+    }
+  }
+}
